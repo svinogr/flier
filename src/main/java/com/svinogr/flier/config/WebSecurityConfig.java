@@ -1,6 +1,7 @@
 package com.svinogr.flier.config;
 
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.method.configuration.EnableReactiveMethodSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
@@ -11,9 +12,10 @@ import org.springframework.security.web.server.SecurityWebFilterChain;
 
 @EnableWebFluxSecurity
 @EnableReactiveMethodSecurity
+@Configuration
 public class WebSecurityConfig{
     @Bean
-    PasswordEncoder passwordEncoder(){
+    BCryptPasswordEncoder passwordEncoder(){
         return new BCryptPasswordEncoder(8);
     }
 
@@ -24,8 +26,8 @@ public class WebSecurityConfig{
                 formLogin().
                 and().httpBasic().disable().
                 authorizeExchange().
-                pathMatchers( "/login", "/favicon.ico").permitAll().
-                pathMatchers("/").hasAnyRole("ACCOUNT", "ADMIN").
+                pathMatchers( "/login", "/favicon.ico", "/").permitAll().
+              //  pathMatchers("/").hasAnyRole("ACCOUNT", "ADMIN").
                 pathMatchers("/admin").hasRole("ADMIN").anyExchange().authenticated().
                 and().
                 build();

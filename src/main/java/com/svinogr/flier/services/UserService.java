@@ -1,25 +1,15 @@
 package com.svinogr.flier.services;
 
 import com.svinogr.flier.model.User;
-import com.svinogr.flier.repo.UserRepo;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.userdetails.ReactiveUserDetailsService;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-@Service
-public class UserService implements ReactiveUserDetailsService {
-    @Autowired
-    private UserRepo userRepo;
-
-    public Flux<User> getAlluser(){
-        return userRepo.findAll();
-    }
-
-    @Override
-    public Mono<UserDetails> findByUsername(String s) {
-        return userRepo.findByName(s).cast(UserDetails.class);
-    }
+public interface UserService {
+    Flux<User> findAll();
+    Mono<User> findUserById(Long id);
+    Mono<User> registerUser(User user);
+    Mono<User> registerAdmin(User user);
+    Mono<User> registerAccount(User user);
+    Mono<User> findUserByName(String name);
+    void deleteUser(Long id);
 }

@@ -1,62 +1,30 @@
 package com.svinogr.flier.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
-import lombok.NoArgsConstructor;
-import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Table;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
 
-import javax.annotation.Generated;
-import java.util.Collection;
+import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
-@NoArgsConstructor
+@Entity(name = "usr")
 @Table("usr")
-public class User implements UserDetails {
-    @Id
-    private Long id;
-    private String name;
-    @JsonIgnore
+public class User extends BaseEntity {
+    @Column(name = "user_name")
+    private String username;
+
+    @Column(name = "email")
+    private String email;
+
+    @Column(name = "password")
     private String password;
-    private String mail;
-    private UserRole role;
 
-    @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new SimpleGrantedAuthority(role.name()));
-    }
-
-    @Override
-    public String getPassword() {
-        return password;
-    }
-
-    @Override
-    public String getUsername() {
-        return name;
-    }
-
-    @Override
-    public boolean isAccountNonExpired() {
-        return true;
-    }
-
-    @Override
-    public boolean isAccountNonLocked() {
-        return true;
-    }
-
-    @Override
-    public boolean isCredentialsNonExpired() {
-        return true;
-    }
-
-    @Override
-    public boolean isEnabled() {
-        return true;
-    }
+    // связь через таблицу "user_roles" в которой есть колонки "user_id" и "role_id"
+    // первая замапена на "id" из User, вторая замапена на "id" из Role( в ней тоже есть мапинг ведущий сюда)
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(name = "user_roles",
+            joinColumns = {@JoinColumn(name = "user_id", referencedColumnName = "id")},
+            inverseJoinColumns = {@JoinColumn(name = "role_id", referencedColumnName = "id")})
+    private List<Role> roles;
 }
