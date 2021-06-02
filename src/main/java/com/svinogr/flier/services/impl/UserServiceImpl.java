@@ -29,7 +29,7 @@ public class UserServiceImpl implements UserService {
     private final BCryptPasswordEncoder passwordEncoder;
 
 
-    public UserServiceImpl( RoleRepo roleRepo, UserRepo userRepo, BCryptPasswordEncoder passwordEncoder) {
+    public UserServiceImpl(RoleRepo roleRepo, UserRepo userRepo, BCryptPasswordEncoder passwordEncoder) {
         this.userRepo = userRepo;
         this.roleRepo = roleRepo;
         this.passwordEncoder = passwordEncoder;
@@ -51,19 +51,22 @@ public class UserServiceImpl implements UserService {
     }
 
     private Mono<User> saveUser(User user, UserRole userRole) {
-        Mono<Role> roleM = roleRepo.findByName(userRole.name());
-
+     /*   Mono<Role> roleM = roleRepo.findByName(userRole.name());
         List<Role> listRoles = new ArrayList<>();
-        listRoles.add(roleM.block());
-
+        listRoles.add(roleM.block());*/
+        Role role = new Role();
+        role.setName("dddd");
+        roleRepo.save(role);
         user.setPassword(passwordEncoder.encode(user.getPassword()));
-           user.setRoles(listRoles);
+      //  user.setRoles(listRoles);
         user.setStatus(Status.ACTIVE);
+        user.setId(1l);
 
         Mono<User> saveUser = userRepo.save(user);
 
-        log.info("IN register - user: {} successfully registered with role:{}", saveUser, roleM);
-
+/*
+        log.info("IN register - user: {} successfully registered with role:{}", saveUser, listRoles.get(0).getName());
+*/
         return saveUser;
     }
 

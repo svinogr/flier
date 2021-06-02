@@ -1,25 +1,28 @@
 package com.svinogr.flier.model;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.Transient;
 import org.springframework.data.relational.core.mapping.Table;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.ManyToMany;
-import java.util.List;
+import java.time.LocalDate;
+import java.util.Date;
 
 
-
-@Table("roles")
-@Entity(name = "roles")
 @Data
-public class Role extends BaseEntity {
-    @Column(name = "name")
-    private String name;
+@Table
+@NoArgsConstructor
+public class Role {
+    @Id
+    private Long id;
 
-    // связь для User
-    @ManyToMany(mappedBy = "roles", fetch = FetchType.LAZY)
-    private List<User> users;
+    private LocalDate created;
+
+    private LocalDate updated;
+
+    private Status status;
+
+    private String name;
 }
 

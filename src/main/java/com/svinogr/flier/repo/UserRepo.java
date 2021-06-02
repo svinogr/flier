@@ -8,7 +8,6 @@ import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Mono;
 
 @Repository
-
 public interface UserRepo extends ReactiveCrudRepository<User, Long> {
   //  Mono<User> findByName(String name);
 }
