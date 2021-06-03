@@ -17,6 +17,7 @@ create table role (
     UNIQUE(Id)
 );
 create table user_roles (
+Id SERIAL PRIMARY key,
  user_id INTEGER,
  role_id INTEGER
 );

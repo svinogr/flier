@@ -1,22 +1,16 @@
 package com.svinogr.flier.services.impl;
 
-import com.svinogr.flier.model.Role;
-import com.svinogr.flier.model.Status;
-import com.svinogr.flier.model.User;
-import com.svinogr.flier.model.UserRole;
+import com.svinogr.flier.model.*;
 import com.svinogr.flier.repo.RoleRepo;
 import com.svinogr.flier.repo.UserRepo;
+import com.svinogr.flier.repo.UserRolesRepo;
 import com.svinogr.flier.services.UserService;
-import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import reactor.core.Disposable;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @Service
 @Slf4j
@@ -26,12 +20,15 @@ public class UserServiceImpl implements UserService {
 
     private final RoleRepo roleRepo;
 
+    private final UserRolesRepo userRolesRepo;
+
     private final BCryptPasswordEncoder passwordEncoder;
 
 
-    public UserServiceImpl(RoleRepo roleRepo, UserRepo userRepo, BCryptPasswordEncoder passwordEncoder) {
+    public UserServiceImpl(RoleRepo roleRepo, UserRepo userRepo, UserRolesRepo userRolesRepo, BCryptPasswordEncoder passwordEncoder) {
         this.userRepo = userRepo;
         this.roleRepo = roleRepo;
+        this.userRolesRepo = userRolesRepo;
         this.passwordEncoder = passwordEncoder;
     }
 
@@ -51,23 +48,17 @@ public class UserServiceImpl implements UserService {
     }
 
     private Mono<User> saveUser(User user, UserRole userRole) {
-     /*   Mono<Role> roleM = roleRepo.findByName(userRole.name());
-        List<Role> listRoles = new ArrayList<>();
-        listRoles.add(roleM.block());*/
-        Role role = new Role();
-        role.setName("dddd");
-        roleRepo.save(role);
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
-      //  user.setRoles(listRoles);
-        user.setStatus(Status.ACTIVE);
-        user.setId(1l);
-
-        Mono<User> saveUser = userRepo.save(user);
-
-/*
-        log.info("IN register - user: {} successfully registered with role:{}", saveUser, listRoles.get(0).getName());
-*/
-        return saveUser;
+       return roleRepo.findByName(userRole.name())
+                .flatMap(role -> {
+                    user.getRoles().add(role);
+                    return Mono.just(user);
+                })
+                .flatMap(userRepo::save)
+                .flatMap(u -> {
+                    UserRoles uR = new UserRoles(u.getId(), u.getRoles().get(0).getId());
+                    return Mono.zip(Mono.just(u), userRolesRepo.save(uR));
+                })
+                .flatMap(data -> Mono.just(data.getT1()));
     }
 
     @Override

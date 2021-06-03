@@ -5,6 +5,6 @@
     <title>Title</title>
 </head>
 <body>
-<h1>GHBdynm,</h1>
+<h1>GHBdynm,${user.username}</h1>
 </body>
 </html>
