@@ -18,6 +18,6 @@ public class WebCtrl {
     @GetMapping()
     public String loginPage(Model model) {
 
-        return "login";
+        return "main";
     }
 }

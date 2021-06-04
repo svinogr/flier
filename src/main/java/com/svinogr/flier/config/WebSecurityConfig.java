@@ -22,7 +22,6 @@ public class WebSecurityConfig{
     @Bean
     SecurityWebFilterChain securityWebFilterChain(ServerHttpSecurity serverHttpSecurity){
         return serverHttpSecurity.
-                csrf().disable().
                 formLogin().
                 and().httpBasic().disable().
                 authorizeExchange().
