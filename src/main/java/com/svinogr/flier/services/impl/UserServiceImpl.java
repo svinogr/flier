@@ -34,12 +34,12 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Flux<User> findAll() {
-        return null;
+        return userRepo.findAll();
     }
 
     @Override
     public Mono<User> findUserById(Long id) {
-        return null;
+        return userRepo.findById(id);
     }
 
     @Override
@@ -73,11 +73,16 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Mono<User> findUserByName(String name) {
-        return null;
+        return userRepo.findByUsername(name);
     }
 
     @Override
     public void deleteUser(Long id) {
-
+        userRepo.findById(id).
+                flatMap(u -> {
+                  u.setStatus(Status.NON_ACTIVE);
+                  userRepo.save(u);
+                  return Mono.just(u);
+                });
     }
 }

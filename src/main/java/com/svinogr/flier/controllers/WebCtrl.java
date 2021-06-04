@@ -16,12 +16,8 @@ public class WebCtrl {
     private UserService userService;
 
     @GetMapping()
-    public String mainPage(Model model) {
-        User user = new User();
-        user.setPassword("123");
-        user.setUsername("vasya");
-        Mono<User> userMono = userService.registerUser(user);
-        model.addAttribute("user", userMono);
-        return "mainpage";
+    public String loginPage(Model model) {
+
+        return "login";
     }
 }
