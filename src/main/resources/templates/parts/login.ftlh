@@ -11,7 +11,7 @@
                     <label>Пароль</label>
                     <input class="form-control " type="password" name="password"/>
                 </div>
-                <input type="hidden"   name="_csrf" value="${_csrf.token}">
+                <#--<input type="hidden"   name="_csrf" value="${_csrf.token}">-->
                 <input class="btn btn-outline-primary form-control mt-4" type="submit" value="Войти"/>
             </form>
         </div>

@@ -16,6 +16,6 @@ public class BaseEntity  {
 
     private LocalDate updated;
 
-    private Status status;
+    private String status;
 
 }

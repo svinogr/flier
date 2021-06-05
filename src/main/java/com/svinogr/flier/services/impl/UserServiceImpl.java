@@ -80,7 +80,7 @@ public class UserServiceImpl implements UserService {
     public void deleteUser(Long id) {
         userRepo.findById(id).
                 flatMap(u -> {
-                  u.setStatus(Status.NON_ACTIVE);
+                  u.setStatus(Status.NON_ACTIVE.name());
                   userRepo.save(u);
                   return Mono.just(u);
                 });

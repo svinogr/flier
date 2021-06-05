@@ -1,4 +1,4 @@
-package com.svinogr.flier.controllers;
+package com.svinogr.flier.controllers.web;
 
 import com.svinogr.flier.model.User;
 import com.svinogr.flier.services.UserService;
@@ -16,8 +16,16 @@ public class WebCtrl {
     private UserService userService;
 
     @GetMapping()
+    public String mainPage(Model model) {
+
+        return "mainpage";
+    }
+
+
+    @GetMapping("/loginpage")
     public String loginPage(Model model) {
 
-        return "main";
+        return "loginpage";
     }
 }
+

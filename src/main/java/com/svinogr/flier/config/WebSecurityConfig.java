@@ -8,7 +8,9 @@ import org.springframework.security.config.annotation.web.reactive.EnableWebFlux
 import org.springframework.security.config.web.server.ServerHttpSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.security.web.server.SecurityWebFilterChain;
+import org.springframework.security.web.server.csrf.ServerCsrfTokenRepository;
 
 @EnableWebFluxSecurity
 @EnableReactiveMethodSecurity
@@ -22,14 +24,18 @@ public class WebSecurityConfig{
     @Bean
     SecurityWebFilterChain securityWebFilterChain(ServerHttpSecurity serverHttpSecurity){
         return serverHttpSecurity.
-                formLogin().
-                and().httpBasic().disable().
-                authorizeExchange().
-                pathMatchers("/webjars/**").permitAll().
-                pathMatchers( "/login", "/favicon.ico", "/").permitAll().
-              //  pathMatchers("/").hasAnyRole("ACCOUNT", "ADMIN").
-                pathMatchers("/admin").hasRole("ADMIN").anyExchange().authenticated().
+
+
+                formLogin().loginPage("loginpage").
                 and().
+                httpBasic().disable().
+                authorizeExchange().
+                pathMatchers( "/webjars/**", "/loginpage", "/favicon.ico", "/").permitAll().
+              //  pathMatchers("/").hasAnyRole("ACCOUNT", "ADMIN").
+                pathMatchers("/admin").hasRole("ADMIN").
+                       // anyExchange().authenticated().
+                        anyExchange().permitAll().
+                        and().
                 build();
     }
 }

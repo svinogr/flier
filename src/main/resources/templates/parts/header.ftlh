@@ -4,11 +4,11 @@
 <head>
     <meta charset="UTF-8">
     <title>WebInterface</title>
-    <link rel="stylesheet" href="webjars/bootstrap/5.0.1/css/bootstrap.min.css" type="text/css">
+    <link rel="stylesheet" href="/webjars/bootstrap/5.0.1/css/bootstrap.min.css" type="text/css">
 
-    <script src="webjars/jquery/3.6.0/jquery.min.js" type="text/javascript"></script>
-    <script src="webjars/popper.js/2.9.2/umd/popper.min.js" type="text/javascript"></script>
-    <script src="webjars/bootstrap/5.0.1/js/bootstrap.min.js"  type="text/javascript" ></script>
+    <script src="/webjars/jquery/3.6.0/jquery.min.js" type="text/javascript"></script>
+    <script src="/webjars/popper.js/2.9.2/umd/popper.min.js" type="text/javascript"></script>
+    <script src="/webjars/bootstrap/5.0.1/js/bootstrap.min.js"  type="text/javascript" ></script>
   <#--  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.1/dist/umd/popper.min.js"
             integrity="sha384-SR1sx49pcuLnqZUnnPwx6FCym0wLsk5JZuNx2bPPENzswTNFaQU1RDvt3wT4gWFG"
             crossorigin="anonymous"></script>
@@ -27,8 +27,7 @@
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                <a class="btn btn-outline-success" href="/" role="button">Пользователи</a>
-                <a class="btn btn-outline-success" href="/" role="button">Серверы</a>
+                <a class="btn btn-outline-success" href="/admin/users" role="button">Пользователи</a>
                 <a class="btn btn-outline-success" href="/" role="button">Акаунт</a>
                 <a class="btn btn-outline-success" href="#" role="button">Что нить еще</a>
             </div>
