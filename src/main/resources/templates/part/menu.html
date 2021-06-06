@@ -1,0 +1,21 @@
+<div xmlns:th="http://www.thymeleaf.org" th:fragment="menu" class="container">
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">WebInterface</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                    data-bs-target="#navbarSupportedContent"
+                    aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <a class="btn btn-outline-success" href="/admin/users" role="button">Пользователи</a>
+                <a class="btn btn-outline-success" href="/acount/" role="button">Серверы</a>
+                <a class="btn btn-outline-success" href="/api/acountpage" role="button">Акаунт</a>
+                <a class="btn btn-outline-success" href="#" role="button">Что нить еще</a>
+            </div>
+            <div>
+                <button class="btn btn-outline-success" id="logout">Выйти</button>
+            </div>
+        </div>
+    </nav>
+</div>

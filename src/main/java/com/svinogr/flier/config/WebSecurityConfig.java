@@ -17,7 +17,7 @@ import org.springframework.security.web.server.csrf.ServerCsrfTokenRepository;
 @Configuration
 public class WebSecurityConfig{
     @Bean
-    BCryptPasswordEncoder passwordEncoder(){
+    PasswordEncoder passwordEncoder(){
         return new BCryptPasswordEncoder(8);
     }
 
@@ -25,17 +25,18 @@ public class WebSecurityConfig{
     SecurityWebFilterChain securityWebFilterChain(ServerHttpSecurity serverHttpSecurity){
         return serverHttpSecurity.
 
-
+csrf().disable().
                 formLogin().loginPage("loginpage").
                 and().
                 httpBasic().disable().
                 authorizeExchange().
                 pathMatchers( "/webjars/**", "/loginpage", "/favicon.ico", "/").permitAll().
               //  pathMatchers("/").hasAnyRole("ACCOUNT", "ADMIN").
-                pathMatchers("/admin").hasRole("ADMIN").
+              //  pathMatchers("/admin").hasRole("ADMIN").
                        // anyExchange().authenticated().
                         anyExchange().permitAll().
                         and().
                 build();
     }
+
 }

@@ -7,6 +7,7 @@ import com.svinogr.flier.repo.UserRolesRepo;
 import com.svinogr.flier.services.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import reactor.core.Disposable;
 import reactor.core.publisher.Flux;
@@ -22,10 +23,10 @@ public class UserServiceImpl implements UserService {
 
     private final UserRolesRepo userRolesRepo;
 
-    private final BCryptPasswordEncoder passwordEncoder;
+    private final PasswordEncoder passwordEncoder;
 
 
-    public UserServiceImpl(RoleRepo roleRepo, UserRepo userRepo, UserRolesRepo userRolesRepo, BCryptPasswordEncoder passwordEncoder) {
+    public UserServiceImpl(RoleRepo roleRepo, UserRepo userRepo, UserRolesRepo userRolesRepo, PasswordEncoder passwordEncoder) {
         this.userRepo = userRepo;
         this.roleRepo = roleRepo;
         this.userRolesRepo = userRolesRepo;
@@ -47,18 +48,26 @@ public class UserServiceImpl implements UserService {
         return saveUser(user, UserRole.ROLE_USER);
     }
 
+    @Override
+    public Mono<User> update(User user) {
+        return userRepo.save(user);
+    }
+
     private Mono<User> saveUser(User user, UserRole userRole) {
-       return roleRepo.findByName(userRole.name())
+        return roleRepo.findByName(userRole.name())
                 .flatMap(role -> {
                     user.getRoles().add(role);
+                    user.setPassword(passwordEncoder.encode(user.getPassword()));
+
                     return Mono.just(user);
                 })
                 .flatMap(userRepo::save)
                 .flatMap(u -> {
                     UserRoles uR = new UserRoles(u.getId(), u.getRoles().get(0).getId());
-                    return Mono.zip(Mono.just(u), userRolesRepo.save(uR));
-                })
-                .flatMap(data -> Mono.just(data.getT1()));
+                    userRolesRepo.save(uR).subscribe();
+
+                    return Mono.just(u);
+                });
     }
 
     @Override
@@ -77,12 +86,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void deleteUser(Long id) {
-        userRepo.findById(id).
+    public Mono<User> deleteUser(Long id) {
+        return userRepo.findById(id).
                 flatMap(u -> {
-                  u.setStatus(Status.NON_ACTIVE.name());
-                  userRepo.save(u);
-                  return Mono.just(u);
+                    u.setStatus(Status.NON_ACTIVE.name());
+                    return userRepo.save(u);
                 });
     }
 }

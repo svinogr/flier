@@ -1,0 +1,43 @@
+<div xmlns:th="http://www.thymeleaf.org" th:fragment="users" class="container mt-4">
+    <div class="row">
+        <script> $(document).ready(function () {
+            $(".clickable-row").click(function () {
+                var id = $(this).prop("id");
+                window.location.href = "/admin/users/" + id;
+            });
+
+            $(".add").click(function () {
+                var id = $(this).prop("id");
+                window.location.href = "/admin/users/" + id;
+            });
+        });
+        </script>
+        <div class="col-9">
+            <table class="table table-hover">
+                <thead>
+                <tr>
+                    <th scope="col">Id</th>
+                    <th scope="col">Пользователь</th>
+                    <th scope="col">Email</th>
+                    <th scope="col">Статус</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="user : ${users}" >
+                    <th class="clickable-row" th:id="${user.id}" th:text="${user.id}" scope="row">d</th>
+
+                    <td class="clickable-row" th:id="${user.id}" th:text="${user.username}">name</td>
+                    <td class="clickable-row" th:id="${user.id}"  th:text="${user.email}">email</td>
+                    <td class="clickable-row" th:id="${user.id}"  th:text="${user.status}">email</td>
+
+                </tr>
+                </tbody>
+            </table>
+
+        </div>
+        <div class="col-3 mt-4">
+            <a class="btn btn-outline-success form-control add" id="0"  role="button">Добавить
+                пользователя</a>
+        </div>
+    </div>
+</div>
