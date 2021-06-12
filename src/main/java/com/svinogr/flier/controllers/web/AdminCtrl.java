@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ServerWebExchange;
 import org.thymeleaf.spring5.context.webflux.IReactiveDataDriverContextVariable;
 import org.thymeleaf.spring5.context.webflux.ReactiveDataDriverContextVariable;
 import reactor.core.publisher.Flux;
@@ -23,16 +24,18 @@ public class AdminCtrl {
     public String getAllUser(Model model) {
 
         //   Flux<User> all = Flux.just(new User(), new User());
+
         Flux<User> all = userService.findAll().sort(Comparator.comparingLong(User::getId));
 
         IReactiveDataDriverContextVariable reactiveDataDrivenMode =
-                new ReactiveDataDriverContextVariable(all, 1);
+                new ReactiveDataDriverContextVariable(all, 1,1);
         model.addAttribute("users", reactiveDataDrivenMode);
-        return "mainpage";
+
+        return "adminmainpage";
     }
 
     @GetMapping("users/{id}")
-    public String getUserById(@PathVariable String id, Model model) {
+    public String getUserById(ServerWebExchange exchange, @PathVariable String id, Model model) {
         Mono<User> userById;
         Long parseId;
         try {
@@ -54,31 +57,30 @@ public class AdminCtrl {
     }
 
     @PostMapping("users/{id}")
-    public String saveOrUpdateUser(User user, Model model) {
+    public Mono<String> saveOrUpdateUser(User user, Model model)  {
         Mono<User> userDb;
         if (user.getId() == null) {
             userDb = userService.registerUser(user);
         } else {
             userDb = userService.update(user);
         }
-        userDb.subscribe();
-   /*     Flux<User> all = userService.findAll().sort(Comparator.comparingLong(User::getId));
 
-        IReactiveDataDriverContextVariable reactiveDataDrivenMode =
-                new ReactiveDataDriverContextVariable(all, 1);
-        model.addAttribute("users", reactiveDataDrivenMode);*/
-        return "redirect:/admin/users";
+      return   userDb.flatMap(u->{
+          return Mono.just("redirect:/admin/users");
+      });
     }
 
     @PostMapping("users/del/{id}")
-    public String deleteUserById(@PathVariable String id, Model model) {
-        userService.deleteUser(Long.parseLong(id)).subscribe();
+    public Mono<String> deleteUserById(@PathVariable String id, Model model) {
+        return userService.deleteUser(Long.parseLong(id)).flatMap(u->{
+            return Mono.just("redirect:/admin/users");
+        });
        /* Flux<User> all = userService.deleteUser(Long.parseLong(id)).
                 flatMapMany(i -> userService.findAll());
 
         IReactiveDataDriverContextVariable reactiveDataDrivenMode =
                 new ReactiveDataDriverContextVariable(all, 1);
         model.addAttribute("users", reactiveDataDrivenMode);*/
-        return "redirect:/admin/users";
+
     }
 }

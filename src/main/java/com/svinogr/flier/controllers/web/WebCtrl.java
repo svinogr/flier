@@ -16,7 +16,7 @@ public class WebCtrl {
     @GetMapping()
     public String mainPage(Model model) {
 
-        return "mainpage";
+        return "adminmainpage";
     }
 
 

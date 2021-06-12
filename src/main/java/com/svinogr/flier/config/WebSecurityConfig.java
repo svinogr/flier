@@ -9,34 +9,60 @@ import org.springframework.security.config.web.server.ServerHttpSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
+import org.springframework.security.web.csrf.CsrfTokenRepository;
+import org.springframework.security.web.csrf.HttpSessionCsrfTokenRepository;
 import org.springframework.security.web.server.SecurityWebFilterChain;
+import org.springframework.security.web.server.csrf.CookieServerCsrfTokenRepository;
 import org.springframework.security.web.server.csrf.ServerCsrfTokenRepository;
+import org.springframework.security.web.server.csrf.WebSessionServerCsrfTokenRepository;
+import org.thymeleaf.templatemode.TemplateMode;
+import org.thymeleaf.templateresolver.ClassLoaderTemplateResolver;
 
 @EnableWebFluxSecurity
 @EnableReactiveMethodSecurity
 @Configuration
-public class WebSecurityConfig{
+public class WebSecurityConfig  {
+
+
     @Bean
-    PasswordEncoder passwordEncoder(){
+    PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder(8);
     }
 
+
+/*     ServerCsrfTokenRepository csrfTokenRepository() {
+         ServerCsrfTokenRepository repository = new WebSessionServerCsrfTokenRepository();
+        repository. setSessionAttributeName("_csrf");
+        return repository;
+    }*/
+@Bean
+public ClassLoaderTemplateResolver adminTemplateResolver() {
+    ClassLoaderTemplateResolver emailTemplateResolver = new ClassLoaderTemplateResolver();
+    emailTemplateResolver.setPrefix("/templates/admin/");
+    emailTemplateResolver.setSuffix(".html");
+    emailTemplateResolver.setTemplateMode(TemplateMode.HTML);
+    emailTemplateResolver.setCharacterEncoding("UTF-8");
+    emailTemplateResolver.setOrder(0);
+    emailTemplateResolver.setCheckExistence(true);
+
+    return emailTemplateResolver;
+}
     @Bean
-    SecurityWebFilterChain securityWebFilterChain(ServerHttpSecurity serverHttpSecurity){
+    SecurityWebFilterChain securityWebFilterChain(ServerHttpSecurity serverHttpSecurity) {
         return serverHttpSecurity.
 
-csrf().disable().
+
                 formLogin().loginPage("loginpage").
                 and().
                 httpBasic().disable().
                 authorizeExchange().
-                pathMatchers( "/webjars/**", "/loginpage", "/favicon.ico", "/").permitAll().
-              //  pathMatchers("/").hasAnyRole("ACCOUNT", "ADMIN").
-              //  pathMatchers("/admin").hasRole("ADMIN").
-                       // anyExchange().authenticated().
+                pathMatchers("/webjars/**", "/loginpage", "/favicon.ico", "/").permitAll().
+                //  pathMatchers("/").hasAnyRole("ACCOUNT", "ADMIN").
+                //  pathMatchers("/admin").hasRole("ADMIN").
+                // anyExchange().authenticated().
                         anyExchange().permitAll().
                         and().
-                build();
+                        build();
     }
 
 }
