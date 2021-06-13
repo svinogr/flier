@@ -1,0 +1,62 @@
+<div xmlns:th="http://www.thymeleaf.org" th:fragment="shops" class="container mt-4">
+    <script> $(document).ready(function () {
+        $(".clickable-row").click(function () {
+            var id = $(this).prop("id");
+            //window.location.href = "/admin/shops/" + id;
+        });
+        $(".searhById").click(function () {
+            var id = $(".searchValue").prop("value");
+            window.location.href = "/admin/shops/" + id;
+        });
+
+        /*    $(".add").click(function () {
+                var id = $(this).prop("id");
+                window.location.href = "/admin/users/" + id;
+            });*/
+    });
+    </script>
+    <div class="row">
+        <div class="col-3">
+            <div class="input-group mb-3">
+                <input type="text" class="form-control searchValue"  placeholder="Поиск по ID" aria-label="Поиск по ID">
+                <div class="input-group-append">
+                    <button class="btn btn-outline-secondary searhById" type="button" id="button-addon2">Найти</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-9">
+            <table class="table table-hover">
+                <thead>
+                <tr>
+                    <th scope="col">Id</th>
+                    <th scope="col">Название</th>
+                    <th scope="col">Описание</th>
+                    <th scope="col">Адрес</th>
+                    <th scope="col">Широта</th>
+                    <th scope="col">Долгота</th>
+                    <th scope="col">Статус</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="shop : ${shops}">
+                    <th class="clickable-row" th:id="${shop.id}" th:text="${shop.id}" scope="row">d</th>
+
+                    <td class="clickable-row" th:id="${shop.id}" th:text="${shop.title}">title</td>
+                    <td class="clickable-row" th:id="${shop.id}" th:text="${shop.description}">description</td>
+                    <td class="clickable-row" th:id="${shop.id}" th:text="${shop.address}">address</td>
+                    <td class="clickable-row" th:id="${shop.id}" th:text="${shop.coordLat}">lat</td>
+                    <td class="clickable-row" th:id="${shop.id}" th:text="${shop.coordLng}">lng</td>
+                    <td class="clickable-row" th:id="${shop.id}" th:text="${shop.status}">status</td>
+                </tr>
+                </tbody>
+            </table>
+
+        </div>
+        <div class="col-3 mt-4">
+            <a class="btn btn-outline-success form-control add" id="0" role="button">Добавить
+                Магазин</a>
+        </div>
+    </div>
+</div>

@@ -35,18 +35,7 @@ public class WebSecurityConfig  {
         repository. setSessionAttributeName("_csrf");
         return repository;
     }*/
-@Bean
-public ClassLoaderTemplateResolver adminTemplateResolver() {
-    ClassLoaderTemplateResolver emailTemplateResolver = new ClassLoaderTemplateResolver();
-    emailTemplateResolver.setPrefix("/templates/admin/");
-    emailTemplateResolver.setSuffix(".html");
-    emailTemplateResolver.setTemplateMode(TemplateMode.HTML);
-    emailTemplateResolver.setCharacterEncoding("UTF-8");
-    emailTemplateResolver.setOrder(0);
-    emailTemplateResolver.setCheckExistence(true);
 
-    return emailTemplateResolver;
-}
     @Bean
     SecurityWebFilterChain securityWebFilterChain(ServerHttpSecurity serverHttpSecurity) {
         return serverHttpSecurity.

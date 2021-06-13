@@ -3,7 +3,7 @@
       <!-- <h1 th:text="${_csrf.token}"></h1>-->
         <div class="col-6 ">
             <form class="" id="update" th:action="${user.id}"  method="post">
-                <input hidden="hidden" class="form-control" th:value="${user.id}" type="text" name="id" placeholder="name">
+                <input hidden="" class="form-control" th:value="${user.id}" type="text" name="id" placeholder="id">
                 <input class="form-control" th:value="${user.username}" type="text" name="username" placeholder="name">
                 <input class="form-control mt-3" th:value="${user.email}"type="text" placeholder="email" name="email">
                 <input class="form-control mt-3" type="text" placeholder="password" name="password">

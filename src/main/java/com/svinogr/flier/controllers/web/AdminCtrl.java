@@ -1,6 +1,8 @@
 package com.svinogr.flier.controllers.web;
 
 import com.svinogr.flier.model.User;
+import com.svinogr.flier.model.shop.Shop;
+import com.svinogr.flier.services.ShopService;
 import com.svinogr.flier.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -20,29 +22,57 @@ public class AdminCtrl {
     @Autowired
     UserService userService;
 
+    @Autowired
+    ShopService shopService;
+
+    @GetMapping("shops")
+    public String getAllShop(Model model) {
+        Flux<Shop> all = shopService.getAllShops().sort(Comparator.comparingLong(Shop::getId));
+
+        IReactiveDataDriverContextVariable reactiveDataDrivenMode =
+                new ReactiveDataDriverContextVariable(all, 1, 1);
+        model.addAttribute("shops", reactiveDataDrivenMode);
+
+        return "adminshoppage";
+    }
+
+    @GetMapping("shops/{id}")
+    public Mono<String> getAllShop(@PathVariable String id, Model model) {
+        Long parseId;
+        try {
+            parseId = Long.parseLong(id);
+
+        } catch (NumberFormatException e) {
+            return Mono.just("redirect:/admin/shops");
+        }
+
+        Mono<Shop> shopById = shopService.getShopById(parseId);
+        return shopById.flatMap(s -> {
+                model.addAttribute("shop", s);
+                return Mono.just("redirect:/admin/shops");
+        }).switchIfEmpty(Mono.just("redirect:/admin/shops"));
+    }
+
     @GetMapping("users")
     public String getAllUser(Model model) {
-
-        //   Flux<User> all = Flux.just(new User(), new User());
-
         Flux<User> all = userService.findAll().sort(Comparator.comparingLong(User::getId));
 
         IReactiveDataDriverContextVariable reactiveDataDrivenMode =
-                new ReactiveDataDriverContextVariable(all, 1,1);
+                new ReactiveDataDriverContextVariable(all, 1, 1);
         model.addAttribute("users", reactiveDataDrivenMode);
 
         return "adminmainpage";
     }
 
     @GetMapping("users/{id}")
-    public String getUserById(ServerWebExchange exchange, @PathVariable String id, Model model) {
+    public Mono<String> getUserById(ServerWebExchange exchange, @PathVariable String id, Model model) {
         Mono<User> userById;
         Long parseId;
         try {
             parseId = Long.parseLong(id);
 
-        }catch (NumberFormatException e){
-            return "redirect:/admin/users";
+        } catch (NumberFormatException e) {
+            return Mono.just("redirect:/admin/users");
         }
 
         if (parseId == 0) {
@@ -51,13 +81,14 @@ public class AdminCtrl {
             userById = userService.findUserById(parseId);
         }
 
-        model.addAttribute("user", userById);
-
-        return "userpage";
+        return userById.flatMap(u ->{
+            model.addAttribute("user", u);
+            return Mono.just("userpage");
+        } ).switchIfEmpty(Mono.just("redirect:/admin/users"));
     }
 
     @PostMapping("users/{id}")
-    public Mono<String> saveOrUpdateUser(User user, Model model)  {
+    public Mono<String> saveOrUpdateUser(User user, Model model) {
         Mono<User> userDb;
         if (user.getId() == null) {
             userDb = userService.registerUser(user);
@@ -65,22 +96,15 @@ public class AdminCtrl {
             userDb = userService.update(user);
         }
 
-      return   userDb.flatMap(u->{
-          return Mono.just("redirect:/admin/users");
-      });
+        return userDb.flatMap(u -> {
+            return Mono.just("redirect:/admin/users");
+        }).switchIfEmpty(Mono.just("redirect:/admin/users"));
     }
 
     @PostMapping("users/del/{id}")
     public Mono<String> deleteUserById(@PathVariable String id, Model model) {
-        return userService.deleteUser(Long.parseLong(id)).flatMap(u->{
+        return userService.deleteUser(Long.parseLong(id)).flatMap(u -> {
             return Mono.just("redirect:/admin/users");
         });
-       /* Flux<User> all = userService.deleteUser(Long.parseLong(id)).
-                flatMapMany(i -> userService.findAll());
-
-        IReactiveDataDriverContextVariable reactiveDataDrivenMode =
-                new ReactiveDataDriverContextVariable(all, 1);
-        model.addAttribute("users", reactiveDataDrivenMode);*/
-
     }
 }
