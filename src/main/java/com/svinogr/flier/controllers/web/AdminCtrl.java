@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ServerWebExchange;
 import org.thymeleaf.spring5.context.webflux.IReactiveDataDriverContextVariable;
 import org.thymeleaf.spring5.context.webflux.ReactiveDataDriverContextVariable;
 import reactor.core.publisher.Flux;
@@ -45,13 +44,74 @@ public class AdminCtrl {
         } catch (NumberFormatException e) {
             return Mono.just("redirect:/admin/shops");
         }
+        Mono<Shop> shopById;
+        if (parseId == 0) {
+            shopById = Mono.just(new Shop());
+        } else {
+            shopById = shopService.getShopById(parseId);
+        }
 
-        Mono<Shop> shopById = shopService.getShopById(parseId);
         return shopById.flatMap(s -> {
+                model.addAttribute("admin", true);
                 model.addAttribute("shop", s);
-                return Mono.just("redirect:/admin/shops");
+                return Mono.just("shoppage");
         }).switchIfEmpty(Mono.just("redirect:/admin/shops"));
     }
+
+    @PostMapping("shops/{id}")
+    public Mono<String> updateShop(@PathVariable String id, Shop shop) {
+        Long parseId;
+        try {
+            parseId = Long.parseLong(id);
+
+        } catch (NumberFormatException e) {
+            return Mono.just("redirect:/admin/shops");
+        }
+
+        boolean isOwner = isOwnerOrAdmin(parseId);
+        if (!isOwner) {
+            return Mono.just("forbidenpage");
+        }
+
+        Mono<Shop> updateShop;
+
+        if (shop.getId() != null) {
+            updateShop = shopService.updateShop(shop);
+        }else {
+            updateShop = shopService.createShop(shop);
+        }
+
+        return updateShop.flatMap(s -> Mono.just("redirect:/admin/shops")).
+                switchIfEmpty(Mono.just("redirect:/admin/shops"));
+    }
+
+    private boolean isOwnerOrAdmin(Long parseId) {
+        //Todo проверка на собственника или админ
+        return true;
+    }
+
+    @GetMapping("shops/del/{id}")
+    public Mono<String> delShopById(@PathVariable String id) {
+        Long parseId;
+        try {
+            parseId = Long.parseLong(id);
+
+        } catch (NumberFormatException e) {
+            return Mono.just("redirect:/admin/shops");
+        }
+
+        Mono<Shop> delShop;
+
+        if(isOwnerOrAdmin(parseId)) {
+            delShop = shopService.deleteShopById(parseId);
+        } else {
+            return  Mono.just("forbidenpage");
+        }
+
+        return delShop.flatMap(s->  Mono.just("redirect:/admin/shops")).
+                switchIfEmpty( Mono.just("redirect:/admin/shops"));
+    }
+
 
     @GetMapping("users")
     public String getAllUser(Model model) {
@@ -65,7 +125,7 @@ public class AdminCtrl {
     }
 
     @GetMapping("users/{id}")
-    public Mono<String> getUserById(ServerWebExchange exchange, @PathVariable String id, Model model) {
+    public Mono<String> getUserById(@PathVariable String id, Model model) {
         Mono<User> userById;
         Long parseId;
         try {
@@ -101,10 +161,25 @@ public class AdminCtrl {
         }).switchIfEmpty(Mono.just("redirect:/admin/users"));
     }
 
-    @PostMapping("users/del/{id}")
-    public Mono<String> deleteUserById(@PathVariable String id, Model model) {
-        return userService.deleteUser(Long.parseLong(id)).flatMap(u -> {
+    @GetMapping("users/del/{id}")
+    public Mono<String> deleteUserById(@PathVariable String id) {
+        Long parseId;
+        try {
+            parseId = Long.parseLong(id);
+
+        } catch (NumberFormatException e) {
             return Mono.just("redirect:/admin/users");
-        });
+        }
+
+        Mono<User> delUser;
+
+        if(isOwnerOrAdmin(parseId)) {
+            delUser = userService.deleteUser(parseId);
+        } else {
+            return  Mono.just("forbidenpage");
+        }
+
+        return delUser.flatMap(s->  Mono.just("redirect:/admin/users")).
+                switchIfEmpty( Mono.just("redirect:/admin/users"));
     }
 }
