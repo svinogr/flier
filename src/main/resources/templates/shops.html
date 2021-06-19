@@ -31,6 +31,7 @@
                 <thead>
                 <tr>
                     <th scope="col">Id</th>
+                    <th scope="col">Картинка</th>
                     <th scope="col">Название</th>
                     <th scope="col">Описание</th>
                     <th scope="col">Адрес</th>
@@ -42,6 +43,7 @@
                 <tbody>
                 <tr th:each="shop : ${shops}">
                     <th class="clickable-row" th:id="${shop.id}" th:text="${shop.id}" scope="row">d</th>
+                    <th class="clickable-row" th:id="${shop.id}"  scope="row"><img style="width: 50px;height: 50px" src="/img/shop/" th:attrappend="src=${shop.img}"></th>
 
                     <td class="clickable-row" th:id="${shop.id}" th:text="${shop.title}">title</td>
                     <td class="clickable-row" th:id="${shop.id}" th:text="${shop.description}">description</td>

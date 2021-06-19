@@ -11,9 +11,9 @@ import org.springframework.data.relational.core.mapping.Table;
 public class Shop extends BaseEntity {
     private Long userId;
     @Column("lat")
-    private String coordLat;
+    private Float coordLat;
     @Column("lng")
-    private String coordLng;
+    private Float coordLng;
     private String title;
     private String address;
     private String description;

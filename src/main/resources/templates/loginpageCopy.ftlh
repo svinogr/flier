@@ -1,6 +1,6 @@
-<#import "parts/header.ftlh" as h>
-<#import "parts/footer.ftlh" as f>
-<#import "parts/login.ftlh" as l>
+<#import "header.ftlh" as h>
+<#import "footer.ftlh" as f>
+<#import "login.ftlh" as l>
 <@h.page>
     <@l.login "/login"/>
 </@h.page>

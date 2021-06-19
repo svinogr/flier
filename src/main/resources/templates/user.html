@@ -1,7 +1,6 @@
 <div xmlns:th="http://www.thymeleaf.org" th:fragment="user" class="container mt-4">
     <div class="row justify-content-md-center mt-4 mb-3">
-      <!-- <h1 th:text="${_csrf.token}"></h1>-->
-        <div class="col-6 ">
+             <div class="col-6 ">
             <form class="" id="update" th:action="${user.id}"  method="post">
                 <input hidden="" class="form-control" th:value="${user.id}" type="text" name="id" placeholder="id">
                 <input class="form-control" th:value="${user.username}" type="text" name="username" placeholder="name">

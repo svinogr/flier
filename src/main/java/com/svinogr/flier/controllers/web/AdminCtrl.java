@@ -1,18 +1,30 @@
 package com.svinogr.flier.controllers.web;
 
+import com.svinogr.flier.model.Status;
 import com.svinogr.flier.model.User;
 import com.svinogr.flier.model.shop.Shop;
 import com.svinogr.flier.services.ShopService;
 import com.svinogr.flier.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpRequest;
+import org.springframework.http.codec.multipart.FilePart;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.reactive.result.view.RequestContext;
 import org.thymeleaf.spring5.context.webflux.IReactiveDataDriverContextVariable;
 import org.thymeleaf.spring5.context.webflux.ReactiveDataDriverContextVariable;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Comparator;
 
 @Controller
@@ -23,6 +35,12 @@ public class AdminCtrl {
 
     @Autowired
     ShopService shopService;
+
+    @Value("${upload.shop.imgPath}")
+    private String upload;
+
+    @Value("${upload.shop.defaultImg}")
+    private String defaultShopImg;
 
     @GetMapping("shops")
     public String getAllShop(Model model) {
@@ -46,20 +64,41 @@ public class AdminCtrl {
         }
         Mono<Shop> shopById;
         if (parseId == 0) {
-            shopById = Mono.just(new Shop());
+            Shop shop = new Shop();
+            shop.setId(parseId);
+            shop.setImg(defaultShopImg);
+            shop.setStatus(Status.ACTIVE.name());
+            shopById = Mono.just(shop);
         } else {
             shopById = shopService.getShopById(parseId);
         }
 
         return shopById.flatMap(s -> {
-                model.addAttribute("admin", true);
-                model.addAttribute("shop", s);
-                return Mono.just("shoppage");
+            model.addAttribute("admin", true);
+            model.addAttribute("shop", s);
+            return Mono.just("shoppage");
         }).switchIfEmpty(Mono.just("redirect:/admin/shops"));
     }
 
+   /* @GetMapping("image/shop/{id}")
+    public Mono<Resource> getImage(@PathVariable String id) throws IOException {
+    //    System.out.println( request.getURI().getPath());
+        File file = new File("./img/shop/" + id);
+        System.out.println(file.length());
+      *//*  String path = "./img/shop/" + id;
+        byte[] data = Files.readAllBytes(Path.of(classPathResource.getPath()));*//*
+        FileSystemResource fileSystemResource = new FileSystemResource(file);
+        return Mono.just(fileSystemResource);
+    }*/
+    /**
+     * value imgTypeAction.
+     * 0 - nothing to do
+     * -1 set default
+     * 1 set new from file
+     */
     @PostMapping("shops/{id}")
-    public Mono<String> updateShop(@PathVariable String id, Shop shop) {
+    public Mono<String> updateShop(@PathVariable String id, @RequestPart("imgTypeAction") String imgTypeAction, @RequestPart("file") Mono<FilePart> file, Shop shop) {
+
         Long parseId;
         try {
             parseId = Long.parseLong(id);
@@ -73,16 +112,87 @@ public class AdminCtrl {
             return Mono.just("forbidenpage");
         }
 
-        Mono<Shop> updateShop;
+        if (shop.getId() == 0) { // создание нового
+            shop.setId(null);
+            return shopService.createShop(shop).flatMap(s -> {
+                switch (imgTypeAction) {
+                    case "0":
+                        return Mono.just("redirect:/admin/shops");
+                    case "1":
+                        return file.flatMap(f -> {
+                            if (f.filename().equals("")) {
+                                s.setImg(defaultShopImg);
+                                return Mono.just(s);// поменять на стринг
+                            }
 
-        if (shop.getId() != null) {
-            updateShop = shopService.updateShop(shop);
-        }else {
-            updateShop = shopService.createShop(shop);
+                            File uploadDir = new File(upload);
+                            if (!uploadDir.exists()) {
+                                uploadDir.mkdir();
+                            }
+
+                            String extension = f.filename().split("\\.")[1]; // получаем расширение
+                            String name = String.format("%d.%s", s.getId(), extension);
+                            String fullPath = String.format("%s/%s", upload, name);
+
+                            f.transferTo(new File(fullPath)).subscribe();
+                            s.setImg(name);
+                            return Mono.just(s);
+                        }).flatMap(sh -> {
+                            shopService.updateShop(sh).subscribe();
+                            return Mono.just("redirect:/admin/shops");
+                        });
+
+                    case "-1":
+                        // сброс на дефолтную картинку и удаление старой из базы
+                        return Mono.just("redirect:/admin/shops");
+                    default:
+                        return Mono.just("forbidenpage");
+                }
+            });
+        } else { // обновление уже созданого
+            return shopService.createShop(shop).flatMap(s -> {
+                switch (imgTypeAction) {
+                    case "0":
+                        return Mono.just("redirect:/admin/shops");
+                    case "1":
+                        return file.flatMap(f -> {
+                            if (f.filename().equals("")) {
+                                shop.setImg(defaultShopImg);
+                                return Mono.just(shop);
+                            }
+
+                            File uploadDir = new File(upload);
+                            if (!uploadDir.exists()) {
+                                uploadDir.mkdir();
+                            }
+
+                            String extension = f.filename().split("\\.")[1]; // получаем расширение
+                            String name = String.format("%d.%s", shop.getId(), extension);
+                            String fullPath = String.format("%s/%S", upload, name);
+
+                            f.transferTo(new File(fullPath));
+                            shop.setImg(name);
+                            return Mono.just(shop);
+                        }).flatMap(sh -> {
+                            shopService.updateShop(sh).subscribe();
+                            return Mono.just("redirect:/admin/shops");
+                        });
+                    case "-1":
+                        // сброс на дефолтную картинку и удаление старой из базы
+                        deleteImgFromServerForShop(shop.getImg());
+                        shop.setImg(defaultShopImg);
+                        shopService.updateShop(shop).subscribe();
+                        return Mono.just("redirect:/admin/shops");
+                    default:
+                        return Mono.just("forbidenpage");
+                }
+            });
+
         }
+    }
 
-        return updateShop.flatMap(s -> Mono.just("redirect:/admin/shops")).
-                switchIfEmpty(Mono.just("redirect:/admin/shops"));
+    private void deleteImgFromServerForShop(String img) {
+
     }
 
     private boolean isOwnerOrAdmin(Long parseId) {
@@ -102,14 +212,14 @@ public class AdminCtrl {
 
         Mono<Shop> delShop;
 
-        if(isOwnerOrAdmin(parseId)) {
+        if (isOwnerOrAdmin(parseId)) {
             delShop = shopService.deleteShopById(parseId);
         } else {
-            return  Mono.just("forbidenpage");
+            return Mono.just("forbidenpage");
         }
 
-        return delShop.flatMap(s->  Mono.just("redirect:/admin/shops")).
-                switchIfEmpty( Mono.just("redirect:/admin/shops"));
+        return delShop.flatMap(s -> Mono.just("redirect:/admin/shops")).
+                switchIfEmpty(Mono.just("redirect:/admin/shops"));
     }
 
 
@@ -141,10 +251,10 @@ public class AdminCtrl {
             userById = userService.findUserById(parseId);
         }
 
-        return userById.flatMap(u ->{
+        return userById.flatMap(u -> {
             model.addAttribute("user", u);
             return Mono.just("userpage");
-        } ).switchIfEmpty(Mono.just("redirect:/admin/users"));
+        }).switchIfEmpty(Mono.just("redirect:/admin/users"));
     }
 
     @PostMapping("users/{id}")
@@ -173,13 +283,13 @@ public class AdminCtrl {
 
         Mono<User> delUser;
 
-        if(isOwnerOrAdmin(parseId)) {
+        if (isOwnerOrAdmin(parseId)) {
             delUser = userService.deleteUser(parseId);
         } else {
-            return  Mono.just("forbidenpage");
+            return Mono.just("forbidenpage");
         }
 
-        return delUser.flatMap(s->  Mono.just("redirect:/admin/users")).
-                switchIfEmpty( Mono.just("redirect:/admin/users"));
+        return delUser.flatMap(s -> Mono.just("redirect:/admin/users")).
+                switchIfEmpty(Mono.just("redirect:/admin/users"));
     }
 }
