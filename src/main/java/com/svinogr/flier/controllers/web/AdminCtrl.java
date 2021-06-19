@@ -3,6 +3,7 @@ package com.svinogr.flier.controllers.web;
 import com.svinogr.flier.model.Status;
 import com.svinogr.flier.model.User;
 import com.svinogr.flier.model.shop.Shop;
+import com.svinogr.flier.services.FileService;
 import com.svinogr.flier.services.ShopService;
 import com.svinogr.flier.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,6 +36,8 @@ public class AdminCtrl {
 
     @Autowired
     ShopService shopService;
+    @Autowired
+    private FileService fileService;
 
     @Value("${upload.shop.imgPath}")
     private String upload;
@@ -90,6 +93,7 @@ public class AdminCtrl {
         FileSystemResource fileSystemResource = new FileSystemResource(file);
         return Mono.just(fileSystemResource);
     }*/
+
     /**
      * value imgTypeAction.
      * 0 - nothing to do
@@ -125,21 +129,18 @@ public class AdminCtrl {
                                 return Mono.just(s);// поменять на стринг
                             }
 
-                            File uploadDir = new File(upload);
-                            if (!uploadDir.exists()) {
-                                uploadDir.mkdir();
-                            }
-
-                            String extension = f.filename().split("\\.")[1]; // получаем расширение
-                            String name = String.format("%d.%s", s.getId(), extension);
-                            String fullPath = String.format("%s/%s", upload, name);
-
-                            f.transferTo(new File(fullPath)).subscribe();
-                            s.setImg(name);
-                            return Mono.just(s);
+                            return fileService.saveImgByIdForShop(f, s.getId()).flatMap(
+                                    n -> {
+                                        s.setImg(n);
+                                        return Mono.just(s);
+                                    }
+                            );
                         }).flatMap(sh -> {
-                            shopService.updateShop(sh).subscribe();
-                            return Mono.just("redirect:/admin/shops");
+                            // shopService.updateShop(sh).subscribe();
+                            return shopService.updateShop(sh).flatMap(sf -> {
+                                return Mono.just("redirect:/admin/shops");
+                            });
+
                         });
 
                     case "-1":
@@ -160,7 +161,7 @@ public class AdminCtrl {
                                 shop.setImg(defaultShopImg);
                                 return Mono.just(shop);
                             }
-
+/*
                             File uploadDir = new File(upload);
                             if (!uploadDir.exists()) {
                                 uploadDir.mkdir();
@@ -171,8 +172,17 @@ public class AdminCtrl {
                             String fullPath = String.format("%s/%S", upload, name);
 
                             f.transferTo(new File(fullPath));
-                            shop.setImg(name);
-                            return Mono.just(shop);
+
+
+                            shop.setImg(name);*/
+                          //  return Mono.just(shop);
+
+                            return fileService.saveImgByIdForShop(f, shop.getId()).flatMap(
+                                    n -> {
+                                        s.setImg(n);
+                                        return Mono.just(s);
+                                    }
+                            );
                         }).flatMap(sh -> {
                             shopService.updateShop(sh).subscribe();
                             return Mono.just("redirect:/admin/shops");
@@ -189,6 +199,7 @@ public class AdminCtrl {
             });
 
         }
+
     }
 
     private void deleteImgFromServerForShop(String img) {
