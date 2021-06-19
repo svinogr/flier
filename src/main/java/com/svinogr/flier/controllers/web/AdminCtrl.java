@@ -135,13 +135,7 @@ public class AdminCtrl {
                                         return Mono.just(s);
                                     }
                             );
-                        }).flatMap(sh -> {
-                            // shopService.updateShop(sh).subscribe();
-                            return shopService.updateShop(sh).flatMap(sf -> {
-                                return Mono.just("redirect:/admin/shops");
-                            });
-
-                        });
+                        }).flatMap(sh -> shopService.updateShop(sh).flatMap(sf -> Mono.just("redirect:/admin/shops")));
 
                     case "-1":
                         // сброс на дефолтную картинку и удаление старой из базы
@@ -161,48 +155,34 @@ public class AdminCtrl {
                                 shop.setImg(defaultShopImg);
                                 return Mono.just(shop);
                             }
-/*
-                            File uploadDir = new File(upload);
-                            if (!uploadDir.exists()) {
-                                uploadDir.mkdir();
-                            }
-
-                            String extension = f.filename().split("\\.")[1]; // получаем расширение
-                            String name = String.format("%d.%s", shop.getId(), extension);
-                            String fullPath = String.format("%s/%S", upload, name);
-
-                            f.transferTo(new File(fullPath));
-
-
-                            shop.setImg(name);*/
-                          //  return Mono.just(shop);
-
-                            return fileService.saveImgByIdForShop(f, shop.getId()).flatMap(
-                                    n -> {
-                                        s.setImg(n);
-                                        return Mono.just(s);
-                                    }
-                            );
+                            return
+                                    fileService.deleteImageForShop(shop.getImg()).flatMap(n -> fileService.saveImgByIdForShop(f, shop.getId()).flatMap(
+                                              name -> {
+                                                  s.setImg(name);
+                                                  return Mono.just(s);
+                                              }));
                         }).flatMap(sh -> {
                             shopService.updateShop(sh).subscribe();
                             return Mono.just("redirect:/admin/shops");
                         });
                     case "-1":
                         // сброс на дефолтную картинку и удаление старой из базы
-                        deleteImgFromServerForShop(shop.getImg());
+                        fileService.deleteImageForShop(shop.getImg()).flatMap(
+                                n->{
+                                    shop.setImg(n);
+                                    return Mono.just(shop);
+                                }
+                        ).flatMap(sh1-> shopService.updateShop(shop).flatMap(sh->Mono.just("redirect:/admin/shops")));
+                 /*
                         shop.setImg(defaultShopImg);
                         shopService.updateShop(shop).subscribe();
-                        return Mono.just("redirect:/admin/shops");
+                        return Mono.just("redirect:/admin/shops");*/
                     default:
                         return Mono.just("forbidenpage");
                 }
             });
 
         }
-
-    }
-
-    private void deleteImgFromServerForShop(String img) {
 
     }
 

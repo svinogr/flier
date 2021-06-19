@@ -1,7 +1,7 @@
 <div xmlns:th="http://www.thymeleaf.org" th:fragment="shop" class="container mt-4">
     <script> $(document).ready(function () {
 
-        $('.updateimg').on('change', function () {
+   /*     $('.updateimg').on('input', function () {
             var maxFileSize = 2 * 1024 * 1024; // (байт) Максимальный размер файла (2мб)
             var file = this.files[0];
 
@@ -15,26 +15,37 @@
 
             preview(file);
 
+
             this.value = '';
+        });*/
+
+        function readURL(input) {
+
+            if (input.files && input.files[0]) {
+                var reader = new FileReader();
+
+                reader.onload = function (e) {
+                    $('#img').attr('src', e.target.result);
+                }
+                var typeImg = $("#imgTypeAction");
+                typeImg.attr('value', 1);
+
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        $("#imgShop").change(function(){
+            readURL(this);
         });
 
         $(".deleteImg").click(function () {
-            $("#com.svinogr.flier.img").attr('src', src = "/img/shop/0.png");
-            file = null;
+            $("#img").attr('src', src = "/img/shop/0.png");
+
             var typeImg = $("#imgTypeAction");
             typeImg.attr('value', -1);
 
         });
 
-        function preview(file) {
-            var reader = new FileReader();
-            reader.addEventListener('load', function (event) {
-                $("#com.svinogr.flier.img").attr('src', event.target.result);
-            });
-            var typeImg = $("#imgTypeAction");
-            typeImg.attr('value', 1);
-            reader.readAsDataURL(file);
-        }
     }); </script>
 
     <div class="col-9 ">
@@ -61,25 +72,24 @@
                 </div>
 
 
-                    <form class="" enctype="multipart/form-data" id="update" th:action="${shop.id}" method="post">
-                        <input class="1" type="file" name="file" id="file">
-                        <!--    <div class="input-group-append">
-                                <label class="btn btn-outline-success btn-block form-control mt-2" for="file">Выбрать
-                                    картинку
-                                <input class="updateimg" type="file" name="file" id="file">
-                            <div class="form-group">-->
+                <form class="" enctype="multipart/form-data" id="update" th:action="${shop.id}" method="post">
+                    <div class="input-group-append">
+                        <label class="  btn btn-outline-success btn-block form-control mt-2" for="imgShop">Выбрать
+                            картинку
+                            <input class="updateimg" style="display: none" type="file" name="file" id="imgShop">
+                    </div>
 
-                        <br>
-                        <div>
-                            <button class="btn btn-outline-danger btn-block form-control deleteImg" type="button">
-                                Удалить
-                                картинку
-                            </button>
-                        </div>
+                    <br>
+                    <div>
+                        <button class="btn btn-outline-danger btn-block form-control deleteImg" type="button">
+                            Удалить
+                            картинку
+                        </button>
+                    </div>
             </div>
 
-                <div class="col-9">
-                    <div>
+            <div class="col-9">
+                <div>
 
                     <input th:if="${admin}" class="form-control mt-3" th:value="${shop.id}"
                            type="text"
@@ -91,9 +101,9 @@
                            placeholder="title">
                     <input class="form-control mt-3" th:value="${shop.description}" type="text"
                            placeholder="description" name="description">
-                    </div>
+                </div>
 
-                   <div class="input-group" th:if="${admin}">
+                <div class="input-group" th:if="${admin}">
                     <input class="form-control mt-3" th:value="${shop.address}" type="text"
                            placeholder="address"
                            name="address">
@@ -106,9 +116,9 @@
                                 data-bs-target="#exampleModal" type="button">Выбрать
                         </button>
                     </div>
-                   </div>
+                </div>
 
-                   <div class="input-group" th:unless="${admin}">
+                <div class="input-group" th:unless="${admin}">
                     <input class="form-control mt-3" th:value="${shop.address}" type="text"
                            placeholder="address"
                            name="address" readonly="readonly">
@@ -121,8 +131,8 @@
                                 data-bs-target="#exampleModal" type="button">Выбрать
                         </button>
                     </div>
-                   </div>
-                   <div>
+                </div>
+                <div>
                     <input class="form-control mt-3" th:value="${shop.status}" type="text" placeholder="status"
                            name="status">
                     <input class="form-control mt-3" value="0" type="text" placeholder="imgAction"
@@ -134,18 +144,17 @@
                            name="url">
                     <input class="btn btn-outline-primary form-control mt-4" type="submit" value="Сохранить">
                     <input hidden="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
-                    </div>
+                </div>
+                </form>
+                <div>
+                    <form class="" id="update" action="del/" th:attrappend="action=${shop.id}" method="get">
+                        <input hidden="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+                        <input th:if="${shop.id} != null" type="submit"
+                               class="btn btn-outline-danger form-control mt-4"
+                               value="Удалить">
                     </form>
-                    <div>
-                        <form class="" id="update" action="del/" th:attrappend="action=${shop.id}" method="get">
-                            <input hidden="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
-                            <input th:if="${shop.id} != null" type="submit"
-                                   class="btn btn-outline-danger form-control mt-4"
-                                   value="Удалить">
-                        </form>
-                    </div>
+                </div>
             </div>
-
 
 
         </div>

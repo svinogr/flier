@@ -7,11 +7,15 @@ import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
 import java.io.File;
+import java.util.function.Function;
 
 @Service
 public class FileServiceImpl implements FileService {
     @Value("${upload.shop.imgPath}")
     private String upload;
+
+    @Value("${upload.shop.defaultImg}")
+    private String defaultImgShop;
 
     @Override
     public Mono<File> getImgByNameAndPath(String name, String path) {
@@ -31,9 +35,18 @@ public class FileServiceImpl implements FileService {
 
         file.transferTo(new File(fullPath));
 
-        return Mono.just(fullPath).flatMap(fp ->{
+        return Mono.just(fullPath).flatMap(fp -> {
             file.transferTo(new File(fp)).subscribe();
             return Mono.just(name);
         });
+    }
+
+    @Override
+    public Mono<String> deleteImageForShop(String name) {
+        return Mono.just(new File(upload + "/" + name)).
+                flatMap(file -> {
+                    file.delete();
+                    return Mono.just(defaultImgShop);
+                });
     }
 }

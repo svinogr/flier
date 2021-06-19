@@ -11,4 +11,6 @@ public interface FileService {
     Mono<File> getImgByNameAndPath(String name, String path);
 
     Mono<String> saveImgByIdForShop(FilePart file, Long id);
+
+    Mono<String> deleteImageForShop(String name);
 }
