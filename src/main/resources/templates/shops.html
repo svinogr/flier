@@ -38,6 +38,7 @@
                     <th scope="col">Широта</th>
                     <th scope="col">Долгота</th>
                     <th scope="col">Статус</th>
+                    <th scope="col">Сайт</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -51,6 +52,9 @@
                     <td class="clickable-row" th:id="${shop.id}" th:text="${shop.coordLat}">lat</td>
                     <td class="clickable-row" th:id="${shop.id}" th:text="${shop.coordLng}">lng</td>
                     <td class="clickable-row" th:id="${shop.id}" th:text="${shop.status}">status</td>
+                    <td class="clickable-row" th:id="${shop.id}" >
+                        <a href="//" th:attrappend="href=${shop.url}">Сайт</a>
+                    </td>
                 </tr>
                 </tbody>
             </table>

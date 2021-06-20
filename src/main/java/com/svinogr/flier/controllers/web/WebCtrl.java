@@ -28,7 +28,7 @@ public class WebCtrl {
     @GetMapping()
     public String mainPage(Model model) {
 
-        return "forbidenpage";
+        return "adminmainpage";
     }
 
 

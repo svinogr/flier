@@ -20,6 +20,7 @@
                     <th scope="col">Пользователь</th>
                     <th scope="col">Email</th>
                     <th scope="col">Статус</th>
+                    <th scope="col">Роль</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -28,7 +29,8 @@
 
                     <td class="clickable-row" th:id="${user.id}" th:text="${user.username}">name</td>
                     <td class="clickable-row" th:id="${user.id}"  th:text="${user.email}">email</td>
-                    <td class="clickable-row" th:id="${user.id}"  th:text="${user.status}">email</td>
+                    <td class="clickable-row" th:id="${user.id}"  th:text="${user.status}">status</td>
+                    <td class="clickable-row" th:id="${user.id}"  th:text="${user.roles[0].name}">role</td>
 
                 </tr>
                 </tbody>

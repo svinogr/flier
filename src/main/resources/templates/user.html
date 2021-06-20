@@ -1,17 +1,37 @@
 <div xmlns:th="http://www.thymeleaf.org" th:fragment="user" class="container mt-4">
     <div class="row justify-content-md-center mt-4 mb-3">
-             <div class="col-6 ">
-            <form class="" id="update" th:action="${user.id}"  method="post">
-                <input hidden="" class="form-control" th:value="${user.id}" type="text" name="id" placeholder="id">
+        <div class="col-6 ">
+            <form class="" id="update" th:action="${user.id}" method="post">
+                <input readonly="readonly"class="form-control" th:value="${user.id}" type="text" name="id" placeholder="id">
+                <input class="form-control" th:value="${user.phone}" type="text" name="phone" placeholder="Номер">
+                <input class="form-control" th:value="${user.name}" type="text" name="name" placeholder="Имя">
+                <input class="form-control" th:value="${user.surname}" type="text" name="surname" placeholder="Фамилия">
+
                 <input class="form-control" th:value="${user.username}" type="text" name="username" placeholder="name">
-                <input class="form-control mt-3" th:value="${user.email}"type="text" placeholder="email" name="email">
+                <input class="form-control mt-3" th:value="${user.email}" type="text" placeholder="email" name="email">
                 <input class="form-control mt-3" type="text" placeholder="password" name="password">
-                <input class="btn btn-outline-primary form-control mt-4" type="submit" value="Сохранить">
+
+                <select class="form-control selectpicker mt-3" th:field="*{user.roles[0].name}" id="roles">
+                    <option value="">Nothing selected</option>
+                <option th:each="role : ${T(com.svinogr.flier.model.UserRole).values()}"
+                        th:value="${role}"
+                        th:text="${role}">pizza
+                </option>
+                </select>
+
+              <!--  <select th:field="*{user.roles[0].name}" class="form-select form-select-sm" aria-label=".form-select-sm example" name="roles">
+                    <option selected>Open this select menu</option>
+                    <option th:value="'ROLE_USER'" th:text="U"></option>
+                    <option th:value="'ROLE_ACCOUNT'" th:text="a"></option>
+                    <option th:value="'ROLE_ADMIN'" th:text="AD"></option>
+                </select>-->
+                <input class="btn btn-outline-primary form-control mt-4" type="submit" value="Зарегистрироваться">
                 <input hidden="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
             </form>
-            <form class="" id="update" action="del/" th:attrappend="action=${user.id}"  method="get">
+            <form class="" id="update" action="del/" th:attrappend="action=${user.id}" method="get">
                 <input hidden="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
-            <input th:if="${user.id} != null" type="submit" class="btn btn-outline-danger form-control mt-4"  value="Удалить">
+                <input th:if="${user.id} != null" type="submit" class="btn btn-outline-danger form-control mt-4"
+                       value="Удалить">
             </form>
         </div>
     </div>

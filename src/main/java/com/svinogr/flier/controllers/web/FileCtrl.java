@@ -26,12 +26,12 @@ public class FileCtrl {
     private String shopImgPath;
 
     @GetMapping("shop/{id}")
-    public Mono<Void> imgShopRout(@PathVariable String id, ServerHttpResponse response) throws IOException {
-       return fileService.getImgByNameAndPath(id, shopImgPath).flatMap(file ->
+    public Mono<Void> imgShopRout(@PathVariable String id, ServerHttpResponse response)  {
+       return fileService.getImgByNameAndPath(id, shopImgPath)
+               .flatMap(file ->
         {
             ZeroCopyHttpOutputMessage zeroCopyResponse = (ZeroCopyHttpOutputMessage) response;
             response.getHeaders().setContentType(MediaType.valueOf("image/" + id.split("\\.")[1].toLowerCase()));
-//            System.out.println(MediaType.valueOf("image/" + id.split("\\.")[1].toLowerCase()));
             return zeroCopyResponse.writeWith(file, 0, file.length());
         });
     }

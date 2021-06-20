@@ -19,7 +19,13 @@ public class FileServiceImpl implements FileService {
 
     @Override
     public Mono<File> getImgByNameAndPath(String name, String path) {
-        return Mono.just(new File(path + "/" + name));
+        File file = new File(path  + name);
+
+        if (!file.exists()){
+            file = new File(path  + defaultImgShop);
+        }
+
+        return Mono.just(file);
     }
 
     @Override
@@ -28,10 +34,10 @@ public class FileServiceImpl implements FileService {
         if (!uploadDir.exists()) {
             uploadDir.mkdir();
         }
-
-        String extension = file.filename().split("\\.")[1]; // получаем расширение
+        String[] split = file.filename().split("\\.");
+        String extension = split[split.length -1]; // получаем расширение
         String name = String.format("%d.%s", id, extension);
-        String fullPath = String.format("%s/%s", upload, name);
+        String fullPath = String.format("%s%s", upload, name);
 
         file.transferTo(new File(fullPath));
 
@@ -43,9 +49,12 @@ public class FileServiceImpl implements FileService {
 
     @Override
     public Mono<String> deleteImageForShop(String name) {
-        return Mono.just(new File(upload + "/" + name)).
+        return Mono.just(new File(upload  + name)).
                 flatMap(file -> {
-                    file.delete();
+                    if(!name.equals(defaultImgShop)) {
+                        file.delete();
+                    }
+
                     return Mono.just(defaultImgShop);
                 });
     }

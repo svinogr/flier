@@ -1,31 +1,24 @@
 package com.svinogr.flier.controllers.web;
 
+import com.svinogr.flier.model.Role;
 import com.svinogr.flier.model.Status;
 import com.svinogr.flier.model.User;
+import com.svinogr.flier.model.UserRole;
 import com.svinogr.flier.model.shop.Shop;
 import com.svinogr.flier.services.FileService;
 import com.svinogr.flier.services.ShopService;
 import com.svinogr.flier.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.io.FileSystemResource;
-import org.springframework.core.io.Resource;
-import org.springframework.http.HttpRequest;
 import org.springframework.http.codec.multipart.FilePart;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.reactive.result.view.RequestContext;
 import org.thymeleaf.spring5.context.webflux.IReactiveDataDriverContextVariable;
 import org.thymeleaf.spring5.context.webflux.ReactiveDataDriverContextVariable;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.Comparator;
 
 @Controller
@@ -77,10 +70,14 @@ public class AdminCtrl {
         }
 
         return shopById.flatMap(s -> {
-            model.addAttribute("admin", true);
+            model.addAttribute("admin", isAdmin());
             model.addAttribute("shop", s);
             return Mono.just("shoppage");
         }).switchIfEmpty(Mono.just("redirect:/admin/shops"));
+    }
+
+    private boolean isAdmin() {
+        return true;
     }
 
    /* @GetMapping("image/shop/{id}")
@@ -167,7 +164,7 @@ public class AdminCtrl {
                         });
                     case "-1":
                         // сброс на дефолтную картинку и удаление старой из базы
-                        fileService.deleteImageForShop(shop.getImg()).flatMap(
+                        return    fileService.deleteImageForShop(shop.getImg()).flatMap(
                                 n->{
                                     shop.setImg(n);
                                     return Mono.just(shop);
@@ -237,7 +234,11 @@ public class AdminCtrl {
         }
 
         if (parseId == 0) {
-            userById = Mono.just(new User());
+            User user = new User();
+            Role role = new Role();
+            role.setName(UserRole.ROLE_USER.name());
+            user.getRoles().add(role);
+            userById = Mono.just(user);
         } else {
             userById = userService.findUserById(parseId);
         }
@@ -251,6 +252,7 @@ public class AdminCtrl {
     @PostMapping("users/{id}")
     public Mono<String> saveOrUpdateUser(User user, Model model) {
         Mono<User> userDb;
+        System.out.println(user.getRoles().get(0).getName());
         if (user.getId() == null) {
             userDb = userService.registerUser(user);
         } else {

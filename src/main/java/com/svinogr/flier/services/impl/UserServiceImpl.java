@@ -13,6 +13,9 @@ import reactor.core.Disposable;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Service
 @Slf4j
 public class UserServiceImpl implements UserService {
@@ -35,8 +38,26 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Flux<User> findAll() {
-        return userRepo.findAll();
+        return userRepo.findAll().flatMap(user -> {
+            System.out.println("user id " + user.getId());
+            return userRolesRepo.findByUserId(user.getId()).
+                    flatMap(ur -> {
+                        System.out.println("ur id " + ur.getId());
+                        return roleRepo.findById(ur.getRoleId()).
+                                flatMap(r -> {
+                                    Role role = new Role();
+                                    role.setName(UserRole.valueOf(r.getName()).name());
+                                    System.out.println(role.getName());
+                                    user.getRoles().add(role);
+                                    return Mono.just(user);
+
+                                });
+
+                    });
+
+        });
     }
+
 
     @Override
     public Mono<User> findUserById(Long id) {
@@ -45,7 +66,10 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Mono<User> registerUser(User user) {
-        return saveUser(user, UserRole.ROLE_USER);
+        Role role = user.getRoles().get(0);
+        UserRole userRole = UserRole.valueOf(role.getName());
+
+        return saveUser(user, userRole);
     }
 
     @Override
@@ -56,7 +80,9 @@ public class UserServiceImpl implements UserService {
     private Mono<User> saveUser(User user, UserRole userRole) {
         return roleRepo.findByName(userRole.name())
                 .flatMap(role -> {
-                    user.getRoles().add(role);
+                    List<Role> roles = new ArrayList();
+                    roles.add(role);
+                    user.setRoles(roles);
                     user.setPassword(passwordEncoder.encode(user.getPassword()));
 
                     return Mono.just(user);
@@ -70,15 +96,6 @@ public class UserServiceImpl implements UserService {
                 });
     }
 
-    @Override
-    public Mono<User> registerAdmin(User user) {
-        return saveUser(user, UserRole.ROLE_ADMIN);
-    }
-
-    @Override
-    public Mono<User> registerAccount(User user) {
-        return saveUser(user, UserRole.ROLE_ACCOUNT);
-    }
 
     @Override
     public Mono<User> findUserByName(String name) {
