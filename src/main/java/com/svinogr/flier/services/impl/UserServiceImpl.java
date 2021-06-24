@@ -61,7 +61,23 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Mono<User> findUserById(Long id) {
-        return userRepo.findById(id);
+        return userRepo.findById(id)
+                .flatMap(u -> {
+                    return userRolesRepo.findByUserId(u.getId())
+                            .flatMap(ur ->{
+                                return roleRepo.findById(ur.getRoleId())
+                                        .flatMap(r ->{
+                                            UserRole userRole = UserRole.valueOf(r.getName());
+
+                                            Role role = new Role();
+                                            role.setName(userRole.name());
+
+                                            u.getRoles().add(role);
+
+                                            return Mono.just(u);
+                                        });
+                            });
+                });
     }
 
     @Override
@@ -74,8 +90,33 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Mono<User> update(User user) {
-        return userRepo.save(user);
+        Role role = user.getRoles().get(0);
+        UserRole userRole = UserRole.valueOf(role.getName());
+
+        return updateUser(user, userRole);
     }
+
+    private Mono<User> updateUser(User user, UserRole userRole) {
+        return userRolesRepo.findByUserId(user.getId())
+                .flatMap(ur -> {
+                    return roleRepo.findById(ur.getRoleId())
+                            .flatMap(r -> {
+                                if (!r.getName().equals(userRole.name())) {
+                                    return roleRepo.findByName(userRole.name())
+                                            .flatMap(r1 -> {
+                                                ur.setRoleId(r1.getId());
+                                                return userRolesRepo.save(ur);
+                                            });
+                                }
+                                return Mono.just(r);
+                            });
+                })
+                .flatMap(r -> {
+                    return //userRepo.save(user);
+                    userRepo.update(user);
+                });
+    }
+
 
     private Mono<User> saveUser(User user, UserRole userRole) {
         return roleRepo.findByName(userRole.name())
@@ -90,6 +131,7 @@ public class UserServiceImpl implements UserService {
                 .flatMap(userRepo::save)
                 .flatMap(u -> {
                     UserRoles uR = new UserRoles(u.getId(), u.getRoles().get(0).getId());
+
                     userRolesRepo.save(uR).subscribe();
 
                     return Mono.just(u);

@@ -252,7 +252,7 @@ public class AdminCtrl {
     @PostMapping("users/{id}")
     public Mono<String> saveOrUpdateUser(User user, Model model) {
         Mono<User> userDb;
-        System.out.println(user.getRoles().get(0).getName());
+
         if (user.getId() == null) {
             userDb = userService.registerUser(user);
         } else {

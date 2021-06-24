@@ -3,24 +3,91 @@
 <head>
     <meta charset="UTF-8">
     <title>Register</title>
-    <header xmlns:th="http://www.thymeleaf.org" th:replace="head.html">
-
+    <header th:replace="head.html">
     </header>
 </head>
 <body>
-<div xmlns:th="http://www.thymeleaf.org" th:fragment="user" class="container mt-4">
+<div th:fragment="user" class="container mt-4">
     <div class="row justify-content-md-center mt-4 mb-3">
         <div class="col-6 ">
-            <form class="" id="update" action="users/"  method="post">
-                <input hidden="hidden" readonly="readonly" class="form-control" th:value="${user.id}" type="text" name="id" placeholder="id">
-                <input class="form-control mt-3" th:value="${user.phone}" type="text" name="phone" placeholder="Телефон">
-                <input class="form-control mt-3" th:value="${user.name}" type="text" name="name" placeholder="Имя">
-                <input class="form-control mt-3" th:value="${user.surname}" type="text" name="surname" placeholder="Фамилия">
+            <form class="" id="update" action="/register" method="post">
 
-                <input class="form-control" th:value="${user.username}" type="text" name="username" placeholder="Логин">
-                <input class="form-control mt-3" th:value="${user.email}" type="text" placeholder="email" name="email">
-                <input class="form-control mt-3" th:value="${user.password}" type="text" placeholder="Пароль" name="password">
+                <input hidden="hidden" readonly="readonly" class="form-control" th:value="${user.id}" type="text"
+                       name="id" placeholder="id">
+                <div>
+                    <div class="form-floating">
+                        <input class="form-control mt-3 " th:errorclass="is-invalid" th:field="*{user.phone}"
+                               th:value="${user.phone}" type="text" name="phone"
+                               id="phone" placeholder="Телефон">
+                        <label for="phone">Телефон</label>
+                    </div>
+                    <div>
+                        <p th:if="${#fields.hasErrors('user.phone')}" th:errors="*{user.phone}"></p>
+                    </div>
+                </div>
+                <div>
+                    <div class="form-floating">
+                        <input class="form-control mt-3" id="name" th:errorclass="is-invalid" th:field="*{user.name}"
+                               th:value="${user.name}" type="text" name="name"
+                               placeholder="Имя">
+                        <label for="name">Имя</label>
+                    </div>
+                    <div>
+                        <p th:if="${#fields.hasErrors('user.name')}" th:errors="*{user.name}"></p>
+                    </div>
+                </div>
+                <div>
+                    <div class="form-floating">
+                        <input class="form-control mt-3" id="surname" th:errorclass="is-invalid"
+                               th:field="*{user.surname}"
+                               th:value="${user.surname}" type="text" name="surname"
+                               placeholder="Фамилия">
+                        <label for="surname">Фамилия</label>
+                    </div>
+                    <div>
+                        <p th:if="${#fields.hasErrors('user.surname')}" th:errors="*{user.surname}"></p>
+                    </div>
+                </div>
+                <div>
+                    <div class="form-floating">
+                        <input class="form-control mt-3" id="username" th:errorclass="is-invalid"
+                               th:field="*{user.username}"
+                               th:value="${user.username}" type="text"
+                               name="username"
+                               placeholder="Логин">
+                        <label for="username">Логин</label>
+                    </div>
+                    <div>
+                        <p th:if="${#fields.hasErrors('user.username')}" th:errors="*{user.username}"></p>
+                    </div>
+                </div>
+                <div>
+                    <div class="form-floating">
+                        <input class="form-control mt-3" id="email" th:errorclass="is-invalid" th:field="*{user.email}"
+                               th:value="${user.email}" type="text"
+                               placeholder="email"
+                               name="email">
+                        <label for="email">Email</label>
+                    </div>
+                    <div>
+                        <p th:if="${#fields.hasErrors('user.email')}" th:errors="*{user.email}"></p>
+                    </div>
+                </div>
+                <div>
+                    <div class="form-floating">
+                        <input class="form-control mt-3" id="password" th:errorclass="is-invalid"
+                               th:field="*{user.password}"
+                               th:value="${user.password}" type="text"
+                               placeholder="Пароль"
+                               name="password">
+                        <label for="password">Пароль</label>
+                    </div>
+                    <div>
+                        <p th:if="${#fields.hasErrors('user.password')}" th:errors="*{user.password}"></p>
+                    </div>
+                </div>
                 <input class="btn btn-outline-primary form-control mt-4" type="submit" value="Зарегистрироваться">
+
                 <input hidden="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
             </form>
         </div>
