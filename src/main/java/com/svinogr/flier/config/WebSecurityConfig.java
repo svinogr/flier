@@ -52,7 +52,7 @@ public class WebSecurityConfig {
                 httpBasic().disable().
                 authorizeExchange().
                 pathMatchers("/webjars/**", "/loginpage", "/favicon.ico", "/**").permitAll().
-                //  pathMatchers("/").hasAnyRole("ACCOUNT", "ADMIN").
+                 // pathMatchers("/d").hasAnyRole("ACCOUNT", "ADMIN").
                 //  pathMatchers("/admin").hasRole("ADMIN").
                 // anyExchange().authenticated().
                         anyExchange().permitAll().

@@ -100,7 +100,7 @@ public class AdminCtrl {
     @PostMapping("shops/{id}")
     public Mono<String> updateShop(@PathVariable String id, @RequestPart("imgTypeAction") String imgTypeAction, @RequestPart("file") Mono<FilePart> file, Shop shop) {
 
-        Long parseId;
+        long parseId;
         try {
             parseId = Long.parseLong(id);
 
