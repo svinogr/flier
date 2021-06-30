@@ -5,8 +5,10 @@ import com.svinogr.flier.model.Status;
 import com.svinogr.flier.model.User;
 import com.svinogr.flier.model.UserRole;
 import com.svinogr.flier.model.shop.Shop;
+import com.svinogr.flier.model.shop.Stock;
 import com.svinogr.flier.services.FileService;
 import com.svinogr.flier.services.ShopService;
+import com.svinogr.flier.services.StockService;
 import com.svinogr.flier.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -19,6 +21,7 @@ import org.thymeleaf.spring5.context.webflux.ReactiveDataDriverContextVariable;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.util.ArrayList;
 import java.util.Comparator;
 
 @Controller
@@ -29,6 +32,10 @@ public class AdminCtrl {
 
     @Autowired
     ShopService shopService;
+
+    @Autowired
+    StockService stockService;
+
     @Autowired
     private FileService fileService;
 
@@ -74,7 +81,6 @@ public class AdminCtrl {
     }
 
 
-
     @GetMapping("updateshoppage/{id}")
     public Mono<String> getUpdateshopPage(@PathVariable String id, Model model) {
         Long parseId;
@@ -89,10 +95,16 @@ public class AdminCtrl {
             Shop shop = new Shop();
             shop.setId(parseId);
             shop.setImg(defaultShopImg);
+            shop.setStocks(new ArrayList());
             shop.setStatus(Status.ACTIVE.name());
             shopById = Mono.just(shop);
         } else {
-            shopById = shopService.getShopById(parseId);
+            shopById = shopService.getShopById(parseId)
+                    .flatMap(s -> {
+                        Flux<Stock> stocksByShopId = stockService.findStocksByShopId(s.getId());
+                        s.setStocks(stocksByShopId.collectList().block());
+                        return Mono.just(s);
+                    });
         }
 
         return shopById.flatMap(s -> {
@@ -178,22 +190,22 @@ public class AdminCtrl {
                             }
                             return
                                     fileService.deleteImageForShop(shop.getImg()).flatMap(n -> fileService.saveImgByIdForShop(f, shop.getId()).flatMap(
-                                              name -> {
-                                                  s.setImg(name);
-                                                  return Mono.just(s);
-                                              }));
+                                            name -> {
+                                                s.setImg(name);
+                                                return Mono.just(s);
+                                            }));
                         }).flatMap(sh -> {
                             shopService.updateShop(sh).subscribe();
                             return Mono.just("redirect:/admin/shops");
                         });
                     case "-1":
                         // сброс на дефолтную картинку и удаление старой из базы
-                        return    fileService.deleteImageForShop(shop.getImg()).flatMap(
-                                n->{
+                        return fileService.deleteImageForShop(shop.getImg()).flatMap(
+                                n -> {
                                     shop.setImg(n);
                                     return Mono.just(shop);
                                 }
-                        ).flatMap(sh1-> shopService.updateShop(shop).flatMap(sh->Mono.just("redirect:/admin/shops")));
+                        ).flatMap(sh1 -> shopService.updateShop(shop).flatMap(sh -> Mono.just("redirect:/admin/shops")));
                  /*
                         shop.setImg(defaultShopImg);
                         shopService.updateShop(shop).subscribe();

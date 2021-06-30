@@ -7,6 +7,7 @@ import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
 
 import javax.validation.constraints.NotBlank;
+import java.util.List;
 
 @Table("shops")
 @Data
@@ -26,5 +27,5 @@ public class Shop extends BaseEntity {
     private String url;
     private String img;
     @Transient
-    private Stock[] stokcs;
+    private List stocks;
 }

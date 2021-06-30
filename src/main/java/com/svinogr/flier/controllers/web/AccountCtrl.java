@@ -19,7 +19,7 @@ import java.util.Map;
 
 @Controller
 @RequestMapping
-public class AcountCtrl {
+public class AccountCtrl {
 
     @Autowired
     private UserService userService;
