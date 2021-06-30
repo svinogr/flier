@@ -15,4 +15,4 @@ create table shops
     UNIQUE (id)
 );
 /*test shop*/
-insert into shops (user_id, title, description, address, lat, lng, img, url) values ('1', 'MAGAS','OPISANIE','Moskow','20','30','1','2');
+insert into shops (user_id, title, description, address, lat, lng, img, url) values ('1', 'MAGAS','OPISANIE','Moskow','20','30','0.png','2');

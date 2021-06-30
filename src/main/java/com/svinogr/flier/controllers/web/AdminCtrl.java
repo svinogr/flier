@@ -23,6 +23,7 @@ import reactor.core.publisher.Mono;
 
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.List;
 
 @Controller
 @RequestMapping("/admin")
@@ -69,9 +70,16 @@ public class AdminCtrl {
 
         Mono<Shop> shopById = shopService.getShopById(parseId);
 
+        Flux<Stock> stocks = stockService.findStocksByShopId(parseId);
+
         return shopById.flatMap(s -> {
             model.addAttribute("admin", isAdmin());
             model.addAttribute("shop", s);
+
+            IReactiveDataDriverContextVariable reactiveDataDrivenMode =
+                    new ReactiveDataDriverContextVariable(stocks, 1, 1);
+            model.addAttribute("stocks", reactiveDataDrivenMode);
+
             return Mono.just("shoppage");
         }).switchIfEmpty(Mono.just("redirect:/admin/shops"));
     }
@@ -99,12 +107,7 @@ public class AdminCtrl {
             shop.setStatus(Status.ACTIVE.name());
             shopById = Mono.just(shop);
         } else {
-            shopById = shopService.getShopById(parseId)
-                    .flatMap(s -> {
-                        Flux<Stock> stocksByShopId = stockService.findStocksByShopId(s.getId());
-                        s.setStocks(stocksByShopId.collectList().block());
-                        return Mono.just(s);
-                    });
+            shopById = shopService.getShopById(parseId);
         }
 
         return shopById.flatMap(s -> {

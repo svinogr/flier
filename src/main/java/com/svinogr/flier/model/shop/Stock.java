@@ -6,7 +6,7 @@ import org.springframework.data.relational.core.mapping.Table;
 
 import java.time.LocalDate;
 
-@Table("stock")
+@Table("stocks")
 @Data
 public class Stock extends BaseEntity {
     private Long shopId;
@@ -14,4 +14,6 @@ public class Stock extends BaseEntity {
     private String description;
     private LocalDate dateStart;
     private LocalDate dateFinish;
+    private String img;
+    private String url;
 }
