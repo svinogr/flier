@@ -58,7 +58,6 @@ public class UserServiceImpl implements UserService {
         });
     }
 
-
     @Override
     public Mono<User> findUserById(Long id) {
         return userRepo.findById(id)

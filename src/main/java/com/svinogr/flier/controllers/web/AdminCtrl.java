@@ -49,8 +49,34 @@ public class AdminCtrl {
         return "adminshoppage";
     }
 
-    @GetMapping("shops/{id}")
-    public Mono<String> getAllShop(@PathVariable String id, Model model) {
+    @GetMapping("shoppage/{id}")
+    public Mono<String> getShopPage(@PathVariable String id, Model model) {
+        Long parseId;
+
+        try {
+            parseId = Long.parseLong(id);
+
+        } catch (NumberFormatException e) {
+            return Mono.just("redirect:/admin/shops");
+        }
+
+        Mono<Shop> shopById = shopService.getShopById(parseId);
+
+        return shopById.flatMap(s -> {
+            model.addAttribute("admin", isAdmin());
+            model.addAttribute("shop", s);
+            return Mono.just("shoppage");
+        }).switchIfEmpty(Mono.just("redirect:/admin/shops"));
+    }
+
+    private boolean isAdmin() {
+        return true;
+    }
+
+
+
+    @GetMapping("updateshoppage/{id}")
+    public Mono<String> getUpdateshopPage(@PathVariable String id, Model model) {
         Long parseId;
         try {
             parseId = Long.parseLong(id);
@@ -72,13 +98,11 @@ public class AdminCtrl {
         return shopById.flatMap(s -> {
             model.addAttribute("admin", isAdmin());
             model.addAttribute("shop", s);
-            return Mono.just("shoppage");
+            return Mono.just("updateshoppage");
         }).switchIfEmpty(Mono.just("redirect:/admin/shops"));
     }
 
-    private boolean isAdmin() {
-        return true;
-    }
+
 
    /* @GetMapping("image/shop/{id}")
     public Mono<Resource> getImage(@PathVariable String id) throws IOException {
@@ -188,7 +212,7 @@ public class AdminCtrl {
         return true;
     }
 
-    @GetMapping("shops/del/{id}")
+    @PostMapping("shops/del/{id}")
     public Mono<String> delShopById(@PathVariable String id) {
         Long parseId;
         try {
