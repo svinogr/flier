@@ -25,6 +25,9 @@ public class FileCtrl {
     @Value("${upload.shop.imgPath}")
     private String shopImgPath;
 
+    @Value("${upload.stock.imgPath}")
+    private String stockImgPath;
+
     @GetMapping("shop/{id}")
     public Mono<Void> imgShopRout(@PathVariable String id, ServerHttpResponse response)  {
        return fileService.getImgByNameAndPath(id, shopImgPath)
@@ -34,5 +37,16 @@ public class FileCtrl {
             response.getHeaders().setContentType(MediaType.valueOf("image/" + id.split("\\.")[1].toLowerCase()));
             return zeroCopyResponse.writeWith(file, 0, file.length());
         });
+    }
+
+    @GetMapping("stock/{id}")
+    public Mono<Void> imgStockRout(@PathVariable String id, ServerHttpResponse response)  {
+        return fileService.getImgByNameAndPath(id, stockImgPath)
+                .flatMap(file ->
+                {
+                    ZeroCopyHttpOutputMessage zeroCopyResponse = (ZeroCopyHttpOutputMessage) response;
+                    response.getHeaders().setContentType(MediaType.valueOf("image/" + id.split("\\.")[1].toLowerCase()));
+                    return zeroCopyResponse.writeWith(file, 0, file.length());
+                });
     }
 }

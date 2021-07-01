@@ -45,6 +45,8 @@ public class AdminCtrl {
 
     @Value("${upload.shop.defaultImg}")
     private String defaultShopImg;
+    @Value("${upload.stock.defaultImg}")
+    private String defaultStockImg;
 
     @GetMapping("shops")
     public String getAllShop(Model model) {
@@ -98,7 +100,9 @@ public class AdminCtrl {
         } catch (NumberFormatException e) {
             return Mono.just("redirect:/admin/shops");
         }
+
         Mono<Shop> shopById;
+
         if (parseId == 0) {
             Shop shop = new Shop();
             shop.setId(parseId);
@@ -117,18 +121,6 @@ public class AdminCtrl {
         }).switchIfEmpty(Mono.just("redirect:/admin/shops"));
     }
 
-
-
-   /* @GetMapping("image/shop/{id}")
-    public Mono<Resource> getImage(@PathVariable String id) throws IOException {
-    //    System.out.println( request.getURI().getPath());
-        File file = new File("./img/shop/" + id);
-        System.out.println(file.length());
-      *//*  String path = "./img/shop/" + id;
-        byte[] data = Files.readAllBytes(Path.of(classPathResource.getPath()));*//*
-        FileSystemResource fileSystemResource = new FileSystemResource(file);
-        return Mono.just(fileSystemResource);
-    }*/
 
     /**
      * value imgTypeAction.
@@ -217,9 +209,7 @@ public class AdminCtrl {
                         return Mono.just("forbidenpage");
                 }
             });
-
         }
-
     }
 
     private boolean isOwnerOrAdmin(Long parseId) {
@@ -249,6 +239,57 @@ public class AdminCtrl {
                 switchIfEmpty(Mono.just("redirect:/admin/shops"));
     }
 
+    @GetMapping("shop/{idSh}/stockpage/{idSt}")
+    public Mono<String> getStockPage(@PathVariable String idSh, @PathVariable String idSt, Model model) {
+        Long shopId, stockId;
+
+        try {
+            shopId = Long.parseLong(idSh);
+
+        } catch (NumberFormatException e) {
+            return Mono.just("redirect:/admin/shops/");
+        }
+
+        try {
+            stockId = Long.parseLong(idSt);
+
+        } catch (NumberFormatException e) {
+            return Mono.just("redirect:/admin/updateshoppage/" + shopId);
+        }
+
+        Mono<Stock> stockById;
+        if (stockId == 0) {
+            Stock stock = new Stock();
+            stock.setId(stockId);
+            stock.setShopId(shopId);
+            stock.setImg(defaultStockImg);
+            stock.setStatus(Status.ACTIVE.name());
+            stockById = Mono.just(stock);
+        } else {
+            stockById =  stockService.findStockById(stockId);
+        }
+
+        return stockById
+                .flatMap(s -> {
+                    if(s.getShopId() != shopId){
+                        Stock stock = new Stock();
+                        stock.setId(0L);
+                        stock.setShopId(shopId);
+                        stock.setImg(defaultStockImg);
+                        stock.setStatus(Status.ACTIVE.name());
+                        return Mono.just(stock);
+                    }
+
+                    return Mono.just(s);
+                })
+                .flatMap(s ->{
+                    model.addAttribute("admin", isAdmin());
+                    model.addAttribute("stock", s);
+
+                    return Mono.just("stockpage");
+                })
+                .switchIfEmpty(Mono.just("redirect:/admin/shops"));
+    }
 
     @GetMapping("users")
     public String getAllUser(Model model) {
