@@ -26,6 +26,7 @@ public class ShopServiceImpl implements ShopService {
 
     @Override
     public Mono<Shop> deleteShopById(Long id) {
+        //TODO сделать удаление акции при удалении магазина
         return shopRepo.findById(id).flatMap(s ->{
             s.setStatus(Status.NON_ACTIVE.name());
             return shopRepo.save(s);

@@ -1,6 +1,5 @@
 <div xmlns:th="http://www.thymeleaf.org" th:fragment="fragmentupdatestock" class="container mt-4">
     <script src="/js/shop/preview.js" type="text/javascript"></script>
-    <script src="/js/shop/map.js" type="text/javascript"></script>
     <div class="col-9 ">
         <form class="" enctype="multipart/form-data" id="update" th:action="${stock.id}" method="post">
             <div class="row">
@@ -33,7 +32,7 @@
                                type="text"
                                name="id" placeholder="id">
                         <input th:if="${admin}" class="form-control mt-3" th:value="${stock.shopId}" type="text"
-                               name="userId"
+                               name="shopId"
                                placeholder="userId">
                         <div>
                             <div class="form-floating ">
@@ -76,7 +75,8 @@
         <div class="row">
             <div class="col-3"></div>
             <div class="col-9">
-                <form class="" id="del" action="/admin/stock/del/" th:attrappend="action=${stock.id}"  th:if="${stock.id} != 0" method="post">
+                <form class="" id="del" action="/admin/stock/del/" th:attrappend="action=${stock.id}"
+                      th:if="${stock.id} != 0" method="post">
                     <input hidden="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
                     <input th:if="${stock.id} != null" type="submit"
                            class="btn btn-outline-danger form-control mt-4"

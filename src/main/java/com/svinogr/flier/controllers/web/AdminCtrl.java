@@ -23,7 +23,6 @@ import reactor.core.publisher.Mono;
 
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.List;
 
 @Controller
 @RequestMapping("/admin")
@@ -92,7 +91,7 @@ public class AdminCtrl {
 
 
     @GetMapping("updateshoppage/{id}")
-    public Mono<String> getUpdateshopPage(@PathVariable String id, Model model) {
+    public Mono<String> getUpdateShopPage(@PathVariable String id, Model model) {
         Long parseId;
         try {
             parseId = Long.parseLong(id);
@@ -130,7 +129,6 @@ public class AdminCtrl {
      */
     @PostMapping("shops/{id}")
     public Mono<String> updateShop(@PathVariable String id, @RequestPart("imgTypeAction") String imgTypeAction, @RequestPart("file") Mono<FilePart> file, Shop shop) {
-
         long parseId;
         try {
             parseId = Long.parseLong(id);
@@ -139,7 +137,7 @@ public class AdminCtrl {
             return Mono.just("redirect:/admin/shops");
         }
 
-        boolean isOwner = isOwnerOrAdmin(parseId);
+        boolean isOwner = isOwnerOrAdminOfShop(parseId);
         if (!isOwner) {
             return Mono.just("forbidenpage");
         }
@@ -212,7 +210,8 @@ public class AdminCtrl {
         }
     }
 
-    private boolean isOwnerOrAdmin(Long parseId) {
+    //TODO сделать не тольео для админа
+    private boolean isOwnerOrAdminOfShop(Long parseId) {
         //Todo проверка на собственника или админ
         return true;
     }
@@ -229,7 +228,7 @@ public class AdminCtrl {
 
         Mono<Shop> delShop;
 
-        if (isOwnerOrAdmin(parseId)) {
+        if (isOwnerOrAdminOfShop(parseId)) {
             delShop = shopService.deleteShopById(parseId);
         } else {
             return Mono.just("forbidenpage");
@@ -269,6 +268,7 @@ public class AdminCtrl {
             stockById =  stockService.findStockById(stockId);
         }
 
+        //TODO можно сделать проверку на существование магазина?!
         return stockById
                 .flatMap(s -> {
                     if(s.getShopId() != shopId){
@@ -289,6 +289,131 @@ public class AdminCtrl {
                     return Mono.just("stockpage");
                 })
                 .switchIfEmpty(Mono.just("redirect:/admin/shops"));
+    }
+
+    /**
+     * value imgTypeAction.
+     * 0 - nothing to do
+     * -1 set default
+     * 1 set new from file
+     */
+    @PostMapping("shop/{idSh}/stockpage/{idSt}")
+    public Mono<String> updateStock(@PathVariable String idSh,@PathVariable String idSt, @RequestPart("imgTypeAction") String imgTypeAction, @RequestPart("file") Mono<FilePart> file, Stock stock){
+        long shopId, stockId;
+        try {
+            shopId = Long.parseLong(idSh);
+
+        } catch (NumberFormatException e) {
+            return Mono.just("redirect:/admin/shops");
+        }
+
+        try {
+            stockId = Long.parseLong(idSt);
+
+        } catch (NumberFormatException e) {
+            return Mono.just("redirect:/admin/updateshoppage/" + shopId);
+        }
+
+        boolean isOwner = isOwnerOrAdminOfShop(shopId);
+        if (!isOwner) {
+            return Mono.just("forbidenpage");
+        }
+
+        if (stock.getId() == 0) { // создание нового
+            stock.setId(null);
+            stock.setShopId(shopId);
+            return stockService.createStock(stock).flatMap(s -> {
+                switch (imgTypeAction) {
+                    case "0":
+                        return Mono.just("redirect:/admin/shoppage/" + shopId );// подозрительное место почему строка а не обьект
+                    case "1":
+                        return file.flatMap(f -> {
+                            if (f.filename().equals("")) {
+                                s.setImg(defaultStockImg);
+                                return Mono.just(s);
+                            }
+
+                            return fileService.saveImgByIdForStock(f, s.getId()).flatMap(
+                                    n -> {
+                                        s.setImg(n);
+                                        return Mono.just(s);
+                                    }
+                            );
+                        })
+                                .flatMap(sh -> stockService.updateStock(sh)
+                                        .flatMap(sf -> Mono.just("redirect:/admin/shoppage/" + shopId)));
+
+                    case "-1":
+                        // сброс на дефолтную картинку и удаление старой из базы
+                        // странное место тоже
+                        return Mono.just("redirect:/admin/shoppage/" + shopId);
+                    default:
+                        return Mono.just("forbidenpage");
+                }
+            });
+        } else { // обновление уже созданого
+            return stockService.updateStock(stock).flatMap(s -> {
+                switch (imgTypeAction) {
+                    case "0":
+                        return Mono.just("redirect:/admin/shoppage/" + shopId);
+                    case "1":
+                        return file.flatMap(f -> {
+                            if (f.filename().equals("")) {
+                                stock.setImg(defaultStockImg);
+                                return Mono.just(stock);
+                            }
+                            return
+                                    fileService.deleteImageForStock(stock.getImg())
+                                            .flatMap(n -> fileService.saveImgByIdForStock(f, stock.getId())
+                                                    .flatMap(
+                                            name -> {
+                                                s.setImg(name);
+                                                return Mono.just(s);
+                                            }));
+                        }).flatMap(sh -> {
+                            stockService.updateStock(sh).subscribe();
+                            return Mono.just("redirect:/admin/shoppage/" + shopId);
+                        });
+                    case "-1":
+                        // сброс на дефолтную картинку и удаление старой из базы
+                        return fileService.deleteImageForStock(stock.getImg()).flatMap(
+                                n -> {
+                                    stock.setImg(n);
+                                    return Mono.just(stock);
+                                }
+                        ).flatMap(sh1 -> stockService.updateStock(stock).flatMap(sh -> Mono.just("redirect:/admin/shoppage/" + shopId)));
+                 /*
+                        shop.setImg(defaultShopImg);
+                        shopService.updateShop(shop).subscribe();
+                        return Mono.just("redirect:/admin/shops");*/
+                    default:
+                        return Mono.just("forbidenpage");
+                }
+            });
+        }
+    }
+
+    @PostMapping("stock/del/{id}")
+    public Mono<String> delStockById(@PathVariable String id) {
+        Long stockId;
+        try {
+            stockId = Long.parseLong(id);
+
+        } catch (NumberFormatException e) {
+            return Mono.just("redirect:/admin/shops");
+        }
+
+        if (isOwnerOrAdminOfStock(stockId)) {
+            return stockService.deleteStockById(stockId)
+                    .flatMap(s -> Mono.just("redirect:/admin/shoppage/" + s.getShopId()))
+                    .switchIfEmpty(Mono.just("redirect:/admin/shoppage/" + stockId));
+        } else {
+            return Mono.just("forbidenpage");
+        }
+    }
+//TODO сделать не тольео для админа
+    private boolean isOwnerOrAdminOfStock(Long parseId) {
+        return true;
     }
 
     @GetMapping("users")
@@ -356,7 +481,7 @@ public class AdminCtrl {
 
         Mono<User> delUser;
 
-        if (isOwnerOrAdmin(parseId)) {
+        if (isOwnerOrAdminOfShop(parseId)) {
             delUser = userService.deleteUser(parseId);
         } else {
             return Mono.just("forbidenpage");
@@ -365,4 +490,5 @@ public class AdminCtrl {
         return delUser.flatMap(s -> Mono.just("redirect:/admin/users")).
                 switchIfEmpty(Mono.just("redirect:/admin/users"));
     }
+
 }

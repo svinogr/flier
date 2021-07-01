@@ -8,4 +8,10 @@ public interface StockService {
     Flux<Stock> findStocksByShopId(Long id);
 
     Mono<Stock> findStockById(Long stockId);
+
+    Mono<Stock> createStock(Stock stock);
+
+    Mono<Stock> updateStock(Stock stock);
+
+    Mono<Stock> deleteStockById(Long parseId);
 }

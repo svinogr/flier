@@ -13,4 +13,8 @@ public interface FileService {
     Mono<String> saveImgByIdForShop(FilePart file, Long id);
 
     Mono<String> deleteImageForShop(String name);
+
+    Mono<String> deleteImageForStock(String name);
+
+    Mono<String> saveImgByIdForStock(FilePart file, Long id);
 }
