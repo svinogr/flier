@@ -5,6 +5,7 @@ import com.svinogr.flier.model.shop.Stock;
 import com.svinogr.flier.repo.StockRepo;
 import com.svinogr.flier.services.StockService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.r2dbc.repository.Modifying;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -31,7 +32,13 @@ public class StockServiceImpl implements StockService {
 
     @Override
     public Mono<Stock> updateStock(Stock stock) {
-        return stockRepo.save(stock);
+       // return Mono.just(new Stock());
+      return stockRepo.updateStock(stock)
+              .flatMap(ok->{
+                  if(ok) return stockRepo.findById(stock.getId());
+
+                  return Mono.just(new Stock());
+              });
     }
 
     @Override

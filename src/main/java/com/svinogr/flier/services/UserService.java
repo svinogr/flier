@@ -10,5 +10,6 @@ public interface UserService {
     Mono<User> registerUser(User user);
     Mono<User>  update(User user);
     Mono<User> findUserByName(String name);
+    Mono<User> findUserByIdSafety(long name);
     Mono<User> deleteUser(Long id);
 }

@@ -63,9 +63,9 @@ public class UserServiceImpl implements UserService {
         return userRepo.findById(id)
                 .flatMap(u -> {
                     return userRolesRepo.findByUserId(u.getId())
-                            .flatMap(ur ->{
+                            .flatMap(ur -> {
                                 return roleRepo.findById(ur.getRoleId())
-                                        .flatMap(r ->{
+                                        .flatMap(r -> {
                                             UserRole userRole = UserRole.valueOf(r.getName());
 
                                             Role role = new Role();
@@ -91,8 +91,9 @@ public class UserServiceImpl implements UserService {
     public Mono<User> update(User user) {
         Role role = user.getRoles().get(0);
         UserRole userRole = UserRole.valueOf(role.getName());
-
-        return updateUser(user, userRole);
+        Mono<User> userMono = updateUser(user, userRole);
+        userMono.subscribe(System.out::println);
+        return userMono;
     }
 
     private Mono<User> updateUser(User user, UserRole userRole) {
@@ -112,7 +113,14 @@ public class UserServiceImpl implements UserService {
                 })
                 .flatMap(r -> {
                     return //userRepo.save(user);
-                    userRepo.update(user);
+                            userRepo.update(user)
+                                    .flatMap(ok -> {
+                                        if (ok) {
+                                            return findUserByIdSafety(user.getId());
+                                        }
+
+                                        return Mono.just(new User());
+                                    });
                 });
     }
 
@@ -141,6 +149,15 @@ public class UserServiceImpl implements UserService {
     @Override
     public Mono<User> findUserByName(String name) {
         return userRepo.findByUsername(name);
+    }
+
+    @Override
+    public Mono<User> findUserByIdSafety(long id) {
+        return userRepo.findById(id).
+                flatMap(user -> {
+                    user.setPassword("secret");
+                    return Mono.just(user);
+                });
     }
 
     @Override

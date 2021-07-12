@@ -14,6 +14,7 @@ import reactor.core.publisher.Mono;
 public interface UserRepo extends ReactiveCrudRepository<User, Long> {
     Mono<User> findByUsername(String name);
 
+    @Modifying
     @Query("update usr set" +
             " user_name = :#{#user.username}," +
             " email = :#{#user.email}," +
@@ -22,5 +23,5 @@ public interface UserRepo extends ReactiveCrudRepository<User, Long> {
             " phone = :#{#user.phone}," +
             " status = :#{#user.status}," +
             " updated = DEFAULT where id= :#{#user.id}")
-    Mono<User> update( User user);
+    Mono<Boolean> update(User user);
 }

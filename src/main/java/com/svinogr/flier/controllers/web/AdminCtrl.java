@@ -265,13 +265,13 @@ public class AdminCtrl {
             stock.setStatus(Status.ACTIVE.name());
             stockById = Mono.just(stock);
         } else {
-            stockById =  stockService.findStockById(stockId);
+            stockById = stockService.findStockById(stockId);
         }
 
         //TODO можно сделать проверку на существование магазина?!
         return stockById
                 .flatMap(s -> {
-                    if(s.getShopId() != shopId){
+                    if (s.getShopId() != shopId) {
                         Stock stock = new Stock();
                         stock.setId(0L);
                         stock.setShopId(shopId);
@@ -282,7 +282,7 @@ public class AdminCtrl {
 
                     return Mono.just(s);
                 })
-                .flatMap(s ->{
+                .flatMap(s -> {
                     model.addAttribute("admin", isAdmin());
                     model.addAttribute("stock", s);
 
@@ -298,7 +298,7 @@ public class AdminCtrl {
      * 1 set new from file
      */
     @PostMapping("shop/{idSh}/stockpage/{idSt}")
-    public Mono<String> updateStock(@PathVariable String idSh,@PathVariable String idSt, @RequestPart("imgTypeAction") String imgTypeAction, @RequestPart("file") Mono<FilePart> file, Stock stock){
+    public Mono<String> updateStock(@PathVariable String idSh, @PathVariable String idSt, @RequestPart("imgTypeAction") String imgTypeAction, @RequestPart("file") Mono<FilePart> file, Stock stock) {
         long shopId, stockId;
         try {
             shopId = Long.parseLong(idSh);
@@ -325,7 +325,7 @@ public class AdminCtrl {
             return stockService.createStock(stock).flatMap(s -> {
                 switch (imgTypeAction) {
                     case "0":
-                        return Mono.just("redirect:/admin/shoppage/" + shopId );// подозрительное место почему строка а не обьект
+                        return Mono.just("redirect:/admin/shoppage/" + shopId);// подозрительное место почему строка а не обьект
                     case "1":
                         return file.flatMap(f -> {
                             if (f.filename().equals("")) {
@@ -357,6 +357,7 @@ public class AdminCtrl {
                     case "0":
                         return Mono.just("redirect:/admin/shoppage/" + shopId);
                     case "1":
+                        System.out.println(1);
                         return file.flatMap(f -> {
                             if (f.filename().equals("")) {
                                 stock.setImg(defaultStockImg);
@@ -366,15 +367,16 @@ public class AdminCtrl {
                                     fileService.deleteImageForStock(stock.getImg())
                                             .flatMap(n -> fileService.saveImgByIdForStock(f, stock.getId())
                                                     .flatMap(
-                                            name -> {
-                                                s.setImg(name);
-                                                return Mono.just(s);
-                                            }));
+                                                            name -> {
+                                                                s.setImg(name);
+                                                                return Mono.just(s);
+                                                            }));
                         }).flatMap(sh -> {
                             stockService.updateStock(sh).subscribe();
                             return Mono.just("redirect:/admin/shoppage/" + shopId);
                         });
                     case "-1":
+                        System.out.println(2);
                         // сброс на дефолтную картинку и удаление старой из базы
                         return fileService.deleteImageForStock(stock.getImg()).flatMap(
                                 n -> {
@@ -382,10 +384,6 @@ public class AdminCtrl {
                                     return Mono.just(stock);
                                 }
                         ).flatMap(sh1 -> stockService.updateStock(stock).flatMap(sh -> Mono.just("redirect:/admin/shoppage/" + shopId)));
-                 /*
-                        shop.setImg(defaultShopImg);
-                        shopService.updateShop(shop).subscribe();
-                        return Mono.just("redirect:/admin/shops");*/
                     default:
                         return Mono.just("forbidenpage");
                 }
@@ -411,7 +409,8 @@ public class AdminCtrl {
             return Mono.just("forbidenpage");
         }
     }
-//TODO сделать не тольео для админа
+
+    //TODO сделать не тольео для админа
     private boolean isOwnerOrAdminOfStock(Long parseId) {
         return true;
     }
