@@ -1,0 +1,17 @@
+<div class="col-3 mt-5" xmlns:th="http://www.thymeleaf.org" th:fragment="fragmentaccount">
+    <h4 th:text="${user.id}" type="text"></h4>
+    <h4 th:text="${user.phone}" type="text"></h4>
+    <h4 th:text="${user.name}" type="text"></h4>
+    <h4 th:text="${user.surname}" type="text"></h4>
+
+    <h4 th:text="${user.username}" type="text"></h4>
+    <h4 th:text="${user.status}" type="text"></h4>
+    <h4 th:text="${user.email}" type="text"></h4>
+
+    <form class="" id="update" action="" th:attrappend="action=${user.id}" method="get">
+        <input hidden="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+        <input type="submit" class="btn btn-outline-danger form-control mt-4"
+               value="Изменить">
+    </form>
+</div>
+
