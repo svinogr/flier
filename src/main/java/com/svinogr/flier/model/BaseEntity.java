@@ -5,6 +5,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.domain.Persistable;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 
 @Data
@@ -12,9 +13,9 @@ public class BaseEntity  {
     @Id
     private Long id;
 
-    private LocalDate created;
+    private LocalDateTime created;
 
-    private LocalDate updated;
+    private LocalDateTime updated;
 
     private String status;
 
