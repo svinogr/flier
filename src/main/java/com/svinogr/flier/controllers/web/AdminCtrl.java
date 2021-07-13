@@ -21,6 +21,8 @@ import org.thymeleaf.spring5.context.webflux.ReactiveDataDriverContextVariable;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
 
@@ -263,6 +265,8 @@ public class AdminCtrl {
             stock.setShopId(shopId);
             stock.setImg(defaultStockImg);
             stock.setStatus(Status.ACTIVE.name());
+            stock.setDateStart(LocalDateTime.now());
+            stock.setDateFinish(LocalDateTime.now());
             stockById = Mono.just(stock);
         } else {
             stockById = stockService.findStockById(stockId);
@@ -277,6 +281,8 @@ public class AdminCtrl {
                         stock.setShopId(shopId);
                         stock.setImg(defaultStockImg);
                         stock.setStatus(Status.ACTIVE.name());
+                        stock.setDateStart(LocalDateTime.now());
+                        stock.setDateFinish(LocalDateTime.now());
                         return Mono.just(stock);
                     }
 
@@ -318,6 +324,7 @@ public class AdminCtrl {
         if (!isOwner) {
             return Mono.just("forbidenpage");
         }
+        System.out.println(stock.getDateFinish());
 
         if (stock.getId() == 0) { // создание нового
             stock.setId(null);

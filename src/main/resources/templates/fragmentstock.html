@@ -45,6 +45,16 @@
                                 <p th:if="${#fields.hasErrors('stock.title')}" th:errors="*{stock.title}"></p>
                             </div>
                         </div>
+                        <div class="form-floating">
+                            <input type="datetime-local"class="form-control mt-3" th:field="${stock.dateStart}" name="dateStart"
+                                   id="dateStart" placeholder="начало">
+                            <label for="dateStart">Начало</label>
+                        </div>
+                        <div class="form-floating">
+                            <input type="datetime-local" class="form-control mt-3" th:field="${stock.dateFinish}" name="dateFinish"
+                                   id="dateFinish" placeholder="конец">
+                            <label for="dateFinish">Начало</label>
+                        </div>
                         <div class="form-floating ">
                             <input class="form-control mt-3" th:value="${stock.description}" type="text"
                                    placeholder="description" name="description">
