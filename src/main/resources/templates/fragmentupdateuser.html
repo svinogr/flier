@@ -10,9 +10,9 @@
                 <input class="form-control mt-3" th:value="${user.username}" type="text" name="username" placeholder="name">
                 <input class="form-control mt-3" th:value="${user.status}" type="text" name="status" placeholder="status">
                 <input class="form-control mt-3" th:value="${user.email}" type="text" placeholder="email" name="email">
-                <input class="form-control mt-3" type="text" placeholder="password" name="password">
+                <input   th:if="${admin}" class="form-control mt-3" type="text" placeholder="password" name="password">
 
-                <select class="form-control selectpicker mt-3" th:field="*{user.roles[0].name}" id="roles">
+                <select  th:if="${admin}" class="form-control selectpicker mt-3" th:field="*{user.roles[0].name}" id="roles">
                     <option value="">Nothing selected</option>
                 <option th:each="role : ${T(com.svinogr.flier.model.UserRole).values()}"
                         th:value="${role}"

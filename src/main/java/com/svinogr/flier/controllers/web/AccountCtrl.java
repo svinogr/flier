@@ -24,6 +24,16 @@ public class AccountCtrl {
     @Autowired
     private UserService userService;
 
+    @GetMapping("/accountpage")
+    public Mono<String> accountPage(Model model) {
+        User user = new User();
+
+        return Mono.just(user).flatMap(u -> {
+            model.addAttribute("user", user);
+            return Mono.just("userpage");
+        });
+    }
+
     @GetMapping("/register")
     public Mono<String> register(Model model) {
         User user = new User();
@@ -33,6 +43,7 @@ public class AccountCtrl {
             return Mono.just("accountpage");
         });
     }
+
 
     @PostMapping("/register")
     public Mono<String> saveOrUpdateUser(@Valid User user, BindingResult bindingResult, Model model ) {

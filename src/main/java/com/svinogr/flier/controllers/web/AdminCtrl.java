@@ -456,6 +456,7 @@ public class AdminCtrl {
 
         return userById.flatMap(u -> {
             model.addAttribute("user", u);
+            model.addAttribute("admin", isAdmin());
             return Mono.just("userpage");
         }).switchIfEmpty(Mono.just("redirect:/admin/users"));
     }
