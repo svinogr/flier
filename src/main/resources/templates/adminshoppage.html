@@ -1,6 +1,5 @@
-
 <!DOCTYPE html>
-<html  xmlns:th="http://www.thymeleaf.org" lang="en" xmlns="http://www.w3.org/1999/html">
+<html xmlns:th="http://www.thymeleaf.org" lang="en" xmlns="http://www.w3.org/1999/html">
 <head th:replace="head::head">
 
 </head>
@@ -8,9 +7,10 @@
 <body>
 <nav th:insert="menu::menu">
 </nav>
-<section th:insert="fragmentshops::fragmentshops">
+<div class="container">
+    <section th:replace="fragmentshops::fragmentshops"/>
+</div>
 
-</section>
 <footer th:insert="footer::footer"></footer>
 </body>
 </html>

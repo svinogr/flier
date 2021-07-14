@@ -1,15 +1,17 @@
 <!DOCTYPE html>
-<html  xmlns:th="http://www.thymeleaf.org" lang="en" xmlns="http://www.w3.org/1999/html">
+<html xmlns:th="http://www.thymeleaf.org" lang="en" xmlns="http://www.w3.org/1999/html">
 <head th:replace="head::head">
 
 </head>
 
 <body>
-<nav th:insert="menu::menu">
+<nav th:replace="menu::menu">
 </nav>
-<section th:insert="fragmentshop::fragmentshop">
+<div class="container">
+    <section th:replace="fragmentshop::fragmentshop">
 
-</section>
-<footer th:insert="footer::footer"></footer>
+    </section>
+</div>
+<footer th:replace="footer::footer"></footer>
 </body>
 </html>

@@ -7,6 +7,7 @@ public class Util {
     public static Mono<User> getPrincipal(){
         //TODO изменить на настоящего юзера
         User user = new User();
+        user.setId(1L);
         user.setUsername("vasya");
         user.setEmail("vasya");
         user.setName("vasya");

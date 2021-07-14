@@ -5,14 +5,14 @@
 </head>
 
 <body>
-<nav th:insert="menu::menu">
+<nav th:replace="menu::menu">
 </nav>
 <div class="container mt-4">
-    <div class="row justify-content-md-center mt-4 mb-3">
+    <div class="row">
         <section th:replace="fragmentaccount::fragmentaccount"/>
-        <div class="col-9">
-            <section th:replace="fragmentshops.html::fragmentshops"/>
-        </div>
+
+        <section th:replace="fragmentaccountshops::fragmentaccountshops"/>
+
     </div>
 </div>
 <footer th:insert="footer::footer"></footer>
