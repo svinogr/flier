@@ -91,9 +91,8 @@ public class UserServiceImpl implements UserService {
     public Mono<User> update(User user) {
         Role role = user.getRoles().get(0);
         UserRole userRole = UserRole.valueOf(role.getName());
-        Mono<User> userMono = updateUser(user, userRole);
-        userMono.subscribe(System.out::println);
-        return userMono;
+
+        return updateUser(user, userRole);
     }
 
     private Mono<User> updateUser(User user, UserRole userRole) {

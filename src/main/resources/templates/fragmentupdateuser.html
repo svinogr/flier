@@ -16,9 +16,18 @@
                     <option value="">Nothing selected</option>
                 <option th:each="role : ${T(com.svinogr.flier.model.UserRole).values()}"
                         th:value="${role}"
-                        th:text="${role}">pizza
+                        th:text="${role}">role
                 </option>
                 </select>
+
+                <select  th:unless="${admin}" hidden="hidden" class="form-control selectpicker mt-3" th:field="*{user.roles[0].name}" id="roles">
+                    <option value="">Nothing selected</option>
+                    <option th:each="role : ${T(com.svinogr.flier.model.UserRole).values()}"
+                            th:value="${role}"
+                            th:text="${role}">role
+                    </option>
+                </select>
+
                 <input class="btn btn-outline-primary form-control mt-4" type="submit" value="Сохранить">
                 <input hidden="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
             </form>

@@ -30,6 +30,9 @@ import java.util.Comparator;
 @RequestMapping("/admin")
 public class AdminCtrl {
     @Autowired
+    private Util utilService;
+
+    @Autowired
     UserService userService;
 
     @Autowired
@@ -44,10 +47,7 @@ public class AdminCtrl {
     @Value("${upload.shop.imgPath}")
     private String upload;
 
-    @Value("${upload.shop.defaultImg}")
-    private String defaultShopImg;
-    @Value("${upload.stock.defaultImg}")
-    private String defaultStockImg;
+
 
     @GetMapping("shops")
     public String getAllShop(Model model) {
@@ -76,7 +76,7 @@ public class AdminCtrl {
         Flux<Stock> stocks = stockService.findStocksByShopId(parseId);
 
         return shopById.flatMap(s -> {
-            model.addAttribute("admin", isAdmin());
+            model.addAttribute("admin", utilService.isAdmin());
             model.addAttribute("shop", s);
 
             IReactiveDataDriverContextVariable reactiveDataDrivenMode =
@@ -87,9 +87,7 @@ public class AdminCtrl {
         }).switchIfEmpty(Mono.just("redirect:/admin/shops"));
     }
 
-    private boolean isAdmin() {
-        return true;
-    }
+
 
 
     @GetMapping("updateshoppage/{id}")
@@ -107,7 +105,7 @@ public class AdminCtrl {
         if (parseId == 0) {
             Shop shop = new Shop();
             shop.setId(parseId);
-            shop.setImg(defaultShopImg);
+            shop.setImg(utilService.defaultShopImg);
             shop.setStocks(new ArrayList());
             shop.setStatus(Status.ACTIVE.name());
             shopById = Mono.just(shop);
@@ -116,7 +114,7 @@ public class AdminCtrl {
         }
 
         return shopById.flatMap(s -> {
-            model.addAttribute("admin", isAdmin());
+            model.addAttribute("admin", utilService.isAdmin());
             model.addAttribute("shop", s);
             return Mono.just("updateshoppage");
         }).switchIfEmpty(Mono.just("redirect:/admin/shops"));
@@ -153,7 +151,7 @@ public class AdminCtrl {
                     case "1":
                         return file.flatMap(f -> {
                             if (f.filename().equals("")) {
-                                s.setImg(defaultShopImg);
+                                s.setImg(utilService.defaultShopImg);
                                 return Mono.just(s);// поменять на стринг
                             }
 
@@ -180,7 +178,7 @@ public class AdminCtrl {
                     case "1":
                         return file.flatMap(f -> {
                             if (f.filename().equals("")) {
-                                shop.setImg(defaultShopImg);
+                                shop.setImg(utilService.defaultShopImg);
                                 return Mono.just(shop);
                             }
                             return
@@ -263,7 +261,7 @@ public class AdminCtrl {
             Stock stock = new Stock();
             stock.setId(stockId);
             stock.setShopId(shopId);
-            stock.setImg(defaultStockImg);
+            stock.setImg(utilService.defaultStockImg);
             stock.setStatus(Status.ACTIVE.name());
             stock.setDateStart(LocalDateTime.now());
             stock.setDateFinish(LocalDateTime.now());
@@ -279,7 +277,7 @@ public class AdminCtrl {
                         Stock stock = new Stock();
                         stock.setId(0L);
                         stock.setShopId(shopId);
-                        stock.setImg(defaultStockImg);
+                        stock.setImg(utilService.defaultStockImg);
                         stock.setStatus(Status.ACTIVE.name());
                         stock.setDateStart(LocalDateTime.now());
                         stock.setDateFinish(LocalDateTime.now());
@@ -289,7 +287,7 @@ public class AdminCtrl {
                     return Mono.just(s);
                 })
                 .flatMap(s -> {
-                    model.addAttribute("admin", isAdmin());
+                    model.addAttribute("admin", utilService.isAdmin());
                     model.addAttribute("stock", s);
 
                     return Mono.just("stockpage");
@@ -336,7 +334,7 @@ public class AdminCtrl {
                     case "1":
                         return file.flatMap(f -> {
                             if (f.filename().equals("")) {
-                                s.setImg(defaultStockImg);
+                                s.setImg(utilService.defaultStockImg);
                                 return Mono.just(s);
                             }
 
@@ -367,7 +365,7 @@ public class AdminCtrl {
                         System.out.println(1);
                         return file.flatMap(f -> {
                             if (f.filename().equals("")) {
-                                stock.setImg(defaultStockImg);
+                                stock.setImg(utilService.defaultStockImg);
                                 return Mono.just(stock);
                             }
                             return
@@ -456,7 +454,7 @@ public class AdminCtrl {
 
         return userById.flatMap(u -> {
             model.addAttribute("user", u);
-            model.addAttribute("admin", isAdmin());
+            model.addAttribute("admin", utilService.isAdmin());
             return Mono.just("userpage");
         }).switchIfEmpty(Mono.just("redirect:/admin/users"));
     }
@@ -471,9 +469,7 @@ public class AdminCtrl {
             userDb = userService.update(user);
         }
 
-        return userDb.flatMap(u -> {
-            return Mono.just("redirect:/admin/users");
-        }).switchIfEmpty(Mono.just("redirect:/admin/users"));
+        return userDb.flatMap(u -> Mono.just("redirect:/admin/users")).switchIfEmpty(Mono.just("redirect:/admin/users"));
     }
 
     @GetMapping("users/del/{id}")
