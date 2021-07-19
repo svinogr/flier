@@ -147,7 +147,15 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Mono<User> findUserByName(String name) {
-        return userRepo.findByUsername(name);
+        return userRepo.findByUsername(name)
+                .flatMap(user -> userRolesRepo.findByUserId(user.getId()). // находим юзерроль по юзер id
+                        flatMap(uR -> roleRepo.findById(uR.getId()). // находим роль по по роль id
+                                flatMap(r -> {
+                            Role role = new Role(r.getId(), r.getName());
+
+                            user.getRoles().add(role);
+                            return Mono.just(user);
+                        })));
     }
 
     @Override

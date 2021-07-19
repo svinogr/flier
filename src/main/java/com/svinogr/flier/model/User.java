@@ -5,15 +5,21 @@ import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Transient;
 import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.validation.constraints.NotBlank;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 
 @Data
 @Table("usr")
-public class User extends BaseEntity {
+public class User extends BaseEntity implements UserDetails {
     @Column("user_name")
     @NotBlank(message = "поле не должно быть пустым")
     private String username;
@@ -31,4 +37,30 @@ public class User extends BaseEntity {
     @Transient
     private List<Role> roles = new ArrayList<>();
 
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return roles.stream().map(role ->
+          new SimpleGrantedAuthority(role.getName())
+        ).collect(Collectors.toList());
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return this.getStatus().equals(Status.ACTIVE.name());
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return this.getStatus().equals(Status.ACTIVE.name());
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return this.getStatus().equals(Status.ACTIVE.name());
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return this.getStatus().equals(Status.ACTIVE.name());
+    }
 }
