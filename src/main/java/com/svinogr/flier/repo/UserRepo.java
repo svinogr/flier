@@ -13,6 +13,7 @@ import reactor.core.publisher.Mono;
 @Repository
 public interface UserRepo extends ReactiveCrudRepository<User, Long> {
     Mono<User> findByUsername(String name);
+    Mono<User> findByEmail(String email);
 
     @Modifying
     @Query("update usr set" +

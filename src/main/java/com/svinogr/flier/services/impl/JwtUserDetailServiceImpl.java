@@ -1,3 +1,4 @@
+/*
 package com.svinogr.flier.services.impl;
 
 import com.svinogr.flier.config.jwt.JwtUser;
@@ -21,3 +22,4 @@ public class JwtUserDetailServiceImpl implements UserDetailsService {
          return new JwtUser(subscribe);
     }
 }
+*/

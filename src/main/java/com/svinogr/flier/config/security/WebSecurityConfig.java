@@ -48,17 +48,18 @@ public class WebSecurityConfig {
         return serverHttpSecurity.
                 csrf().tokenFromMultipartDataEnabled(true).and().
 
-                formLogin().loginPage("loginpage").
+                formLogin().loginPage("/loginpage").
                 and().
                 httpBasic().disable().
                 authenticationManager(authentificationManager).
                 securityContextRepository(securityContextRepository).
                 authorizeExchange().
-                pathMatchers("/webjars/**", "/loginpage", "/favicon.ico", "/**").permitAll().
+                pathMatchers("/webjars/**", "/loginpage", "/login",  "/favicon.ico").permitAll().
                 // pathMatchers("/d").hasAnyRole("ACCOUNT", "ADMIN").
-                //  pathMatchers("/admin").hasRole("ADMIN").
-                // anyExchange().authenticated().
-                        anyExchange().permitAll().
+                  pathMatchers("/admin").hasRole("ADMIN").
+                  pathMatchers("/account/**").hasAnyRole("ACCOUNT", "ADMIN").
+                 anyExchange().authenticated().
+                     //   anyExchange().permitAll().
                         and().
                         build();
     }
