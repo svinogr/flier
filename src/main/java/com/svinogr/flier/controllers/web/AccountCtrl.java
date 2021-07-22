@@ -52,6 +52,9 @@ public class AccountCtrl {
                 });
     }
 
+
+
+
     @GetMapping("{id}")
     public Mono<String> updateAccountPage(@PathVariable String id, Model model) {
         Long parsedShopId;
@@ -63,8 +66,8 @@ public class AccountCtrl {
         }
 
         return utilService.getPrincipal().
-                flatMap(user -> {
-                    if (!isOwner(user, parsedShopId)) return Mono.just(utilService.FORBIDEN_PAGE);
+                flatMap(userPrincipal -> {
+                    if (!isOwnerAccount(userPrincipal, parsedShopId)) return Mono.just(utilService.FORBIDEN_PAGE);
 
                     return userService.findUserById(parsedShopId)
                             .flatMap(user1 -> {
@@ -73,6 +76,10 @@ public class AccountCtrl {
                                 return Mono.just("accountuserpage");
                             });
                 });
+    }
+
+    private boolean isOwnerAccount(User userPrincipal, Long accountId) {
+        return userPrincipal.getId() == accountId;
     }
 
 
@@ -88,8 +95,8 @@ public class AccountCtrl {
         }
 
         return utilService.getPrincipal()
-                .flatMap(u -> {
-                    if (!isOwner(u, parsedShopId)) return Mono.just(utilService.FORBIDEN_PAGE);
+                .flatMap(userPrincipal -> {
+                    if (!isOwnerAccount(userPrincipal, parsedShopId)) return Mono.just(utilService.FORBIDEN_PAGE);
 
                     return userService.update(user)
                             .flatMap(u1 -> Mono.just("redirect:/account/accountpage"))
@@ -98,12 +105,12 @@ public class AccountCtrl {
     }
 
 
-    private boolean isOwner(User user, Long parseId) {
+  /*  private boolean isOwner(User user, Long parseId) {
         if (user.getId() == parseId) {
             return true;
         }
         return false;
-    }
+    }*/
 
     /**
      * @param id    id shop
@@ -123,25 +130,35 @@ public class AccountCtrl {
 
         return utilService.getPrincipal().
                 flatMap(user -> {
-                    if (!isOwner(user, parsedShopId)) return Mono.just(utilService.FORBIDEN_PAGE);
+               return      isOwnerShop(user, parsedShopId).flatMap(ok ->{
+                        if(!ok)  return Mono.just(utilService.FORBIDEN_PAGE);
+                        return shopService.getShopById(parsedShopId).
+                                flatMap(s -> {
+                                    return utilService.isAdmin().flatMap(isAdmin -> {
+                                        System.out.println(isAdmin);
+                                        model.addAttribute("admin", isAdmin);
+                                        model.addAttribute("shop", s);
 
-                    return shopService.getShopById(parsedShopId).
-                            flatMap(s -> {
-                                return utilService.isAdmin().flatMap(ok -> {
-                                    System.out.println(ok);
-                                    model.addAttribute("admin", ok);
-                                    model.addAttribute("shop", s);
+                                        IReactiveDataDriverContextVariable reactiveDataDrivenMode =
+                                                new ReactiveDataDriverContextVariable(stockService.findStocksByShopId(parsedShopId), 1, 1);
+                                        model.addAttribute("stocks", reactiveDataDrivenMode);
 
-                                    IReactiveDataDriverContextVariable reactiveDataDrivenMode =
-                                            new ReactiveDataDriverContextVariable(stockService.findStocksByShopId(parsedShopId), 1, 1);
-                                    model.addAttribute("stocks", reactiveDataDrivenMode);
-
-                                    return Mono.just("shoppage");
-                                });
+                                        return Mono.just("shoppage");
+                                    });
 
 
-                            }).switchIfEmpty(Mono.just("redirect:/accountpage"));
+                                }).switchIfEmpty(Mono.just("redirect:/accountpage"));
+                    });
+
                 });
+    }
+
+    private Mono<Boolean> isOwnerShop(User userPrincipal, Long shopId) {
+        return shopService.getShopById(shopId).
+                flatMap(shop ->
+                        Mono.just(shop.getUserId() == userPrincipal.getId())
+                );
+
     }
 
     @GetMapping("updateshoppage/{id}")
@@ -154,7 +171,6 @@ public class AccountCtrl {
             return Mono.just(utilService.FORBIDEN_PAGE);
         }
 
-        Mono<Shop> shopById;
 
         if (parseId == 0) {
             Shop shop = new Shop();
@@ -163,16 +179,29 @@ public class AccountCtrl {
             shop.setStocks(new ArrayList());
             shop.setStatus(Status.ACTIVE.name());
 
-            shopById = Mono.just(shop);
+            return Mono.just(shop).flatMap(s -> {
+                model.addAttribute("admin", utilService.isAdmin());
+                model.addAttribute("shop", s);
+                return Mono.just("updateshoppage");
+            });
         } else {
-            shopById = shopService.getShopById(parseId);
+
+            return utilService.getPrincipal().flatMap(user -> isOwnerShop(user, parseId).flatMap(ok ->{
+                if (!ok) return Mono.just(utilService.FORBIDEN_PAGE);
+
+                return shopService.getShopById(parseId).flatMap(s -> {
+                    model.addAttribute("admin", utilService.isAdmin());
+                    model.addAttribute("shop", s);
+                    return Mono.just("updateshoppage");
+                });
+            }));
         }
 
-        return shopById.flatMap(s -> {
-            model.addAttribute("admin", utilService.isAdmin());
-            model.addAttribute("shop", s);
-            return Mono.just("updateshoppage");
-        }).switchIfEmpty(Mono.just("redirect:/account/accountpage"));
+      /*      return shopById.flatMap(s -> {
+                model.addAttribute("admin", utilService.isAdmin());
+                model.addAttribute("shop", s);
+                return Mono.just("updateshoppage");
+            }).switchIfEmpty(Mono.just("redirect:/account/accountpage"));*/
     }
 
 
@@ -195,11 +224,10 @@ public class AccountCtrl {
         }
 
         return utilService.getPrincipal().
-                flatMap(user -> {
-                    if (!isOwner(user, parseShopId)) return Mono.just(utilService.FORBIDEN_PAGE);
-
-                    if (shop.getId() == 0) { // создание нового
+                flatMap(userPrincipal -> {
+                    if (parseShopId == 0) { // создание нового
                         shop.setId(null);
+                        shop.setUserId(userPrincipal.getId());
                         return shopService.createShop(shop).flatMap(s -> {
                             switch (imgTypeAction) {
                                 case "0":
@@ -227,44 +255,48 @@ public class AccountCtrl {
                             }
                         });
                     } else { // обновление уже созданого
-                        return shopService.createShop(shop).flatMap(s -> {
-                            switch (imgTypeAction) {
-                                case "0":
-                                    return Mono.just("redirect:/account/accountpage");
-                                case "1":
-                                    return file.flatMap(f -> {
-                                        if (f.filename().equals("")) {
-                                            shop.setImg(utilService.defaultShopImg);
-                                            return Mono.just(shop);
-                                        }
-                                        return
-                                                fileService.deleteImageForShop(shop.getImg()).flatMap(n -> fileService.saveImgByIdForShop(f, shop.getId()).flatMap(
-                                                        name -> {
-                                                            s.setImg(name);
-                                                            return Mono.just(s);
-                                                        }));
-                                    }).flatMap(sh -> {
-                                        shopService.updateShop(sh).subscribe();
-                                        return Mono.just("redirect:/account/accountpage");
-                                    });
-                                case "-1":
-                                    // сброс на дефолтную картинку и удаление старой из базы
-                                    return fileService.deleteImageForShop(shop.getImg()).flatMap(
-                                            n -> {
-                                                shop.setImg(n);
-                                                return Mono.just(shop);
-                                            }
-                                    ).flatMap(sh1 -> shopService.updateShop(shop).flatMap(sh -> Mono.just("redirect:/account/accountpage")));
-                 /*
-                        shop.setImg(defaultShopImg);
-                        shopService.updateShop(shop).subscribe();
-                        return Mono.just("redirect:/admin/shops");*/
-                                default:
-                                    return Mono.just(utilService.FORBIDEN_PAGE);
-                            }
-                        });
-                    }
+                        return isOwnerShop(userPrincipal, parseShopId).flatMap(ok -> {
+                            if (!ok) {
+                                return Mono.just(utilService.FORBIDEN_PAGE);
+                            } else {
+                                return shopService.updateShop(shop).flatMap(s -> {
+                                    switch (imgTypeAction) {
+                                        case "0":
+                                            return Mono.just("redirect:/account/accountpage");
+                                        case "1":
+                                            return file.flatMap(f -> {
+                                                if (f.filename().equals("")) {
+                                                    shop.setImg(utilService.defaultShopImg);
+                                                    return Mono.just(shop);
+                                                }
+                                                return
+                                                        fileService.deleteImageForShop(shop.getImg()).flatMap(n -> fileService.saveImgByIdForShop(f, shop.getId()).flatMap(
+                                                                name -> {
+                                                                    s.setImg(name);
+                                                                    return Mono.just(s);
+                                                                }));
+                                            }).flatMap(sh -> {
+                                                shopService.updateShop(sh).subscribe();
+                                                return Mono.just("redirect:/account/accountpage");
+                                            });
+                                        case "-1":
+                                            // сброс на дефолтную картинку и удаление старой из базы
+                                            return fileService.deleteImageForShop(shop.getImg()).flatMap(
+                                                    n -> {
+                                                        shop.setImg(n);
+                                                        return Mono.just(shop);
+                                                    }
+                                            ).flatMap(sh1 -> shopService.updateShop(shop).flatMap(sh -> Mono.just("redirect:/account/accountpage")));
 
+                                        default:
+                                            return Mono.just(utilService.FORBIDEN_PAGE);
+                                    }
+                                });
+                            }
+
+                        });
+
+                    }
 
                 });
     }

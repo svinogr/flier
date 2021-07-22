@@ -45,8 +45,6 @@ public class Util {
 
     public Mono<Boolean> isAdmin() {
         return getPrincipal().
-                flatMap(u -> {
-                    return Mono.just(u.getRoles().get(0).getName().equals(UserRole.ROLE_ADMIN.name()));
-                });
+                flatMap(u -> Mono.just(u.getRoles().get(0).getName().equals(UserRole.ROLE_ADMIN.name())));
     }
 }
