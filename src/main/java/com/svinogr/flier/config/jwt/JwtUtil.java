@@ -1,11 +1,14 @@
 package com.svinogr.flier.config.jwt;
 
 import com.svinogr.flier.model.User;
+import com.svinogr.flier.services.UserService;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import reactor.core.publisher.Mono;
 
 import javax.xml.crypto.Data;
 import java.util.Base64;
@@ -21,11 +24,17 @@ public class JwtUtil {
     @Value("${jwt.expired}")
     private String expiredTime;
 
+    @Autowired
+    UserService userService;
+
     public String extractUserName(String authToken) {
-        String key = getKeyFromToken(authToken);
-        System.out.println("key " + key);
-        System.out.println("subject " + getClaims(authToken).getSubject());
         return getClaims(authToken).getSubject();
+    }
+
+    public Mono<User> getFullUserFromToken(String authToken) {
+        Claims claims = getClaims(authToken);
+        String email = (String) claims.get("email");
+        return userService.findUserByEmail(email);
     }
 
     private String getKeyFromToken(String authToken) {
@@ -34,35 +43,33 @@ public class JwtUtil {
 
     public Claims getClaims(String authToken) {
         return Jwts.parser().
-                setSigningKey(Base64.getEncoder().encodeToString(secret.getBytes())).
+                setSigningKey(getKeyFromToken(authToken)).
                 parseClaimsJws(authToken).
                 getBody();
     }
 
     public boolean validateToken(String authToken) {
-       boolean re = getClaims(authToken).
+        return getClaims(authToken).
                 getExpiration().
-                before(new Date());
-        System.out.println("valid" + re);
-        return  re;
-
+                after(new Date());
     }
 
     public String createJwtToken(User user) {
-        Map<String, Object>  claims = new HashMap<>();
+        Map<String, Object> claims = new HashMap<>();
         claims.put("role", user.getRoles().get(0).getName());
+        claims.put("email", user.getEmail());
 
         Date creationDate = new Date();
 
         long parseExpirationValue = Long.parseLong(expiredTime);
 
-        Date expirationDate = new Date(creationDate.getTime() + parseExpirationValue *1000);
+        Date expirationDate = new Date(creationDate.getTime() + parseExpirationValue * 1000);
 
-       return Jwts.builder().
+        return Jwts.builder().
                 setClaims(claims).
                 setSubject(user.getUsername()).
                 setIssuedAt(creationDate).
-               setExpiration(expirationDate).
+                setExpiration(expirationDate).
                 signWith(SignatureAlgorithm.HS256, secret.getBytes()).
                 compact();
     }

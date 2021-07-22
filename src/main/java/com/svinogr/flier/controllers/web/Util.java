@@ -1,34 +1,52 @@
 package com.svinogr.flier.controllers.web;
 
+import com.svinogr.flier.model.Role;
 import com.svinogr.flier.model.User;
+import com.svinogr.flier.model.UserRole;
 import com.svinogr.flier.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.context.ReactiveSecurityContextHolder;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
 @Service
-public  class Util {
+public class Util {
     @Value("${upload.shop.defaultImg}")
     public String defaultShopImg;
 
     @Value("${upload.stock.defaultImg}")
     public String defaultStockImg;
 
-//TODO удалить после реализации getPrincipal
+    //TODO удалить после реализации getPrincipal
     @Autowired
     private UserService userService;
 
-    public  final String FORBIDEN_PAGE = "forbidenpage";
+    public final String FORBIDEN_PAGE = "forbidenpage";
 
-    public  Mono<User> getPrincipal(){
+    public Mono<User> getPrincipal() {
         //TODO изменить на настоящего юзера
-      return   userService.findUserById(1L).flatMap(user -> Mono.just(user));
+        return ReactiveSecurityContextHolder.getContext().
+                flatMap(sC -> Mono.just(sC.getAuthentication().getPrincipal())).cast(User.class);
+
+
+        /* *//*ReactiveSecurityContextHolder.getContext().flatMap(sC -> Mono.just(sC.getAuthentication().getPrincipal())).subscribe(s->{
+         System.out.println("principal " + s);
+     });*//*
+        return   userService.findUserById(1L).flatMap(user -> {
+            return   ReactiveSecurityContextHolder.getContext().flatMap(sC -> Mono.just(sC.getAuthentication().getPrincipal())).flatMap(s->{
+
+                System.out.println(s);
+                return Mono.just(user);});
+
+            });*/
+
     }
 
-    public  boolean isAdmin() {
-
-        //TODO сделать реализацию проверки
-        return false;
+    public Mono<Boolean> isAdmin() {
+        return getPrincipal().
+                flatMap(u -> {
+                    return Mono.just(u.getRoles().get(0).getName().equals(UserRole.ROLE_ADMIN.name()));
+                });
     }
 }

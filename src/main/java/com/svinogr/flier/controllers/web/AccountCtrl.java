@@ -40,14 +40,16 @@ public class AccountCtrl {
 
     @GetMapping("accountpage")
     public Mono<String> accountPage(Model model) {
-        return Mono.just(utilService.getPrincipal()).flatMap(u -> {
-            model.addAttribute("user", u);
-            //TODO удалить тестовые акции
-            Flux<Shop> shopsByShopId = shopService.getAllShops();
-            model.addAttribute("shops", shopsByShopId);
+        return utilService.getPrincipal().
+                flatMap(u -> {
+                    IReactiveDataDriverContextVariable shops =
+                            new ReactiveDataDriverContextVariable(shopService.getShopByUserId(u.getId()), 1, 1);
 
-            return Mono.just("accountpage");
-        });
+                    model.addAttribute("shops", shops);
+                    model.addAttribute("user", u);
+
+                    return Mono.just("accountpage");
+                });
     }
 
     @GetMapping("{id}")
@@ -125,14 +127,19 @@ public class AccountCtrl {
 
                     return shopService.getShopById(parsedShopId).
                             flatMap(s -> {
-                                model.addAttribute("admin", utilService.isAdmin());
-                                model.addAttribute("shop", s);
+                                return utilService.isAdmin().flatMap(ok -> {
+                                    System.out.println(ok);
+                                    model.addAttribute("admin", ok);
+                                    model.addAttribute("shop", s);
 
-                                IReactiveDataDriverContextVariable reactiveDataDrivenMode =
-                                        new ReactiveDataDriverContextVariable(stockService.findStocksByShopId(parsedShopId), 1, 1);
-                                model.addAttribute("stocks", reactiveDataDrivenMode);
+                                    IReactiveDataDriverContextVariable reactiveDataDrivenMode =
+                                            new ReactiveDataDriverContextVariable(stockService.findStocksByShopId(parsedShopId), 1, 1);
+                                    model.addAttribute("stocks", reactiveDataDrivenMode);
 
-                                return Mono.just("shoppage");
+                                    return Mono.just("shoppage");
+                                });
+
+
                             }).switchIfEmpty(Mono.just("redirect:/accountpage"));
                 });
     }
@@ -155,6 +162,7 @@ public class AccountCtrl {
             shop.setImg(utilService.defaultShopImg);
             shop.setStocks(new ArrayList());
             shop.setStatus(Status.ACTIVE.name());
+
             shopById = Mono.just(shop);
         } else {
             shopById = shopService.getShopById(parseId);
@@ -174,7 +182,7 @@ public class AccountCtrl {
      * -1 set default
      * 1 set new from file
      */
-    @PostMapping("shops/{id}")
+    @PostMapping("updateshoppage/{id}")
     public Mono<String> updateShop(@PathVariable String id, @RequestPart("imgTypeAction") String imgTypeAction,
                                    @RequestPart("file") Mono<FilePart> file, Shop shop) {
         long parseShopId;

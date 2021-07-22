@@ -11,4 +11,6 @@ public interface ShopService {
     Mono<Shop> getShopById(Long id);
     Flux<Shop> getAllShops();
     Flux<Shop> getAllActiveShops();
+
+    Flux<Shop> getShopByUserId(Long id);
 }

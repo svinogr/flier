@@ -47,4 +47,9 @@ public class ShopServiceImpl implements ShopService {
     public Flux<Shop> getAllActiveShops() {
         return shopRepo.findAll().filter(s-> s.getStatus().equals(Status.ACTIVE.name()));
     }
+
+    @Override
+    public Flux<Shop> getShopByUserId(Long id) {
+        return shopRepo.findAllByUserId(id);
+    }
 }

@@ -1,5 +1,7 @@
 package com.svinogr.flier.config.security;
 
+import com.svinogr.flier.config.jwt.JwtUtil;
+import com.svinogr.flier.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpCookie;
 import org.springframework.http.HttpHeaders;
@@ -18,6 +20,9 @@ public class SecurityContextRepository implements ServerSecurityContextRepositor
     @Autowired
     AuthenticationManager authenticationManager;
 
+    @Autowired
+    JwtUtil jwtUtil;
+
     @Override
     public Mono<Void> save(ServerWebExchange exchange, SecurityContext context) {
       throw  new IllegalStateException("not supported");
@@ -30,15 +35,14 @@ public class SecurityContextRepository implements ServerSecurityContextRepositor
         if(jwt == null) return Mono.empty();
 
         String authCookie =jwt.toString();
-    //    System.out.println("jwt cokie " + authCookie);
 
         if (authCookie != null ) {
             String authToken = authCookie.substring(5, authCookie.length() - 1);
-       //     System.out.println("jwt  " + authToken);
+
+
+
             UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(authToken, authToken);
 
-         //   System.out.println("name " + auth.getName());
-         //   System.out.println(auth.getCredentials());
             return authenticationManager.authenticate(auth).
                     map(SecurityContextImpl::new);
         }

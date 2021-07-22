@@ -11,6 +11,7 @@ import org.springframework.boot.autoconfigure.web.reactive.WebFluxProperties;
 import org.springframework.boot.web.servlet.server.Session;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.ReactiveSecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -78,18 +79,7 @@ public class RegistrationCtrl {
 
     @PostMapping("/login")
     public Mono<String> login(User user, ServerWebExchange swe) {
-        System.out.println("login");
-        System.out.println(user);
-        System.out.println(swe.getRequest().getCookies());
-  /*      User u = new User();
-        Role r = new Role();
-        r.setName(UserRole.ROLE_USER.name());
-        u.getRoles().add(r);*/
-  /*      MultiValueMap<String, ResponseCookie> cookies = swe.getResponse().getCookies();
-        ResponseCookie jwt = ResponseCookie.from("jwt", jwtUtil.createJwtToken(u)).httpOnly(true).build();*/
-        //     swe.getResponse().getCookies().add("SESSION", jwt);
-        //   return  Mono.just("accountpage");
-        return userService.findUserByEmail(user.getEmail())
+             return userService.findUserByEmail(user.getEmail())
                 .flatMap(u -> {
                             if (passwordEncoder.matches(user.getPassword(), u.getPassword())) {
                                 System.out.println("user found");
@@ -102,24 +92,8 @@ public class RegistrationCtrl {
                                 System.out.println("user not found");
                                 return Mono.just("redirect:/loginpage");
                             }
-
-
                         }
-                        //               Mono.just("accountpage") : Mono.just("loginpage")
-                        //  Mono.just(ResponseEntity.ok().build()) : Mono.just(ResponseEntity.badRequest().build())
 
                 ).defaultIfEmpty("redirect:/loginpage");
-
-   /*     return webExchange.getFormData().
-                flatMap(credential ->
-                        userService.findUserByName(credential.getFirst("username"))
-                                .cast(User.class)
-                                .flatMap(userDetails ->
-                                        passwordEncoder.matches(credential.getFirst("password"), userDetails.getPassword()) ?
-                                                *//*   ResponseEntity.ok(jwtUtil.createJwtToken(userDetails)) : ResponseEntity.badRequest()*//*
-                                                Mono.just("accountpage") : Mono.just(util.FORBIDEN_PAGE)
-                                ));*/
-
-
-    }
+      }
 }

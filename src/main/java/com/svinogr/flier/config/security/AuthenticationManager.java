@@ -24,32 +24,27 @@ public class AuthenticationManager implements ReactiveAuthenticationManager {
     @Override
     public Mono<Authentication> authenticate(Authentication authentication) {
         String authToken = authentication.getCredentials().toString();
-        System.out.println("ath "+authToken);
 
         String username;
         try {
             username = jwtUtil.extractUserName(authToken);
-            System.out.println("name from token" + username);
-
         } catch (Exception e) {
             username = null;
         }
 
-    //    if (username != null && jwtUtil.validateToken(authToken)) {
-        if (username != null ) {
+          if (username != null && jwtUtil.validateToken(authToken)) {
 
-            Claims claims = jwtUtil.getClaims(authToken);
-         /*   List<String> roles = claims.get("role", List.class);
-
-            List<SimpleGrantedAuthority> auth = roles.stream().
-                    map(SimpleGrantedAuthority::new
-                    ).collect(Collectors.toList());*/
+            /*Claims claims = jwtUtil.getClaims(authToken);
 
             String role = (String) claims.get("role");
-            SimpleGrantedAuthority simpleGrantedAuthority = new SimpleGrantedAuthority(role);
-            List<SimpleGrantedAuthority> auth = new ArrayList<>();
-            auth.add(simpleGrantedAuthority);
-            return Mono.just(new UsernamePasswordAuthenticationToken(username, null, auth));
+            String email = (String) claims.get("email");
+            */
+            return   jwtUtil.getFullUserFromToken(authToken).flatMap(user -> {
+                  SimpleGrantedAuthority simpleGrantedAuthority = new SimpleGrantedAuthority(user.getRoles().get(0).getName());
+                  List<SimpleGrantedAuthority> auth = new ArrayList<>();
+                  auth.add(simpleGrantedAuthority);
+                  return Mono.just(new UsernamePasswordAuthenticationToken(user, null, auth));
+              });
 
         } else {
             return Mono.empty();

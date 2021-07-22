@@ -54,9 +54,9 @@ public class WebSecurityConfig {
                 authenticationManager(authentificationManager).
                 securityContextRepository(securityContextRepository).
                 authorizeExchange().
-                pathMatchers("/webjars/**", "/loginpage", "/login",  "/favicon.ico").permitAll().
+                pathMatchers("/webjars/**", "/loginpage", "/login",  "/favicon.ico", "/register").permitAll().
                 // pathMatchers("/d").hasAnyRole("ACCOUNT", "ADMIN").
-                  pathMatchers("/admin").hasRole("ADMIN").
+                  pathMatchers("/admin/**").hasRole("ADMIN").
                   pathMatchers("/account/**").hasAnyRole("ACCOUNT", "ADMIN").
                  anyExchange().authenticated().
                      //   anyExchange().permitAll().
