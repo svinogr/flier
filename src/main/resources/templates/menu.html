@@ -14,7 +14,14 @@
                 <a class="btn btn-outline-success" href="#" role="button">Что нить еще</a>
             </div>
             <div>
-                <button class="btn btn-outline-success" id="logout">Выйти</button>
+                <div class="input-group">
+                    <input readonly="readonly" th:value="${user.getEmail}" style="border: 0; text-align: end" value="vasya"></input>
+                    <div class="input-group-append ">
+                        <button class="btn btn-outline-success"  id="logout"
+                                type="button">Выйти
+                        </button>
+                    </div>
+                </div>
             </div>
         </div>
     </nav>
