@@ -77,7 +77,7 @@ public class RegistrationCtrl {
                 .switchIfEmpty(Mono.just("redirect:/admin/users"));
     }
 
-    @PostMapping("/login")
+ /*   @PostMapping("/login")
     public Mono<String> login(User user, ServerWebExchange swe) {
              return userService.findUserByEmail(user.getEmail())
                 .flatMap(u -> {
@@ -95,5 +95,26 @@ public class RegistrationCtrl {
                         }
 
                 ).defaultIfEmpty("redirect:/loginpage");
-      }
+      }*/
+
+      //ver 2
+    @PostMapping("/login")
+    public Mono<String> login(User user, ServerWebExchange swe) {
+        return userService.findUserByEmail(user.getEmail())
+                .flatMap(u -> {
+                            if (passwordEncoder.matches(user.getPassword(), u.getPassword())) {
+                                System.out.println("user found");
+
+                                ResponseCookie jwt = ResponseCookie.from("jwt", jwtUtil.createJwtToken(u)).httpOnly(true).build();
+                                swe.getResponse().getCookies().add("jwt", jwt);
+
+                                return Mono.just("redirect:/account/accountpage/" + u.getId());
+                            } else {
+                                System.out.println("user not found");
+                                return Mono.just("redirect:/loginpage");
+                            }
+                        }
+
+                ).defaultIfEmpty("redirect:/loginpage");
+    }
 }

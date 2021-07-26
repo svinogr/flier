@@ -38,22 +38,49 @@ public class AccountCtrl {
     private UserService userService;
 
 
-    @GetMapping("accountpage")
-    public Mono<String> accountPage(Model model) {
+    /*   @GetMapping("accountpage")
+       public Mono<String> accountPage(Model model) {
+           return utilService.getPrincipal().
+                   flatMap(u -> {
+                       IReactiveDataDriverContextVariable shops =
+                               new ReactiveDataDriverContextVariable(shopService.getShopByUserId(u.getId()), 1, 1);
+
+                       model.addAttribute("shops", shops);
+                       model.addAttribute("user", u);
+
+                       return Mono.just("accountpage");
+                   });
+       }*/
+    //ver 2
+    @GetMapping("accountpage/{id}")
+    public Mono<String> accountPage(@PathVariable String id, Model model) {
+        long userId;
+        try {
+            userId = Long.parseLong(id);
+        } catch (NumberFormatException e) {
+            return Mono.just(utilService.FORBIDEN_PAGE);
+        }
+
         return utilService.getPrincipal().
-                flatMap(u -> {
-                    IReactiveDataDriverContextVariable shops =
-                            new ReactiveDataDriverContextVariable(shopService.getShopByUserId(u.getId()), 1, 1);
+                flatMap(userPrincipal -> {
+                    if (!isOwnerAccount(userPrincipal, userId)) return Mono.just(utilService.FORBIDEN_PAGE);
 
-                    model.addAttribute("shops", shops);
-                    model.addAttribute("user", u);
+                    return utilService.isAdmin().flatMap(ok -> {
+                                IReactiveDataDriverContextVariable shops =
+                                        new ReactiveDataDriverContextVariable(shopService.getShopByUserId(userPrincipal.getId()), 1, 1);
 
-                    return Mono.just("accountpage");
+                                model.addAttribute("shops", shops);
+                                model.addAttribute("user", userPrincipal);
+                                model.addAttribute("admin", ok);
+
+                                return Mono.just("accountpage");
+                            }
+                    );
+
                 });
     }
 
-
-
+/*
 
     @GetMapping("{id}")
     public Mono<String> updateAccountPage(@PathVariable String id, Model model) {
@@ -81,8 +108,39 @@ public class AccountCtrl {
     private boolean isOwnerAccount(User userPrincipal, Long accountId) {
         return userPrincipal.getId() == accountId;
     }
+*/
 
+    // ver 2
+    @GetMapping("accountpage/{id}/update")
+    public Mono<String> updateAccountPage(@PathVariable String id, Model model) {
+        Long userId;
+        try {
+            userId = Long.parseLong(id);
 
+        } catch (NumberFormatException e) {
+            return Mono.just(utilService.FORBIDEN_PAGE);
+        }
+
+        return utilService.getPrincipal().
+                flatMap(userPrincipal -> {
+                    if (!isOwnerAccount(userPrincipal, userId)) return Mono.just(utilService.FORBIDEN_PAGE);
+
+                    return utilService.isAdmin().flatMap(ok -> {
+
+                        model.addAttribute("user", userPrincipal);
+                        model.addAttribute("admin", ok);
+
+                        return Mono.just("accountuserpage");
+                    });
+
+                });
+    }
+
+    private boolean isOwnerAccount(User userPrincipal, Long accountId) {
+        return userPrincipal.getId() == accountId;
+    }
+
+/*
     @PostMapping("{id}")
     public Mono<String> saveOrUpdateAccount(@PathVariable String id, User user) {
         Long parsedShopId;
@@ -102,9 +160,29 @@ public class AccountCtrl {
                             .flatMap(u1 -> Mono.just("redirect:/account/accountpage"))
                             .switchIfEmpty(Mono.just("redirect:/account/accountpage"));
                 });
+    }*/
+
+//ver 2
+    @PostMapping("accountpage/{id}/update")
+    public Mono<String> saveOrUpdateAccount(@PathVariable String id, User user) {
+        Long userId;
+
+        try {
+            userId = Long.parseLong(id);
+
+        } catch (NumberFormatException e) {
+            return Mono.just(utilService.FORBIDEN_PAGE);
+        }
+
+        return utilService.getPrincipal()
+                .flatMap(userPrincipal -> {
+                    if (!isOwnerAccount(userPrincipal, userId)) return Mono.just(utilService.FORBIDEN_PAGE);
+
+                    return userService.update(user)
+                            .flatMap(u1 -> Mono.just("redirect:/account/accountpage/" + userPrincipal.getId()))
+                            .switchIfEmpty(Mono.just("redirect:/account/accountpage"+ userPrincipal.getId()));
+                });
     }
-
-
   /*  private boolean isOwner(User user, Long parseId) {
         if (user.getId() == parseId) {
             return true;
@@ -130,8 +208,8 @@ public class AccountCtrl {
 
         return utilService.getPrincipal().
                 flatMap(user -> {
-               return      isOwnerShop(user, parsedShopId).flatMap(ok ->{
-                        if(!ok)  return Mono.just(utilService.FORBIDEN_PAGE);
+                    return isOwnerShop(user, parsedShopId).flatMap(ok -> {
+                        if (!ok) return Mono.just(utilService.FORBIDEN_PAGE);
                         return shopService.getShopById(parsedShopId).
                                 flatMap(s -> {
                                     return utilService.isAdmin().flatMap(isAdmin -> {
@@ -186,7 +264,7 @@ public class AccountCtrl {
             });
         } else {
 
-            return utilService.getPrincipal().flatMap(user -> isOwnerShop(user, parseId).flatMap(ok ->{
+            return utilService.getPrincipal().flatMap(user -> isOwnerShop(user, parseId).flatMap(ok -> {
                 if (!ok) return Mono.just(utilService.FORBIDEN_PAGE);
 
                 return shopService.getShopById(parseId).flatMap(s -> {
