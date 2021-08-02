@@ -238,7 +238,7 @@ public class AdminCtrl {
                 switchIfEmpty(Mono.just("redirect:/admin/shops"));
     }
 
-    @GetMapping("shop/{idSh}/stockpage/{idSt}")
+    /*@GetMapping("shop/{idSh}/stockpage/{idSt}")
     public Mono<String> getStockPage(@PathVariable String idSh, @PathVariable String idSt, Model model) {
         Long shopId, stockId;
 
@@ -293,7 +293,7 @@ public class AdminCtrl {
                     return Mono.just("stockpage");
                 })
                 .switchIfEmpty(Mono.just("redirect:/admin/shops"));
-    }
+    }*/
 
     /**
      * value imgTypeAction.

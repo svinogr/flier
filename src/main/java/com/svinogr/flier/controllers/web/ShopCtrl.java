@@ -3,6 +3,7 @@ package com.svinogr.flier.controllers.web;
 import com.svinogr.flier.model.Status;
 import com.svinogr.flier.model.User;
 import com.svinogr.flier.model.shop.Shop;
+import com.svinogr.flier.model.shop.Stock;
 import com.svinogr.flier.services.FileService;
 import com.svinogr.flier.services.ShopService;
 import com.svinogr.flier.services.StockService;
@@ -16,6 +17,7 @@ import org.thymeleaf.spring5.context.webflux.IReactiveDataDriverContextVariable;
 import org.thymeleaf.spring5.context.webflux.ReactiveDataDriverContextVariable;
 import reactor.core.publisher.Mono;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 
 @Controller
@@ -71,7 +73,7 @@ public class ShopCtrl {
             parsedShopId = Long.parseLong(id);
 
         } catch (NumberFormatException e) {
-           return userService.getPrincipal().flatMap(user -> Mono.just("redirect:/account/accountpage/" + user.getId()));
+            return userService.getPrincipal().flatMap(user -> Mono.just("redirect:/account/accountpage/" + user.getId()));
         }
 
         return userService.getPrincipal().
@@ -81,7 +83,7 @@ public class ShopCtrl {
                         return shopService.getShopById(parsedShopId).
                                 flatMap(s -> {
                                     return userService.isAdmin().flatMap(isAdmin -> {
-                                    //    model.addAttribute("admin", isAdmin);
+                                        //    model.addAttribute("admin", isAdmin);
                                         model.addAttribute("shop", s);
 
                                         IReactiveDataDriverContextVariable reactiveDataDrivenMode =
@@ -114,7 +116,7 @@ public class ShopCtrl {
             shop.setStatus(Status.ACTIVE.name());
 
             return Mono.just(shop).flatMap(s -> {
-             //   model.addAttribute("admin", userService.isAdmin());
+                //   model.addAttribute("admin", userService.isAdmin());
                 model.addAttribute("shop", s);
                 return Mono.just("updateshoppage");
             });
@@ -124,7 +126,7 @@ public class ShopCtrl {
                 if (!ok) return Mono.just(utilService.FORBIDEN_PAGE);
 
                 return shopService.getShopById(shopid).flatMap(s -> {
-                 //   model.addAttribute("admin", userService.isAdmin());
+                    //   model.addAttribute("admin", userService.isAdmin());
                     model.addAttribute("shop", s);
                     return Mono.just("updateshoppage");
                 });
@@ -233,4 +235,207 @@ public class ShopCtrl {
                 });
     }
 
+    @GetMapping("shoppage/{id}/delete")
+    public Mono<String> deleteShop(@PathVariable String id) {
+        Long shopId;
+
+        try {
+            shopId = Long.parseLong(id);
+        } catch (NumberFormatException e) {
+            return Mono.just(utilService.FORBIDEN_PAGE);
+        }
+
+        return shopService.isOwnerOfShop(shopId).
+                flatMap(owner ->{
+                    if (!owner) return Mono.just(utilService.FORBIDEN_PAGE);
+
+                    return userService.getPrincipal().
+                            flatMap(principal ->{
+                              return   shopService.deleteShopById(shopId).
+                                      flatMap(shop -> {
+                                          return Mono.just("redirect:/account/accountpage/" + principal.getId());
+                                      }).switchIfEmpty(Mono.just("redirect:/account/accountpage/" + principal.getId()));
+                            });
+                });
+    }
+
+    @GetMapping("shoppage/{idSh}/stockpage/{idSt}")
+    public Mono<String> getStockPage(@PathVariable String idSh, @PathVariable String idSt, Model model) {
+        Long shopId, stockId;
+
+        try {
+            shopId = Long.parseLong(idSh);
+            stockId = Long.parseLong(idSt);
+        } catch (NumberFormatException e) {
+            return Mono.just(utilService.FORBIDEN_PAGE);
+        }
+
+        Mono<Stock> stockById;
+        if (stockId == 0) {
+            Stock stock = new Stock();
+            stock.setId(stockId);
+            stock.setShopId(shopId);
+            stock.setImg(utilService.defaultStockImg);
+            stock.setStatus(Status.ACTIVE.name());
+            stock.setDateStart(LocalDateTime.now());
+            stock.setDateFinish(LocalDateTime.now());
+            stockById = Mono.just(stock);
+        } else {
+            stockById = stockService.findStockById(stockId);
+        }
+
+        //TODO можно сделать проверку на существование магазина?!
+        return stockById
+                .flatMap(s -> {
+                    if (s.getShopId() != shopId) {
+                        Stock stock = new Stock();
+                        stock.setId(0L);
+                        stock.setShopId(shopId);
+                        stock.setImg(utilService.defaultStockImg);
+                        stock.setStatus(Status.ACTIVE.name());
+                        stock.setDateStart(LocalDateTime.now());
+                        stock.setDateFinish(LocalDateTime.now());
+                        return Mono.just(stock);
+                    }
+
+                    return Mono.just(s);
+                })
+                .flatMap(s -> {
+                    //  model.addAttribute("admin", userService.isAdmin());
+                    model.addAttribute("stock", s);
+
+                    return Mono.just("stockpage");
+                })
+                .switchIfEmpty(Mono.just(utilService.FORBIDEN_PAGE));
+    }
+
+    /**
+     * value imgTypeAction.
+     * 0 - nothing to do
+     * -1 set default
+     * 1 set new from file
+     */
+    @PostMapping("shoppage/{idSh}/stockpage/{idSt}")
+    public Mono<String> updateStock(@PathVariable String idSh, @PathVariable String idSt, @RequestPart("imgTypeAction") String imgTypeAction, @RequestPart("file") Mono<FilePart> file, Stock stock) {
+        long shopId, stockId;
+
+        try {
+            shopId = Long.parseLong(idSh);
+            stockId = Long.parseLong(idSt);
+        } catch (NumberFormatException e) {
+            return Mono.just(utilService.FORBIDEN_PAGE);
+        }
+
+        return shopService.isOwnerOfShop(shopId).
+                flatMap(shopOwner -> {
+                    if (!shopOwner) return Mono.just(utilService.FORBIDEN_PAGE);
+
+                    if (stock.getId() == 0) { // создание нового
+                        stock.setId(null);
+                        stock.setShopId(shopId);
+
+                        return stockService.createStock(stock).flatMap(s -> {
+                            switch (imgTypeAction) {
+                                case "0":
+                                    return Mono.just("redirect:/shop/shoppage/" + shopId);// подозрительное место почему строка а не обьект
+                                case "1":
+                                    return file.flatMap(f -> {
+                                        if (f.filename().equals("")) {
+                                            s.setImg(utilService.defaultStockImg);
+                                            return Mono.just(s);
+                                        }
+
+                                        return fileService.saveImgByIdForStock(f, s.getId()).flatMap(
+                                                n -> {
+                                                    s.setImg(n);
+                                                    return Mono.just(s);
+                                                }
+                                        );
+                                    })
+                                            .flatMap(sh -> stockService.updateStock(sh)
+                                                    .flatMap(sf -> Mono.just("redirect:/shop/shoppage/" + shopId)));
+
+                                case "-1":
+                                    // сброс на дефолтную картинку и удаление старой из базы
+                                    // странное место тоже
+                                    return Mono.just("redirect:/shop/shoppage/" + shopId);
+                                default:
+                                    return Mono.just(utilService.FORBIDEN_PAGE);
+                            }
+                        });
+                    } else { // обновление уже созданого
+                        return stockService.isOwnerOfStock(shopId, stockId).flatMap(stockOwner -> {
+                            if (!stockOwner) return Mono.just(utilService.FORBIDEN_PAGE);
+
+                            return stockService.updateStock(stock).flatMap(s -> {
+                                switch (imgTypeAction) {
+                                    case "0":
+                                        return Mono.just("redirect:/admin/shoppage/" + shopId);
+                                    case "1":
+
+                                        return file.flatMap(f -> {
+                                            if (f.filename().equals("")) {
+                                                stock.setImg(utilService.defaultStockImg);
+
+                                                return Mono.just(stock);
+                                            }
+                                            return fileService.deleteImageForStock(stock.getImg())
+                                                    .flatMap(n -> fileService.saveImgByIdForStock(f, stock.getId())
+                                                            .flatMap(
+                                                                    name -> {
+                                                                        s.setImg(name);
+                                                                        return Mono.just(s);
+                                                                    }));
+                                        }).flatMap(sh -> {
+                                            //   stockService.updateStock(sh).subscribe();
+                                            return stockService.updateStock(sh).flatMap(stock1 -> {
+                                                return Mono.just("redirect:/shop/shoppage/" + shopId);
+                                            });
+
+                                        });
+                                    case "-1":
+                                        System.out.println(2);
+                                        // сброс на дефолтную картинку и удаление старой из базы
+                                        return fileService.deleteImageForStock(stock.getImg()).flatMap(
+                                                n -> {
+                                                    stock.setImg(n);
+                                                    return Mono.just(stock);
+                                                }
+                                        ).flatMap(sh1 -> stockService.updateStock(stock).flatMap(sh -> Mono.just("redirect:/shop/shoppage/" + shopId)));
+                                    default:
+                                        return Mono.just(utilService.FORBIDEN_PAGE);
+                                }
+                            });
+
+                        });
+                    }
+                });
+    }
+
+    @PostMapping("shoppage/{idSh}/stockpage/{idSt}/delete")
+    public Mono<String> delStockById(@PathVariable String idSh, @PathVariable String idSt) {
+        long stockId;
+        long shopId;
+        try {
+            stockId = Long.parseLong(idSt);
+            shopId = Long.parseLong(idSh);
+
+        } catch (NumberFormatException e) {
+            return Mono.just(utilService.FORBIDEN_PAGE);
+        }
+
+        return shopService.isOwnerOfShop(shopId).
+                flatMap(shopOwner -> {
+                    if (!shopOwner) return Mono.just(utilService.FORBIDEN_PAGE);
+
+                    return stockService.isOwnerOfStock(shopId, stockId).
+                            flatMap(stockOwner -> {
+                                if (!stockOwner) return Mono.just(utilService.FORBIDEN_PAGE);
+
+                                return stockService.deleteStockById(stockId).
+                                        flatMap(stock -> Mono.just("redirect:/shop/shoppage/" + shopId)).
+                                        switchIfEmpty(Mono.just("redirect:/shop/shoppage/" + shopId));
+                            });
+                });
+    }
 }

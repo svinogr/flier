@@ -1,23 +1,16 @@
 package com.svinogr.flier.controllers.web;
 
-import com.svinogr.flier.model.Status;
 import com.svinogr.flier.model.User;
-import com.svinogr.flier.model.shop.Shop;
-import com.svinogr.flier.services.FileService;
 import com.svinogr.flier.services.ShopService;
 import com.svinogr.flier.services.StockService;
 import com.svinogr.flier.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.codec.multipart.FilePart;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.thymeleaf.spring5.context.webflux.IReactiveDataDriverContextVariable;
 import org.thymeleaf.spring5.context.webflux.ReactiveDataDriverContextVariable;
-import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-
-import java.util.ArrayList;
 
 @Controller
 @RequestMapping("/account/")
@@ -127,49 +120,6 @@ public class AccountCtrl {
                     });
                 });
     }
-
-    @GetMapping("updateshoppage/{id}")
-    public Mono<String> getUpdateShopPage(@PathVariable String id, Model model) {
-        Long parseId;
-        try {
-            parseId = Long.parseLong(id);
-
-        } catch (NumberFormatException e) {
-            return Mono.just(utilService.FORBIDEN_PAGE);
-        }
-
-        if (parseId == 0) {
-            Shop shop = new Shop();
-            shop.setId(parseId);
-            shop.setImg(utilService.defaultShopImg);
-            shop.setStocks(new ArrayList());
-            shop.setStatus(Status.ACTIVE.name());
-
-            return Mono.just(shop).flatMap(s -> {
-              //  model.addAttribute("admin", userService.isAdmin());
-                model.addAttribute("shop", s);
-                return Mono.just("updateshoppage");
-            });
-        } else {
-
-            return userService.getPrincipal().flatMap(user -> shopService.isOwnerOfShop(parseId).flatMap(ok -> {
-                if (!ok) return Mono.just(utilService.FORBIDEN_PAGE);
-
-                return shopService.getShopById(parseId).flatMap(s -> {
-                 //   model.addAttribute("admin", userService.isAdmin());
-                    model.addAttribute("shop", s);
-                    return Mono.just("updateshoppage");
-                });
-            }));
-        }
-
-      /*      return shopById.flatMap(s -> {
-                model.addAttribute("admin", utilService.isAdmin());
-                model.addAttribute("shop", s);
-                return Mono.just("updateshoppage");
-            }).switchIfEmpty(Mono.just("redirect:/account/accountpage"));*/
-    }
-
 
     // ver2
     @GetMapping("accountpage/{id}/delete")

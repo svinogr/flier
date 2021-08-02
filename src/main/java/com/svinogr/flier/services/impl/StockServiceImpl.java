@@ -50,4 +50,10 @@ public class StockServiceImpl implements StockService {
                 })
                 .flatMap(stock -> stockRepo.save(stock));
     }
+
+    @Override
+    public Mono<Boolean> isOwnerOfStock(long shopId, long stockId) {
+        return stockRepo.findById(stockId).
+                flatMap(stock -> Mono.just(stock.getShopId() == shopId));
+    }
 }
