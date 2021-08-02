@@ -13,4 +13,7 @@ public interface UserService {
     Mono<User> findUserByEmail(String email);
     Mono<User> findUserByIdSafety(long name);
     Mono<User> deleteUser(Long id);
+    Mono<User> getPrincipal();
+    Mono<Boolean> isAdmin();
+    Mono<Boolean> isOwnerOfAccount(Long userId);
 }

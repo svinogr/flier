@@ -18,33 +18,37 @@ public class Util {
     @Value("${upload.stock.defaultImg}")
     public String defaultStockImg;
 
-    //TODO удалить после реализации getPrincipal
-    @Autowired
-    private UserService userService;
-
     public final String FORBIDEN_PAGE = "forbidenpage";
 
-    public Mono<User> getPrincipal() {
+/*    public Mono<User> getPrincipal() {
         //TODO изменить на настоящего юзера
         return ReactiveSecurityContextHolder.getContext().
                 flatMap(sC -> Mono.just(sC.getAuthentication().getPrincipal())).cast(User.class);
 
 
-        /* *//*ReactiveSecurityContextHolder.getContext().flatMap(sC -> Mono.just(sC.getAuthentication().getPrincipal())).subscribe(s->{
+        *//* *//**//*ReactiveSecurityContextHolder.getContext().flatMap(sC -> Mono.just(sC.getAuthentication().getPrincipal())).subscribe(s->{
          System.out.println("principal " + s);
-     });*//*
+     });*//**//*
         return   userService.findUserById(1L).flatMap(user -> {
             return   ReactiveSecurityContextHolder.getContext().flatMap(sC -> Mono.just(sC.getAuthentication().getPrincipal())).flatMap(s->{
 
                 System.out.println(s);
                 return Mono.just(user);});
 
-            });*/
+            });*//*
 
-    }
+    }*/
 
-    public Mono<Boolean> isAdmin() {
+   /* public Mono<Boolean> isAdmin() {
         return getPrincipal().
                 flatMap(u -> Mono.just(u.getRoles().get(0).getName().equals(UserRole.ROLE_ADMIN.name())));
-    }
+    }*/
+
+/*    private Mono<Boolean> isOwnerShop(User userPrincipal, Long shopId) {
+        return shopService.getShopById(shopId).
+                flatMap(shop ->
+                        Mono.just(shop.getUserId() == userPrincipal.getId())
+                );
+
+    }*/
 }

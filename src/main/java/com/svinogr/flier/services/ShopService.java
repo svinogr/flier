@@ -7,10 +7,10 @@ import reactor.core.publisher.Mono;
 public interface ShopService {
     Mono<Shop> createShop(Shop shop);
     Mono<Shop> updateShop(Shop shop);
-    Mono<Shop> deleteShopById(Long id);
-    Mono<Shop> getShopById(Long id);
+    Mono<Shop> deleteShopById(Long shopId);
+    Mono<Shop> getShopById(Long shopId);
     Flux<Shop> getAllShops();
     Flux<Shop> getAllActiveShops();
-
-    Flux<Shop> getShopByUserId(Long id);
+    Flux<Shop> getShopByUserId(Long shopId);
+    Mono<Boolean> isOwnerOfShop(Long shopId);
 }

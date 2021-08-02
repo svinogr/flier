@@ -10,17 +10,14 @@
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
                 <a class="btn btn-outline-danger" href="/admin/users" role="button">Пользователи</a>
                 <a class="btn btn-outline-danger" href="/admin/shops" role="button">Магазины</a>
-                <a class="btn btn-outline-success" href="/account/accountpage" role="button">Акаунт</a>
+                <a class="btn btn-outline-success" href="/account/accountpage/" th:attrappend="href=${principal.getId}" role="button">Акаунт</a>
                 <a class="btn btn-outline-success" href="#" role="button">Что нить еще</a>
             </div>
-
                 <div class="align-items-center d-flex">
-                    <p th:text=" ${user.getEmail}" class="m-0 px-2"></p>
+                    <p th:text=" ${principal.getEmail}" class="m-0 px-2"></p>
                     <button class="btn btn-outline-success" id="logout" type="button">Выйти
                     </button>
                 </div>
-
-
         </div>
     </nav>
 </div>

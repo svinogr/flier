@@ -76,7 +76,7 @@ public class AdminCtrl {
         Flux<Stock> stocks = stockService.findStocksByShopId(parseId);
 
         return shopById.flatMap(s -> {
-            model.addAttribute("admin", utilService.isAdmin());
+            model.addAttribute("admin", userService.isAdmin());
             model.addAttribute("shop", s);
 
             IReactiveDataDriverContextVariable reactiveDataDrivenMode =
@@ -114,7 +114,7 @@ public class AdminCtrl {
         }
 
         return shopById.flatMap(s -> {
-            model.addAttribute("admin", utilService.isAdmin());
+            model.addAttribute("admin", userService.isAdmin());
             model.addAttribute("shop", s);
             return Mono.just("updateshoppage");
         }).switchIfEmpty(Mono.just("redirect:/admin/shops"));
@@ -287,7 +287,7 @@ public class AdminCtrl {
                     return Mono.just(s);
                 })
                 .flatMap(s -> {
-                    model.addAttribute("admin", utilService.isAdmin());
+                    model.addAttribute("admin", userService.isAdmin());
                     model.addAttribute("stock", s);
 
                     return Mono.just("stockpage");
@@ -454,7 +454,7 @@ public class AdminCtrl {
 
         return userById.flatMap(u -> {
             model.addAttribute("user", u);
-            model.addAttribute("admin", utilService.isAdmin());
+            model.addAttribute("admin", userService.isAdmin());
             return Mono.just("userpage");
         }).switchIfEmpty(Mono.just("redirect:/admin/users"));
     }

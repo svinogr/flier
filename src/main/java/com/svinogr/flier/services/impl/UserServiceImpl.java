@@ -6,6 +6,7 @@ import com.svinogr.flier.repo.UserRepo;
 import com.svinogr.flier.repo.UserRolesRepo;
 import com.svinogr.flier.services.UserService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.context.ReactiveSecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -150,12 +151,12 @@ public class UserServiceImpl implements UserService {
         return userRepo.findByUsername(name)
                 .flatMap(user -> userRolesRepo.findByUserId(user.getId()). // находим юзерроль по юзер id
                         flatMap(uR -> roleRepo.findById(uR.getId()). // находим роль по по роль id
-                                flatMap(r -> {
-                            Role role = new Role(r.getId(), r.getName());
+                        flatMap(r -> {
+                    Role role = new Role(r.getId(), r.getName());
 
-                            user.getRoles().add(role);
-                            return Mono.just(user);
-                        })));
+                    user.getRoles().add(role);
+                    return Mono.just(user);
+                })));
     }
 
     @Override
@@ -187,5 +188,22 @@ public class UserServiceImpl implements UserService {
                     u.setStatus(Status.NON_ACTIVE.name());
                     return userRepo.save(u);
                 });
+    }
+
+    @Override
+    public Mono<User> getPrincipal() {
+        return ReactiveSecurityContextHolder.getContext().
+                flatMap(sC -> Mono.just(sC.getAuthentication().getPrincipal())).cast(User.class);
+    }
+
+    @Override
+    public Mono<Boolean> isAdmin() {
+        return getPrincipal().
+                flatMap(u -> Mono.just(u.getRoles().get(0).getName().equals(UserRole.ROLE_ADMIN.name())));
+    }
+
+    @Override
+    public Mono<Boolean> isOwnerOfAccount(Long accountId) {
+        return  getPrincipal().flatMap(user -> Mono.just(user.getId() == accountId));
     }
 }
