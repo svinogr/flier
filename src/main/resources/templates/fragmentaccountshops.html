@@ -7,21 +7,14 @@
 
         $(".searhById").click(function () {
             var id = $(".searchValue").prop("value");
-            window.location.href = "/account/shops/" + id;
+            window.location.href = "/shop/shops/" + id+"search";
         });
 
     });
     </script>
-    <div class="row">
-        <div class="col-3">
-            <div class="input-group mb-3">
-                <input type="text" class="form-control searchValue"  placeholder="Поиск по ID" aria-label="Поиск по ID">
-                <div class="input-group-append">
-                    <button class="btn btn-outline-secondary searhById" type="button" id="button-addon2">Найти</button>
-                </div>
-            </div>
-        </div>
-    </div>
+
+    <h4>Магазины</h4>
+    <brr/>
     <div class="row">
         <div class="col-9">
             <table class="table table-hover">
@@ -57,8 +50,17 @@
 
         </div>
         <div class="col-3 mt-4">
+            <div>
+                <div class="input-group mb-3">
+                    <input type="text" class="form-control searchValue"  placeholder="Поиск по ID" aria-label="Поиск по ID">
+                    <div class="input-group-append">
+                        <button class="btn btn-outline-secondary searhById" type="button" id="button-addon2">Найти</button>
+                    </div>
+                </div>
+            </div>
             <a href="/shop/shoppage/0/update" class="btn btn-outline-success form-control" role="button">Добавить
                 Магазин</a>
+
         </div>
     </div>
 </div>

@@ -370,7 +370,7 @@ public class ShopCtrl {
                             return stockService.updateStock(stock).flatMap(s -> {
                                 switch (imgTypeAction) {
                                     case "0":
-                                        return Mono.just("redirect:/admin/shoppage/" + shopId);
+                                        return Mono.just("redirect:/shop/shoppage/" + shopId);
                                     case "1":
 
                                         return file.flatMap(f -> {

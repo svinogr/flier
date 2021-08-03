@@ -5,12 +5,12 @@
 
 </head>
 
-<body>
-<nav th:insert="menu::menu">
-</nav>
-<section th:insert="fragmentstock::fragmentupdatestock">
+<body style="overflow-y:hidden;">
+<nav th:replace="menu::menu"></nav>
+<div class="container mt-4">
+<section th:replace="fragmentstock::fragmentupdatestock"/>
+</div>
 
-</section>
 <footer th:insert="footer::footer"></footer>
 </body>
 </html>
