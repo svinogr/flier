@@ -95,7 +95,7 @@
     <div class="row">
         <div class="col-3"></div>
         <div class="col-9">
-            <form class="" id="del" action="/admin/shops/del/" th:attrappend="action=${shop.id}" th:if="${shop.id} != 0"
+            <form class="" id="del" action=" frupdshop/admin/shops/del/" th:attrappend="action=${shop.id}" th:if="${shop.id} != 0"
                   method="post">
                 <input hidden="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
                 <input th:if="${shop.id} != null" type="submit"

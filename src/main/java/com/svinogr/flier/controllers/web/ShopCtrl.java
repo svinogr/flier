@@ -330,7 +330,7 @@ public class ShopCtrl {
                 flatMap(shopOwner -> {
                     if (!shopOwner) return Mono.just(utilService.FORBIDEN_PAGE);
 
-                    if (stock.getId() == 0) { // создание нового
+                    if (stockId == 0) { // создание нового
                         stock.setId(null);
                         stock.setShopId(shopId);
 

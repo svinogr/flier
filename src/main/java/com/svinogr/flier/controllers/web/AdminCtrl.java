@@ -21,6 +21,7 @@ import org.thymeleaf.spring5.context.webflux.ReactiveDataDriverContextVariable;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
 
@@ -126,7 +127,7 @@ public class AdminCtrl {
      * -1 set default
      * 1 set new from file
      */
-    @PostMapping("shops/shoppage/{id}/update")
+    @PostMapping("shop/shoppage/{id}/update")
     public Mono<String> updateShop(@PathVariable String id, @RequestPart("imgTypeAction") String imgTypeAction,
                                    @RequestPart("file") Mono<FilePart> file, Shop shop) {
         long shopId;
@@ -169,7 +170,7 @@ public class AdminCtrl {
             return shopService.createShop(shop).flatMap(s -> {
                 switch (imgTypeAction) {
                     case "0":
-                        return Mono.just("redirect:/admin/shops");
+                        return Mono.just("redirect:/admin/shop/shoppage/" + shop.getId());
                     case "1":
                         return file.flatMap(f -> {
                             if (f.filename().equals("")) {
@@ -184,7 +185,7 @@ public class AdminCtrl {
                                             }));
                         }).flatMap(sh -> {
                             shopService.updateShop(sh).subscribe();
-                            return Mono.just("redirect:/admin/shops");
+                            return Mono.just("redirect:/admin/shop/shoppage/" + shop.getId());
                         });
                     case "-1":
                         // сброс на дефолтную картинку и удаление старой из базы
@@ -193,7 +194,7 @@ public class AdminCtrl {
                                     shop.setImg(n);
                                     return Mono.just(shop);
                                 }
-                        ).flatMap(sh1 -> shopService.updateShop(shop).flatMap(sh -> Mono.just("redirect:/admin/shops")));
+                        ).flatMap(sh1 -> shopService.updateShop(shop).flatMap(sh -> Mono.just("redirect:/admin/shop/shoppage/" + shop.getId())));
                  /*
                         shop.setImg(defaultShopImg);
                         shopService.updateShop(shop).subscribe();
@@ -215,34 +216,21 @@ public class AdminCtrl {
         } catch (NumberFormatException e) {
             return Mono.just(utilService.FORBIDEN_PAGE);
         }
-
-        return userService.isAdmin().
-                flatMap(admin -> {
-                    if (!admin) return Mono.just(utilService.FORBIDEN_PAGE);
-
-                    return shopService.deleteShopById(shopId).
-                            flatMap(shop -> {
-                                return Mono.just("redirect:/admin/shops");
-                            });
+        return shopService.deleteShopById(shopId).
+                flatMap(shop -> {
+                    return Mono.just("redirect:/admin/shops");
                 });
     }
 
-    /*@GetMapping("shop/{idSh}/stockpage/{idSt}")
+    @GetMapping("shop/shoppage/{idSh}/stockpage/{idSt}")
     public Mono<String> getStockPage(@PathVariable String idSh, @PathVariable String idSt, Model model) {
-        Long shopId, stockId;
+        long shopId, stockId;
 
         try {
             shopId = Long.parseLong(idSh);
-
-        } catch (NumberFormatException e) {
-            return Mono.just("redirect:/admin/shops/");
-        }
-
-        try {
             stockId = Long.parseLong(idSt);
-
         } catch (NumberFormatException e) {
-            return Mono.just("redirect:/admin/updateshoppage/" + shopId);
+            return Mono.just(utilService.FORBIDEN_PAGE);
         }
 
         Mono<Stock> stockById;
@@ -276,13 +264,12 @@ public class AdminCtrl {
                     return Mono.just(s);
                 })
                 .flatMap(s -> {
-                    model.addAttribute("admin", userService.isAdmin());
                     model.addAttribute("stock", s);
 
-                    return Mono.just("stockpage");
+                    return Mono.just("adminstockpage");
                 })
-                .switchIfEmpty(Mono.just("redirect:/admin/shops"));
-    }*/
+                .switchIfEmpty(Mono.just("redirect:/admin/shop/shoppage/" + shopId));
+    }
 
     /**
      * value imgTypeAction.
@@ -290,7 +277,7 @@ public class AdminCtrl {
      * -1 set default
      * 1 set new from file
      */
-    @PostMapping("shop/{idSh}/stockpage/{idSt}")
+    @PostMapping("shop/shoppage/{idSh}/stockpage/{idSt}")
     public Mono<String> updateStock(@PathVariable String idSh, @PathVariable String idSt, @RequestPart("imgTypeAction") String imgTypeAction, @RequestPart("file") Mono<FilePart> file, Stock stock) {
         long shopId, stockId;
         try {
@@ -311,7 +298,7 @@ public class AdminCtrl {
                         return stockService.createStock(stock).flatMap(s -> {
                             switch (imgTypeAction) {
                                 case "0":
-                                    return Mono.just("redirect:/admin/shoppage/" + shopId);// подозрительное место почему строка а не обьект
+                                    return Mono.just("redirect:/admin/shop/shoppage/" + shopId);
                                 case "1":
                                     return file.flatMap(f -> {
                                         if (f.filename().equals("")) {
@@ -327,12 +314,12 @@ public class AdminCtrl {
                                         );
                                     })
                                             .flatMap(sh -> stockService.updateStock(sh)
-                                                    .flatMap(sf -> Mono.just("redirect:/admin/shoppage/" + shopId)));
+                                                    .flatMap(sf -> Mono.just("redirect:/admin/shop/shoppage/" + shopId)));
 
                                 case "-1":
                                     // сброс на дефолтную картинку и удаление старой из базы
                                     // странное место тоже
-                                    return Mono.just("redirect:/admin/shoppage/" + shopId);
+                                    return Mono.just("redirect:/admin/shop/shoppage/" + shopId);
                                 default:
                                     return Mono.just("forbidenpage");
                             }
@@ -341,7 +328,7 @@ public class AdminCtrl {
                         return stockService.updateStock(stock).flatMap(s -> {
                             switch (imgTypeAction) {
                                 case "0":
-                                    return Mono.just("redirect:/admin/shoppage/" + shopId);
+                                    return Mono.just("redirect:/admin/shop/shoppage/" + shopId);
                                 case "1":
                                     System.out.println(1);
                                     return file.flatMap(f -> {
@@ -359,7 +346,7 @@ public class AdminCtrl {
                                                                         }));
                                     }).flatMap(sh -> {
                                         stockService.updateStock(sh).subscribe();
-                                        return Mono.just("redirect:/admin/shoppage/" + shopId);
+                                        return Mono.just("redirect:/admin/shop/shoppage/" + shopId);
                                     });
                                 case "-1":
                                     System.out.println(2);
@@ -369,39 +356,31 @@ public class AdminCtrl {
                                                 stock.setImg(n);
                                                 return Mono.just(stock);
                                             }
-                                    ).flatMap(sh1 -> stockService.updateStock(stock).flatMap(sh -> Mono.just("redirect:/admin/shoppage/" + shopId)));
+                                    ).flatMap(sh1 -> stockService.updateStock(stock).flatMap(sh -> Mono.just("redirect:/admin/shop/shoppage/" + shopId)));
                                 default:
                                     return Mono.just("forbidenpage");
                             }
                         });
                     }
-
                 });
     }
 
-    @PostMapping("stock/del/{id}")
+    @PostMapping("stock/stockpage/{id}/delete")
     public Mono<String> delStockById(@PathVariable String id) {
         Long stockId;
         try {
             stockId = Long.parseLong(id);
 
         } catch (NumberFormatException e) {
-            return Mono.just("redirect:/admin/shops");
+            return Mono.just(utilService.FORBIDEN_PAGE);
         }
 
-        if (isOwnerOrAdminOfStock(stockId)) {
-            return stockService.deleteStockById(stockId)
-                    .flatMap(s -> Mono.just("redirect:/admin/shoppage/" + s.getShopId()))
-                    .switchIfEmpty(Mono.just("redirect:/admin/shoppage/" + stockId));
-        } else {
-            return Mono.just("forbidenpage");
-        }
+        return stockService.deleteStockById(stockId)
+                .flatMap(s -> Mono.just("redirect:/admin/shop/shoppage/" + s.getShopId()))
+                .switchIfEmpty(Mono.just("redirect:/admin/shop/shoppage/" + stockId));
+
     }
 
-    //TODO сделать не тольео для админа
-    private boolean isOwnerOrAdminOfStock(Long parseId) {
-        return true;
-    }
 
     @GetMapping("users")
     public String getAllUser(Model model) {
@@ -414,35 +393,35 @@ public class AdminCtrl {
         return "adminuserspage";
     }
 
-    @GetMapping("users/{id}")
+    @GetMapping("accountpage/{id}")
     public Mono<String> getUserById(@PathVariable String id, Model model) {
         Mono<User> userById;
-        Long parseId;
+        Long userId;
+
         try {
-            parseId = Long.parseLong(id);
+            userId = Long.parseLong(id);
 
         } catch (NumberFormatException e) {
-            return Mono.just("redirect:/admin/users");
+            return Mono.just(utilService.FORBIDEN_PAGE);
         }
 
-        if (parseId == 0) {
+        if (userId == 0) {
             User user = new User();
             Role role = new Role();
             role.setName(UserRole.ROLE_USER.name());
             user.getRoles().add(role);
             userById = Mono.just(user);
         } else {
-            userById = userService.findUserById(parseId);
+            userById = userService.findUserById(userId);
         }
 
         return userById.flatMap(u -> {
             model.addAttribute("user", u);
-            model.addAttribute("admin", userService.isAdmin());
-            return Mono.just("userpage");
+            return Mono.just("adminuserpage");
         }).switchIfEmpty(Mono.just("redirect:/admin/users"));
     }
 
-    @PostMapping("users/{id}")
+    @PostMapping("accountpage/{id}")
     public Mono<String> saveOrUpdateUser(User user, Model model) {
         Mono<User> userDb;
 
@@ -465,16 +444,9 @@ public class AdminCtrl {
             return Mono.just(utilService.FORBIDEN_PAGE);
         }
 
-        return userService.isAdmin().
-                flatMap(admin -> {
-                    if (!admin) return Mono.just(utilService.FORBIDEN_PAGE);
-
-                    return userService.deleteUser(userId).
-                            flatMap(user -> {
-                                return Mono.just("redirect:/admin/users");
-                            });
+        return userService.deleteUser(userId).
+                flatMap(user -> {
+                    return Mono.just("redirect:/admin/users");
                 });
-
     }
-
 }

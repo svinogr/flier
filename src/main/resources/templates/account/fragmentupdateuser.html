@@ -1,67 +1,6 @@
 <div xmlns:th="http://www.thymeleaf.org" th:fragment="fragmentupdateuser" class="container mt-4">
     <div class="row justify-content-md-center mt-4 mb-3">
-        <div class="col-6" th:if="${admin}">
-            <form class="" id="update" th:action="update" method="post">
-                <div class="form-floating">
-                    <input readonly="readonly" class="form-control mt-3" th:value="${user.id}" type="text" id="id"
-                           name="id" placeholder="id">
-                    <label for="id">ID</label>
-                </div>
-                <div class="form-floating">
-                    <input class="form-control mt-3" th:value="${user.phone}" id="phone" type="text" name="phone"
-                           placeholder="Номер">
-                    <label for="phone">Телефон</label>
-                </div>
-                <div class="form-floating">
-                    <input class="form-control mt-3" th:value="${user.name}" id="name" type="text" name="name"
-                           placeholder="Имя">
-                    <label for="name">Имя</label>
-                </div>
-                <div class="form-floating">
-                    <input class="form-control mt-3" th:value="${user.surname}" id="surname" type="text" name="surname"
-                           placeholder="Фамилия">
-                    <label for="surname">Фамилия</label>
-                </div>
-                <div class="form-floating">
-                    <input class="form-control mt-3" th:value="${user.username}" id="username" type="text"
-                           name="username"
-                           placeholder="name">
-                    <label for="username">Логин</label>
-                </div>
-                <div class="form-floating">
-                    <input class="form-control mt-3" th:value="${user.status}" id="status" type="text" name="status"
-                           placeholder="Статус">
-                    <label for="status">Статус</label>
-                </div>
-                <div class="form-floating">
-                    <input class="form-control mt-3" th:value="${user.email}" id="email" type="text" placeholder="email"
-                           name="Email">
-                    <label for="email">Email</label>
-                </div>
-                <div class="form-floating">
-                    <input class="form-control mt-3" type="text" placeholder="Пароль" id="password" name="password">
-                    <label for="password">Пароль</label>
-                </div>
-                <div class="form-floating">
-                    <select class="form-control selectpicker mt-3" th:field="*{user.roles[0].name}" id="roles">
-                        <option value="">Nothing selected</option>
-                        <option th:each="role : ${T(com.svinogr.flier.model.UserRole).values()}"
-                                th:value="${role}"
-                                th:text="${role}">role
-                        </option>
-                    </select>
-                    <label for="roles">Роль</label>
-                </div>
-                <input class="btn btn-outline-primary form-control mt-4" type="submit" value="Сохранить">
-                <input hidden="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
-            </form>
-            <div>
-                <a class="btn btn-outline-danger form-control mt-4" href="/admin/accountpage/" th:attrappend="href=${user.id}+'/delete'">Удалить>
-                </a>
-            </div>
-        </div>
-
-        <div class="col-6" th:unless="${admin}">
+        <div class="col-6">
             <form class="" id="update" th:action="update" method="post">
                 <div class="form-floating">
                     <input readonly="readonly" class="form-control mt-3" th:value="${user.id}" type="text" id="id"
