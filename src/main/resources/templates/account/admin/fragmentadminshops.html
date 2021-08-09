@@ -1,13 +1,13 @@
-<div xmlns:th="http://www.thymeleaf.org" th:fragment="fragmentshops" class="mt-4">
+<div xmlns:th="http://www.thymeleaf.org" th:fragment="adminfragmentshops" class="mt-4">
     <script> $(document).ready(function () {
         $(".clickable-row").click(function () {
             var id = $(this).prop("id");
-            window.location.href = "/admin/shoppage/" + id;
+            window.location.href = "/admin/shop/shoppage/" + id;
         });
 
         $(".searhById").click(function () {
             var id = $(".searchValue").prop("value");
-            window.location.href = "/admin/shops/" + id;
+            window.location.href = "/admin/shops/shoppage" + id+"/search";
         });
 
     });

@@ -1,0 +1,36 @@
+<div xmlns:th="http://www.thymeleaf.org" th:fragment="fragmentadminshop" class=" col-3  mt-4">
+    <script> $(document).ready(function () {
+        $(".clickable-row").click(function () {
+            var id = $(this).prop("id");
+            window.location.href = "admin/shop/shoppage/" + [[${shop.id}]] + "/stockpage/" + id;
+        });
+    });
+    </script>
+
+    <div class="mt-3">
+        <img id="img" style="width:100%; height:250px" src="/img/shop/"
+             th:attrappend="src=${shop.img}">
+    </div>
+    <div class="mt-3">
+        <h4> Аккаунт ID:
+            <small class="text-muted" th:text="${shop.id}"/>
+        </h4>
+        <h4> Название:
+            <small class="text-muted" th:text="${shop.title}"/>
+        </h4>
+        <h4> Адрес:
+            <small class="text-muted" th:text="${shop.address}"/>
+        </h4>
+        <h4> Описание:
+            <small class="text-muted" th:text="${shop.description}"/>
+        </h4>
+        <h4> Статус:
+            <small class="text-muted" th:text="${shop.status}"/>
+        </h4>
+    </div>
+
+    <a th:if="${admin}" href="/admin/shop/shoppage/" th:attrappend="href=${shop.id}+'/update'"
+       class="btn btn-outline-danger form-control mt-3"
+    >Изменить</a>
+</div>
+

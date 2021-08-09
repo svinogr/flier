@@ -8,8 +8,8 @@
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                <a class="btn btn-outline-danger" href="/admin/users" role="button">Пользователи</a>
-                <a class="btn btn-outline-danger" href="/admin/shops" role="button">Магазины</a>
+                <a th:if="${admin}" class="btn btn-outline-danger" href="/admin/users" role="button">Пользователи</a>
+                <a th:if="${admin}"  class="btn btn-outline-danger" href="/admin/shops" role="button">Магазины</a>
                 <a class="btn btn-outline-success" href="/account/accountpage/" th:attrappend="href=${principal.getId}" role="button">Акаунт</a>
                 <a class="btn btn-outline-success" href="#" role="button">Что нить еще</a>
             </div>

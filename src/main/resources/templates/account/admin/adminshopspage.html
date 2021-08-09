@@ -5,12 +5,12 @@
 </head>
 
 <body>
-<nav th:insert="menu::menu">
+<nav th:insert="common/menu::menu">
 </nav>
 <div class="container">
-    <section th:replace="fragmentshops::fragmentshops"/>
+    <section th:replace="fragmentadminshops::adminfragmentshops"/>
 </div>
 
-<footer th:insert="footer::footer"></footer>
+<footer th:insert="common/footer::footer"></footer>
 </body>
 </html>

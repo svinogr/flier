@@ -11,10 +11,10 @@ import org.thymeleaf.templateresolver.ITemplateResolver;
 @Configuration
 public class TemplateResolver {
 
-/*    @Bean
+    @Bean
     public ClassLoaderTemplateResolver adminTemplateResolver() {
         ClassLoaderTemplateResolver adminTemplateResolver = new ClassLoaderTemplateResolver();
-        adminTemplateResolver.setPrefix("/templates/admin/");
+        adminTemplateResolver.setPrefix("/templates/account/admin/");
         adminTemplateResolver.setSuffix(".html");
         adminTemplateResolver.setTemplateMode(TemplateMode.HTML);
         adminTemplateResolver.setCharacterEncoding("UTF-8");
@@ -24,11 +24,23 @@ public class TemplateResolver {
         return adminTemplateResolver;
     }
 
+    @Bean
+    public ClassLoaderTemplateResolver adminsTemplateResolver() {
+        ClassLoaderTemplateResolver adminTemplateResolver = new ClassLoaderTemplateResolver();
+        adminTemplateResolver.setPrefix("/templates/account/admin/common/");
+        adminTemplateResolver.setSuffix(".html");
+        adminTemplateResolver.setTemplateMode(TemplateMode.HTML);
+        adminTemplateResolver.setCharacterEncoding("UTF-8");
+        adminTemplateResolver.setOrder(4);
+        adminTemplateResolver.setCheckExistence(true);
+
+        return adminTemplateResolver;
+    }
 
     @Bean
     public ClassLoaderTemplateResolver shopTemplateResolver() {
         ClassLoaderTemplateResolver shopTemplateResolver = new ClassLoaderTemplateResolver();
-        shopTemplateResolver.setPrefix("/templates/shop/");
+        shopTemplateResolver.setPrefix("/templates/account/");
         shopTemplateResolver.setSuffix(".html");
         shopTemplateResolver.setTemplateMode(TemplateMode.HTML);
         shopTemplateResolver.setCharacterEncoding("UTF-8");
@@ -36,5 +48,5 @@ public class TemplateResolver {
         shopTemplateResolver.setCheckExistence(true);
 
         return shopTemplateResolver;
-    }*/
+    }
 }

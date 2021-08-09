@@ -56,7 +56,7 @@
                 <input hidden="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
             </form>
             <div>
-                <a class="btn btn-outline-danger form-control mt-4" href="admin/accountpage/" th:attrappend="href=${user.id}+'/delete'">Удалить>
+                <a class="btn btn-outline-danger form-control mt-4" href="/admin/accountpage/" th:attrappend="href=${user.id}+'/delete'">Удалить>
                 </a>
             </div>
         </div>
