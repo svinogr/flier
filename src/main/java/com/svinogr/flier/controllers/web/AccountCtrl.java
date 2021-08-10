@@ -49,22 +49,20 @@ public class AccountCtrl {
 
         return userService.getPrincipal().
                 flatMap(userPrincipal -> {
-
                     return userService.isOwnerOfAccount(userId).flatMap(ok -> {
                         if (!ok) return Mono.just(utilService.FORBIDEN_PAGE);
 
-                        return userService.isAdmin().flatMap(admin -> {
-                                    IReactiveDataDriverContextVariable shops =
+                                    // с этим не работает обьект в нексколькх местах сразу
+                                  /*  IReactiveDataDriverContextVariable shops =
                                             new ReactiveDataDriverContextVariable(shopService.
-                                                    getShopByUserId(userPrincipal.getId()), 1, 1);
+                                                    getShopByUserId(userPrincipal.getId()), 10, 1);*/
 
-                                    model.addAttribute("shops", shops);
-                                    model.addAttribute("user", userPrincipal);
-                                  //  model.addAttribute("admin", admin);
+                        model.addAttribute("shops", shopService.
+                                getShopByUserId(userPrincipal.getId()));
+                        model.addAttribute("user", userPrincipal);
+                        //  model.addAttribute("admin", admin);
 
-                                    return Mono.just("accountpage");
-                                }
-                        );
+                        return Mono.just("accountpage");
                     });
                 });
     }
@@ -87,7 +85,7 @@ public class AccountCtrl {
                         return userService.isAdmin().flatMap(admin -> {
 
                                     model.addAttribute("user", userPrincipal);
-                                 //   model.addAttribute("admin", admin);
+                                    //   model.addAttribute("admin", admin);
 
                                     return Mono.just("accountuserpage");
 
