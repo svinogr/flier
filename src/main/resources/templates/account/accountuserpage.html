@@ -1,16 +1,15 @@
-
 <!DOCTYPE html>
-<html  xmlns:th="http://www.thymeleaf.org" lang="en" xmlns="http://www.w3.org/1999/html">
-<head th:replace="head::head">
-
+<html xmlns:th="http://www.thymeleaf.org" lang="en" xmlns="http://www.w3.org/1999/html">
+<head th:replace="admin/common/head::head">
 </head>
-
-<body>
-<nav th:insert="menu::menu">
+<body style="overflow-y:hidden;">
+<nav th:replace="admin/common/menu::menu">
 </nav>
-<section th:insert="fragmentupdateuser::fragmentupdateuser">
-
-</section>
-<footer th:insert="footer::footer"></footer>
+</nav>
+<div class="container mt-4">
+    <section th:replace="fragmentupdateuser::fragmentupdateuser">
+    </section>
+    <div th:replace="/admin/common/footer::footer"></div>
+</div>
 </body>
 </html>

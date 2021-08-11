@@ -25,7 +25,10 @@ public class SecurityContextRepository implements ServerSecurityContextRepositor
 
     @Override
     public Mono<Void> save(ServerWebExchange exchange, SecurityContext context) {
+/*
       throw  new IllegalStateException("not supported");
+*/
+     return Mono.empty() ;
     }
 
     @Override
@@ -38,8 +41,6 @@ public class SecurityContextRepository implements ServerSecurityContextRepositor
 
         if (authCookie != null ) {
             String authToken = authCookie.substring(5, authCookie.length() - 1);
-
-
 
             UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(authToken, authToken);
 

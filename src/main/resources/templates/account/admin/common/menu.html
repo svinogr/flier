@@ -1,22 +1,26 @@
 <div xmlns:th="http://www.thymeleaf.org" th:fragment="menu" class="container">
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
         <div class="container-fluid">
-            <a class="navbar-brand" href="#">WebInterface</a>
+            <a class="navbar-brand" href="/account/accountpage/" th:attrappend="href=${principal.getId}" >WebInterface</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
                     data-bs-target="#navbarSupportedContent"
                     aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
+            <form action="/logout" method="post">
+                <button type="submit">ПОст</button>
+                <input hidden="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+            </form>
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <a class="btn btn-outline-success" href="#" role="button">Новости</a>
                 <a th:if="${admin}" class="btn btn-outline-danger" href="/admin/users" role="button">Пользователи</a>
                 <a th:if="${admin}"  class="btn btn-outline-danger" href="/admin/shops" role="button">Магазины</a>
                 <a class="btn btn-outline-success" href="/account/accountpage/" th:attrappend="href=${principal.getId}" role="button">Акаунт</a>
-                <a class="btn btn-outline-success" href="#" role="button">Что нить еще</a>
             </div>
                 <div class="align-items-center d-flex">
                     <p th:text=" ${principal.getEmail}" class="m-0 px-2"></p>
-                    <button class="btn btn-outline-success" id="logout" type="button">Выйти
-                    </button>
+                    <a class="btn btn-outline-success" href="/logout" id="logout" type="button">Выйти
+                    </a>
                 </div>
         </div>
     </nav>
