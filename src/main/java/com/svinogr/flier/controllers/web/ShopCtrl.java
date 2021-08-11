@@ -67,10 +67,10 @@ public class ShopCtrl {
      */
     @GetMapping("shoppage/{id}")
     public Mono<String> getShopPage(@PathVariable String id, Model model) {
-        Long parsedShopId;
+        Long shopId;
 
         try {
-            parsedShopId = Long.parseLong(id);
+            shopId = Long.parseLong(id);
 
         } catch (NumberFormatException e) {
             return userService.getPrincipal().flatMap(user -> Mono.just("redirect:/account/accountpage/" + user.getId()));
@@ -78,17 +78,17 @@ public class ShopCtrl {
 
         return userService.getPrincipal().
                 flatMap(user -> {
-                    return shopService.isOwnerOfShop(parsedShopId).flatMap(ok -> {
+                    return shopService.isOwnerOfShop(shopId).flatMap(ok -> {
                         if (!ok) return Mono.just(utilService.FORBIDEN_PAGE);
-                        return shopService.getShopById(parsedShopId).
+                        return shopService.getShopById(shopId).
                                 flatMap(s -> {
                                     return userService.isAdmin().flatMap(isAdmin -> {
                                         //    model.addAttribute("admin", isAdmin);
                                         model.addAttribute("shop", s);
 
-                                        IReactiveDataDriverContextVariable reactiveDataDrivenMode =
-                                                new ReactiveDataDriverContextVariable(stockService.findStocksByShopId(parsedShopId), 1, 1);
-                                        model.addAttribute("stocks", reactiveDataDrivenMode);
+                                      /*  IReactiveDataDriverContextVariable reactiveDataDrivenMode =
+                                                new ReactiveDataDriverContextVariable(stockService.findStocksByShopId(shopId), 1, 1);*/
+                                        model.addAttribute("stocks", stockService.findStocksByShopId(shopId));
 
                                         return Mono.just("shoppage");
                                     });
@@ -115,7 +115,7 @@ public class ShopCtrl {
             shop.setStocks(new ArrayList());
             shop.setStatus(Status.ACTIVE.name());
 
-            return  userService.getPrincipal().
+            return userService.getPrincipal().
                     flatMap(user -> {
                         shop.setUserId(user.getId());
                         model.addAttribute("shop", shop);
@@ -123,15 +123,16 @@ public class ShopCtrl {
                     });
         } else {
 
-            return userService.getPrincipal().flatMap(user -> shopService.isOwnerOfShop(shopid).flatMap(ok -> {
-                if (!ok) return Mono.just(utilService.FORBIDEN_PAGE);
+            return userService.getPrincipal().flatMap(user -> shopService.isOwnerOfShop(shopid).
+                    flatMap(ok -> {
+                        if (!ok) return Mono.just(utilService.FORBIDEN_PAGE);
 
-                return shopService.getShopById(shopid).flatMap(s -> {
-                    //   model.addAttribute("admin", userService.isAdmin());
-                    model.addAttribute("shop", s);
-                    return Mono.just("updateshoppage");
-                });
-            }));
+                        return shopService.getShopById(shopid).flatMap(s -> {
+                            //   model.addAttribute("admin", userService.isAdmin());
+                            model.addAttribute("shop", s);
+                            return Mono.just("updateshoppage");
+                        });
+                    }));
         }
 
       /*      return shopById.flatMap(s -> {
@@ -247,15 +248,15 @@ public class ShopCtrl {
         }
 
         return shopService.isOwnerOfShop(shopId).
-                flatMap(owner ->{
+                flatMap(owner -> {
                     if (!owner) return Mono.just(utilService.FORBIDEN_PAGE);
 
                     return userService.getPrincipal().
-                            flatMap(principal ->{
-                              return   shopService.deleteShopById(shopId).
-                                      flatMap(shop -> {
-                                          return Mono.just("redirect:/account/accountpage/" + principal.getId());
-                                      }).switchIfEmpty(Mono.just("redirect:/account/accountpage/" + principal.getId()));
+                            flatMap(principal -> {
+                                return shopService.deleteShopById(shopId).
+                                        flatMap(shop -> {
+                                            return Mono.just("redirect:/account/accountpage/" + principal.getId());
+                                        }).switchIfEmpty(Mono.just("redirect:/account/accountpage/" + principal.getId()));
                             });
                 });
     }
@@ -365,50 +366,53 @@ public class ShopCtrl {
                             }
                         });
                     } else { // обновление уже созданого
-                        return stockService.isOwnerOfStock(shopId, stockId).flatMap(stockOwner -> {
-                            if (!stockOwner) return Mono.just(utilService.FORBIDEN_PAGE);
+                        return stockService.isOwnerOfStock(shopId, stockId).
+                                flatMap(stockOwner -> {
+                                    if (!stockOwner) return Mono.just(utilService.FORBIDEN_PAGE);
 
-                            return stockService.updateStock(stock).flatMap(s -> {
-                                switch (imgTypeAction) {
-                                    case "0":
-                                        return Mono.just("redirect:/shop/shoppage/" + shopId);
-                                    case "1":
-
-                                        return file.flatMap(f -> {
-                                            if (f.filename().equals("")) {
-                                                stock.setImg(utilService.defaultStockImg);
-
-                                                return Mono.just(stock);
-                                            }
-                                            return fileService.deleteImageForStock(stock.getImg())
-                                                    .flatMap(n -> fileService.saveImgByIdForStock(f, stock.getId())
-                                                            .flatMap(
-                                                                    name -> {
-                                                                        s.setImg(name);
-                                                                        return Mono.just(s);
-                                                                    }));
-                                        }).flatMap(sh -> {
-                                            //   stockService.updateStock(sh).subscribe();
-                                            return stockService.updateStock(sh).flatMap(stock1 -> {
+                                    return stockService.updateStock(stock).flatMap(s -> {
+                                        System.out.println(stock);
+                                        switch (imgTypeAction) {
+                                            case "0":
+                                                System.out.println(0);
                                                 return Mono.just("redirect:/shop/shoppage/" + shopId);
-                                            });
+                                            case "1":
+                                                System.out.println(1);
+                                                return file.flatMap(f -> {
+                                                    if (f.filename().equals("")) {
+                                                        stock.setImg(utilService.defaultStockImg);
 
-                                        });
-                                    case "-1":
-                                        System.out.println(2);
-                                        // сброс на дефолтную картинку и удаление старой из базы
-                                        return fileService.deleteImageForStock(stock.getImg()).flatMap(
-                                                n -> {
-                                                    stock.setImg(n);
-                                                    return Mono.just(stock);
-                                                }
-                                        ).flatMap(sh1 -> stockService.updateStock(stock).flatMap(sh -> Mono.just("redirect:/shop/shoppage/" + shopId)));
-                                    default:
-                                        return Mono.just(utilService.FORBIDEN_PAGE);
-                                }
-                            });
+                                                        return Mono.just(stock);
+                                                    }
+                                                    return fileService.deleteImageForStock(stock.getImg())
+                                                            .flatMap(n -> fileService.saveImgByIdForStock(f, stock.getId())
+                                                                    .flatMap(
+                                                                            name -> {
+                                                                                s.setImg(name);
+                                                                                return Mono.just(s);
+                                                                            }));
+                                                }).flatMap(sh -> {
+                                                    //   stockService.updateStock(sh).subscribe();
+                                                    return stockService.updateStock(sh).flatMap(stock1 -> {
+                                                        return Mono.just("redirect:/shop/shoppage/" + shopId);
+                                                    });
 
-                        });
+                                                });
+                                            case "-1":
+                                                System.out.println(2);
+                                                // сброс на дефолтную картинку и удаление старой из базы
+                                                return fileService.deleteImageForStock(stock.getImg()).flatMap(
+                                                        n -> {
+                                                            stock.setImg(n);
+                                                            return Mono.just(stock);
+                                                        }
+                                                ).flatMap(sh1 -> stockService.updateStock(stock).flatMap(sh -> Mono.just("redirect:/shop/shoppage/" + shopId)));
+                                            default:
+                                                return Mono.just(utilService.FORBIDEN_PAGE);
+                                        }
+                                    });
+
+                                });
                     }
                 });
     }

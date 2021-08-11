@@ -36,7 +36,7 @@ public class StockServiceImpl implements StockService {
       return stockRepo.updateStock(stock)
               .flatMap(ok->{
                   if(ok) return stockRepo.findById(stock.getId());
-
+//TODO плохой вариант возвоащать пустой сток
                   return Mono.just(new Stock());
               });
     }

@@ -1,20 +1,16 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="en" xmlns="http://www.w3.org/1999/html">
-<head th:replace="head::head">
-
+<head th:replace="admin/common/head::head">
 </head>
-
 <body>
-<nav th:replace="menu::menu">
+<nav th:replace="admin/common/menu::menu">
 </nav>
 <div class="container mt-4">
     <div class="row">
-
         <section th:replace="fragmentshop::fragmentshop"/>
-
         <section th:replace="fragmentshoppagestocks::fragmentshoppagestocks"/>
     </div>
+    <div th:replace="/admin/common/footer::footer"></div>
 </div>
-<footer th:replace="footer::footer"></footer>
 </body>
 </html>

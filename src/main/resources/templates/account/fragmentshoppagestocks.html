@@ -9,37 +9,98 @@
     <h4>Акции магазина:</h4> <br>
     <div class="row">
         <div class="col-9">
-            <table class="table table-hover">
-                <thead>
-                <tr>
-                    <th scope="col">Id</th>
-                    <th scope="col">Картинка</th>
-                    <th scope="col">Название</th>
-                    <th scope="col">Описание</th>
-                    <th scope="col">Статус</th>
-                    <th scope="col">Сайт</th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr th:each="stock : ${stocks}">
-                    <th class="clickable-row" th:id="${stock.id}" th:text="${stock.id}" scope="row">id</th>
-                    <th class="clickable-row" th:id="${stock.id}" scope="row"><img
-                            style="width: 50px;height: 50px" src="/img/stock/"
-                            th:attrappend="src=${stock.img}">
-                    </th>
-                    <td class="clickable-row" th:id="${stock.id}" th:text="${stock.title}">title</td>
-                    <td class="clickable-row" th:id="${stock.id}" th:text="${stock.description}">description
-                    </td>
-                    <td class="clickable-row" th:id="${stock.id}" th:text="${stock.status}">status</td>
-                    <td class="clickable-row" th:id="${stock.id}">
-                        <a href="//" th:attrappend="href=${stock.url}">Сайт</a>
-                    </td>
-                </tr>
-                </tbody>
-            </table>
-        </div>
+            <ul class="nav nav-tabs">
+                <li class="nav-item">
+                    <a class="nav-link active" data-bs-toggle="tab" data-bs-target="#active-tab"
+                       aria-current="page">Активные</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" data-bs-toggle="tab" data-bs-target="#unactive-tab"
+                       aria-current="page">Неактивные</a>
+                </li>
+            </ul>
+            <div class="tab-content" id="nav-tabContent">
+                <div class="tab-pane fade active show" id="active-tab">
+                    <div class="">
+                        <table class="table table-hover">
+                            <thead>
+                            <tr>
+                                <th scope="col">Id</th>
+                                <th scope="col">Картинка</th>
+                                <th scope="col">Название</th>
+                                <th scope="col">Описание</th>
+                                <th scope="col">Статус</th>
+                                <th scope="col">Сайт</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr th:each="stock : ${stocks}" th:if="${stock.status}
+                                    == 'ACTIVE'">
+                                <th class="clickable-row" th:id="${stock.id}" th:text="${stock.id}" scope="row">id</th>
+                                <th class="clickable-row" th:id="${stock.id}" scope="row"><img
+                                        style="width: 50px;height: 50px" src="/img/stock/"
+                                        th:attrappend="src=${stock.img}">
+                                </th>
+                                <td class="clickable-row" th:id="${stock.id}" th:text="${stock.title}">title</td>
+                                <td class="clickable-row" th:id="${stock.id}" th:text="${stock.description}">description
+                                </td>
+                                <td class="clickable-row" th:id="${stock.id}" th:text="${stock.status}">status</td>
+                                <td class="clickable-row" th:id="${stock.id}">
+                                    <a href="//" th:attrappend="href=${stock.url}">Сайт</a>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="tab-pane fade" id="unactive-tab">
+                    <div>
+                        <table class="table table-hover">
+                            <thead>
+                            <tr>
+                                <th scope="col">Id</th>
+                                <th scope="col">Картинка</th>
+                                <th scope="col">Название</th>
+                                <th scope="col">Описание</th>
+                                <th scope="col">Статус</th>
+                                <th scope="col">Сайт</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr th:each="stock : ${stocks}"  th:if="${stock.status}
+                                    == 'NON_ACTIVE'">
+                                <th class="clickable-row" th:id="${stock.id}" th:text="${stock.id}" scope="row">id</th>
+                                <th class="clickable-row" th:id="${stock.id}" scope="row"><img
+                                        style="width: 50px;height: 50px" src="/img/stock/"
+                                        th:attrappend="src=${stock.img}">
+                                </th>
+                                <td class="clickable-row" th:id="${stock.id}" th:text="${stock.title}">title</td>
+                                <td class="clickable-row" th:id="${stock.id}" th:text="${stock.description}">description
+                                </td>
+                                <td class="clickable-row" th:id="${stock.id}" th:text="${stock.status}">status</td>
+                                <td class="clickable-row" th:id="${stock.id}">
+                                    <a href="//" th:attrappend="href=${stock.url}">Сайт</a>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
 
-        <div class="col-3 mt-4">
+                </div>
+            </div>
+        </div>
+        <div class="col-3">
+            <div>
+                <div class="input-group mb-3">
+                    <input type="text" class="form-control searchValue" placeholder="Поиск по ID"
+                           aria-label="Поиск по ID">
+                    <div class="input-group-append">
+                        <button class="btn btn-outline-secondary searhById" type="button" id="button-addon2">
+                            Найти
+                        </button>
+                    </div>
+                </div>
+            </div>
             <a th:with="shopId=${shop.id}" th:href="'/shop/shoppage/' + ${shopId} + '/stockpage/0'"
                class="btn btn-outline-success form-control">Добавить акцию</a>
         </div>

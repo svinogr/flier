@@ -1,16 +1,13 @@
-
 <!DOCTYPE html>
-<html  xmlns:th="http://www.thymeleaf.org" lang="en" xmlns="http://www.w3.org/1999/html">
-<head th:replace="head::head">
-
+<html xmlns:th="http://www.thymeleaf.org" lang="en" xmlns="http://www.w3.org/1999/html">
+<head th:replace="admin/common/head::head">
 </head>
-
 <body style="overflow-y:hidden;">
-<nav th:replace="menu::menu"></nav>
+<nav th:replace="admin/common/menu::menu">
+</nav>
 <div class="container mt-4">
-<section th:replace="fragmentstock::fragmentupdatestock"/>
+    <section th:replace="fragmentstock::fragmentupdatestock"/>
+    <div th:replace="/admin/common/footer::footer"></div>
 </div>
-
-<footer th:insert="footer::footer"></footer>
 </body>
 </html>
