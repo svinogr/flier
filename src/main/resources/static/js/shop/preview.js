@@ -1,5 +1,6 @@
 function preview() {
     var input = event.target;
+
     if (input.files && input.files[0]) {
         var reader = new FileReader();
 

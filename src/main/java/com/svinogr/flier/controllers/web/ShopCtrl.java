@@ -115,11 +115,12 @@ public class ShopCtrl {
             shop.setStocks(new ArrayList());
             shop.setStatus(Status.ACTIVE.name());
 
-            return Mono.just(shop).flatMap(s -> {
-                //   model.addAttribute("admin", userService.isAdmin());
-                model.addAttribute("shop", s);
-                return Mono.just("updateshoppage");
-            });
+            return  userService.getPrincipal().
+                    flatMap(user -> {
+                        shop.setUserId(user.getId());
+                        model.addAttribute("shop", shop);
+                        return Mono.just("updateshoppage");
+                    });
         } else {
 
             return userService.getPrincipal().flatMap(user -> shopService.isOwnerOfShop(shopid).flatMap(ok -> {

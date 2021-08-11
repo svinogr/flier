@@ -1,5 +1,12 @@
 <div xmlns:th="http://www.thymeleaf.org" th:fragment="fragmentshoppagestocks" class="col-9">
-    <h4>Акции магазина</h4> <br>
+    <script> $(document).ready(function () {
+        $(".clickable-row").click(function () {
+            var id = $(this).prop("id");
+            window.location.href = "/shop/shoppage/" + [[${shop.id}]] + "/stockpage/" + id;
+        });
+    });
+    </script>
+    <h4>Акции магазина:</h4> <br>
     <div class="row">
         <div class="col-9">
             <table class="table table-hover">
