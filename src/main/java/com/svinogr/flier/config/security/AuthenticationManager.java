@@ -24,7 +24,7 @@ public class AuthenticationManager implements ReactiveAuthenticationManager {
     @Override
     public Mono<Authentication> authenticate(Authentication authentication) {
         String authToken = authentication.getCredentials().toString();
-
+        System.out.println("authenticate");
         String username;
         try {
             username = jwtUtil.extractUserName(authToken);
@@ -34,11 +34,6 @@ public class AuthenticationManager implements ReactiveAuthenticationManager {
 
           if (username != null && jwtUtil.validateToken(authToken)) {
 
-            /*Claims claims = jwtUtil.getClaims(authToken);
-
-            String role = (String) claims.get("role");
-            String email = (String) claims.get("email");
-            */
             return   jwtUtil.getFullUserFromToken(authToken).flatMap(user -> {
                   SimpleGrantedAuthority simpleGrantedAuthority = new SimpleGrantedAuthority(user.getRoles().get(0).getName());
                   List<SimpleGrantedAuthority> auth = new ArrayList<>();

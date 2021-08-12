@@ -7,7 +7,7 @@
                     aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
-            <form action="/logout" method="post">
+            <form action="/signout" method="post">
                 <button type="submit">ПОст</button>
                 <input hidden="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
             </form>

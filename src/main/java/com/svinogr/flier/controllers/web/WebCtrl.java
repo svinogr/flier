@@ -6,6 +6,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.server.ServerWebExchange;
 
 @Controller
 @RequestMapping("/")
@@ -21,8 +22,9 @@ public class WebCtrl {
 
 
     @GetMapping("/loginpage")
-    public String loginPage(Model model) {
-
+    public String loginPage(ServerWebExchange swe) {
+   //     swe.getRequest().getCookies().clear();
+      //  System.out.println(swe.getResponse().getCookies().getFirst("jwt").);
         return "loginpage";
     }
 

@@ -73,4 +73,24 @@ public class JwtUtil {
                 signWith(SignatureAlgorithm.HS256, secret.getBytes()).
                 compact();
     }
+
+    public String createExpiredJwtToken() {
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("role", "EXPIRED");
+        claims.put("email", "EXPIRED");
+
+        Date creationDate = new Date();
+
+        long parseExpirationValue = Long.parseLong(expiredTime);
+
+        Date expirationDate = new Date(creationDate.getTime() - 1000);
+
+        return Jwts.builder().
+                setClaims(claims).
+                setSubject("EXPIRED").
+                setIssuedAt(creationDate).
+                setExpiration(expirationDate).
+                signWith(SignatureAlgorithm.HS256, secret.getBytes()).
+                compact();
+    }
 }
