@@ -216,6 +216,7 @@ public class AdminCtrl {
         } catch (NumberFormatException e) {
             return Mono.just(utilService.FORBIDEN_PAGE);
         }
+
         return shopService.deleteShopById(shopId).
                 flatMap(shop -> {
                     return Mono.just("redirect:/admin/shops");
@@ -288,81 +289,77 @@ public class AdminCtrl {
             return Mono.just(utilService.FORBIDEN_PAGE);
         }
 
-        return userService.isAdmin().
-                flatMap(admin -> {
-                    if (!admin) return Mono.just(utilService.FORBIDEN_PAGE);
-
-                    if (stock.getId() == 0) { // создание нового
-                        stock.setId(null);
-                        stock.setShopId(shopId);
-                        return stockService.createStock(stock).flatMap(s -> {
-                            switch (imgTypeAction) {
-                                case "0":
-                                    return Mono.just("redirect:/admin/shop/shoppage/" + shopId);
-                                case "1":
-                                    return file.flatMap(f -> {
-                                        if (f.filename().equals("")) {
-                                            s.setImg(utilService.defaultStockImg);
-                                            return Mono.just(s);
-                                        }
-
-                                        return fileService.saveImgByIdForStock(f, s.getId()).flatMap(
-                                                n -> {
-                                                    s.setImg(n);
-                                                    return Mono.just(s);
-                                                }
-                                        );
-                                    })
-                                            .flatMap(sh -> stockService.updateStock(sh)
-                                                    .flatMap(sf -> Mono.just("redirect:/admin/shop/shoppage/" + shopId)));
-
-                                case "-1":
-                                    // сброс на дефолтную картинку и удаление старой из базы
-                                    // странное место тоже
-                                    return Mono.just("redirect:/admin/shop/shoppage/" + shopId);
-                                default:
-                                    return Mono.just("forbidenpage");
+        if (stock.getId() == 0) { // создание нового
+            stock.setId(null);
+            stock.setShopId(shopId);
+            return stockService.createStock(stock).flatMap(s -> {
+                switch (imgTypeAction) {
+                    case "0":
+                        return Mono.just("redirect:/admin/shop/shoppage/" + shopId);
+                    case "1":
+                        return file.flatMap(f -> {
+                            if (f.filename().equals("")) {
+                                s.setImg(utilService.defaultStockImg);
+                                return Mono.just(s);
                             }
-                        });
-                    } else { // обновление уже созданого
-                        return stockService.updateStock(stock).flatMap(s -> {
-                            switch (imgTypeAction) {
-                                case "0":
-                                    return Mono.just("redirect:/admin/shop/shoppage/" + shopId);
-                                case "1":
-                                    System.out.println(1);
-                                    return file.flatMap(f -> {
-                                        if (f.filename().equals("")) {
-                                            stock.setImg(utilService.defaultStockImg);
-                                            return Mono.just(stock);
-                                        }
-                                        return
-                                                fileService.deleteImageForStock(stock.getImg())
-                                                        .flatMap(n -> fileService.saveImgByIdForStock(f, stock.getId())
-                                                                .flatMap(
-                                                                        name -> {
-                                                                            s.setImg(name);
-                                                                            return Mono.just(s);
-                                                                        }));
-                                    }).flatMap(sh -> {
-                                        stockService.updateStock(sh).subscribe();
-                                        return Mono.just("redirect:/admin/shop/shoppage/" + shopId);
-                                    });
-                                case "-1":
-                                    System.out.println(2);
-                                    // сброс на дефолтную картинку и удаление старой из базы
-                                    return fileService.deleteImageForStock(stock.getImg()).flatMap(
-                                            n -> {
-                                                stock.setImg(n);
-                                                return Mono.just(stock);
-                                            }
-                                    ).flatMap(sh1 -> stockService.updateStock(stock).flatMap(sh -> Mono.just("redirect:/admin/shop/shoppage/" + shopId)));
-                                default:
-                                    return Mono.just("forbidenpage");
+
+                            return fileService.saveImgByIdForStock(f, s.getId()).flatMap(
+                                    n -> {
+                                        s.setImg(n);
+                                        return Mono.just(s);
+                                    }
+                            );
+                        })
+                                .flatMap(sh -> stockService.updateStock(sh)
+                                        .flatMap(sf -> Mono.just("redirect:/admin/shop/shoppage/" + shopId)));
+
+                    case "-1":
+                        // сброс на дефолтную картинку и удаление старой из базы
+                        // странное место тоже
+                        return Mono.just("redirect:/admin/shop/shoppage/" + shopId);
+                    default:
+                        return Mono.just("forbidenpage");
+                }
+            });
+        } else { // обновление уже созданого
+            return stockService.updateStock(stock).flatMap(s -> {
+                switch (imgTypeAction) {
+                    case "0":
+                        return Mono.just("redirect:/admin/shop/shoppage/" + shopId);
+                    case "1":
+                        System.out.println(1);
+                        return file.flatMap(f -> {
+                            if (f.filename().equals("")) {
+                                stock.setImg(utilService.defaultStockImg);
+                                return Mono.just(stock);
                             }
+                            return
+                                    fileService.deleteImageForStock(stock.getImg())
+                                            .flatMap(n -> fileService.saveImgByIdForStock(f, stock.getId())
+                                                    .flatMap(
+                                                            name -> {
+                                                                s.setImg(name);
+                                                                return Mono.just(s);
+                                                            }));
+                        }).flatMap(sh -> {
+                            stockService.updateStock(sh).subscribe();
+                            return Mono.just("redirect:/admin/shop/shoppage/" + shopId);
                         });
-                    }
-                });
+                    case "-1":
+                        System.out.println(2);
+                        // сброс на дефолтную картинку и удаление старой из базы
+                        return fileService.deleteImageForStock(stock.getImg()).flatMap(
+                                n -> {
+                                    stock.setImg(n);
+                                    return Mono.just(stock);
+                                }
+                        ).flatMap(sh1 -> stockService.updateStock(stock).flatMap(sh -> Mono.just("redirect:/admin/shop/shoppage/" + shopId)));
+                    default:
+                        return Mono.just("forbidenpage");
+                }
+            });
+        }
+
     }
 
     @PostMapping("stock/stockpage/{id}/delete")

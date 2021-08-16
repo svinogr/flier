@@ -1,6 +1,6 @@
 <div xmlns:th="http://www.thymeleaf.org" th:fragment="fragmentupdateshop" class="container mt-4">
-    <script src="/static/js/shop/preview.js" type="text/javascript"></script>
-    <script src="/static/js/shop/map.js" type="text/javascript"></script>
+    <script src="/js/shop/preview.js" type="text/javascript"></script>
+    <script src="/js/shop/map.js" type="text/javascript"></script>
     <h4>Редактирование магазина:</h4>
     <form class="" enctype="multipart/form-data" id="update" method="post">
         <div class="row">
@@ -19,7 +19,7 @@
 
                 <br>
                 <div>
-                    <button class="btn btn-outline-danger btn-block form-control deleteImg"
+                    <button th:attrappend="hidden=${shop.img} == '0.png'?@{'hidden'}" id="deleteImg" class="btn btn-outline-danger btn-block form-control deleteImg"
                             onclick="deleteImgPreview('/img/shop/0.png')" type="button">
                         Удалить
                         картинку
