@@ -15,5 +15,7 @@ public interface StockService {
 
     Mono<Stock> deleteStockById(Long parseId);
 
+    Mono<Stock> restoreStockById(Long parseId);
+
     Mono<Boolean> isOwnerOfStock(long shopId, long stockId);
 }

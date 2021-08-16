@@ -28,7 +28,7 @@ public class ShopServiceImpl implements ShopService {
     public Mono<Shop> updateShop(Shop shop) {
         return shopRepo.updateShop(shop).
                 flatMap(ok ->{
-                    if (ok) return shopRepo.findById(shop.getId());
+                    if (ok) return getShopById(shop.getId());
                     //TODO возвращать пустой хорощо ли это??
                     return Mono.empty();
                 });
@@ -41,7 +41,7 @@ public class ShopServiceImpl implements ShopService {
             shop.setStatus(Status.NON_ACTIVE.name());
             return shopRepo.updateShop(shop).
                     flatMap(ok ->{
-                        if (ok) return shopRepo.findById(shop.getId());
+                        if (ok) return getShopById(shop.getId());
                         //TODO возвращать пустой хорощо ли это??
                         return Mono.empty();
                     });

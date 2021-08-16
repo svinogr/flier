@@ -32,13 +32,13 @@ public class StockServiceImpl implements StockService {
 
     @Override
     public Mono<Stock> updateStock(Stock stock) {
-       // return Mono.just(new Stock());
-      return stockRepo.updateStock(stock)
-              .flatMap(ok->{
-                  if(ok) return stockRepo.findById(stock.getId());
+        // return Mono.just(new Stock());
+        return stockRepo.updateStock(stock)
+                .flatMap(ok -> {
+                    if (ok) return findStockById(stock.getId());
 //TODO плохой вариант возвоащать пустой сток
-                  return Mono.just(new Stock());
-              });
+                    return Mono.empty();
+                });
     }
 
     @Override
@@ -48,12 +48,22 @@ public class StockServiceImpl implements StockService {
                     stock.setStatus(Status.NON_ACTIVE.name());
                     return Mono.just(stock);
                 })
-                .flatMap(stock -> stockRepo.save(stock));
+                .flatMap(stock -> updateStock(stock));
     }
 
     @Override
     public Mono<Boolean> isOwnerOfStock(long shopId, long stockId) {
-        return stockRepo.findById(stockId).
+        return findStockById(stockId).
                 flatMap(stock -> Mono.just(stock.getShopId() == shopId));
+    }
+
+    @Override
+    public Mono<Stock> restoreStockById(Long stockId) {
+        return stockRepo.findById(stockId)
+                .flatMap(stock -> {
+                    stock.setStatus(Status.ACTIVE.name());
+                    return Mono.just(stock);
+                })
+                .flatMap(stock -> updateStock(stock));
     }
 }

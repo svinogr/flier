@@ -468,4 +468,31 @@ public class ShopCtrl {
                             });
                 });
     }
+
+    @PostMapping("shoppage/{idSh}/stockpage/{idSt}/restore")
+    public Mono<String> restoreStockById(@PathVariable String idSh, @PathVariable String idSt) {
+        long stockId;
+        long shopId;
+        try {
+            stockId = Long.parseLong(idSt);
+            shopId = Long.parseLong(idSh);
+
+        } catch (NumberFormatException e) {
+            return Mono.just(utilService.FORBIDEN_PAGE);
+        }
+
+        return shopService.isOwnerOfShop(shopId).
+                flatMap(shopOwner -> {
+                    if (!shopOwner) return Mono.just(utilService.FORBIDEN_PAGE);
+
+                    return stockService.isOwnerOfStock(shopId, stockId).
+                            flatMap(stockOwner -> {
+                                if (!stockOwner) return Mono.just(utilService.FORBIDEN_PAGE);
+
+                                return stockService.restoreStockById(stockId).
+                                        flatMap(stock -> Mono.just("redirect:/shop/shoppage/" + shopId)).
+                                        switchIfEmpty(Mono.just("redirect:/shop/shoppage/" + shopId));
+                            });
+                });
+    }
 }
