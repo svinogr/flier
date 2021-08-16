@@ -80,7 +80,7 @@ public class WebSecurityConfig {
                                     ServerHttpResponse response = exchange.getExchange().getResponse();
                                     response.setStatusCode(HttpStatus.FOUND);
                                     response.getHeaders().setLocation(URI.create("/loginpage"));
-                                    ResponseCookie jwt = ResponseCookie.from("jwt", jwtUtil.createExpiredJwtToken()).maxAge(1).build();
+                                    ResponseCookie jwt = ResponseCookie.from("jwt", jwtUtil.createExpiredJwtToken()).maxAge(1).build(); // установил время 1 чтоб кукис был просроченым и не позволял себя использовать иначе хер знает как его удалить
                                     response.addCookie(jwt);
 
                                     return exchange.getExchange().getSession()

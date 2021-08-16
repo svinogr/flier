@@ -13,4 +13,6 @@ public interface ShopService {
     Flux<Shop> getAllActiveShops();
     Flux<Shop> getShopByUserId(Long shopId);
     Mono<Boolean> isOwnerOfShop(Long shopId);
+
+    Mono<Shop> restoreShop(Long shopId);
 }

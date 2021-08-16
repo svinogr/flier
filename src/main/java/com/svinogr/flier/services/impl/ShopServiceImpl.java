@@ -26,15 +26,25 @@ public class ShopServiceImpl implements ShopService {
 
     @Override
     public Mono<Shop> updateShop(Shop shop) {
-        return shopRepo.save(shop);
+        return shopRepo.updateShop(shop).
+                flatMap(ok ->{
+                    if (ok) return shopRepo.findById(shop.getId());
+                    //TODO возвращать пустой хорощо ли это??
+                    return Mono.empty();
+                });
     }
 
     @Override
     public Mono<Shop> deleteShopById(Long id) {
         //TODO сделать удаление акции при удалении магазина
-        return shopRepo.findById(id).flatMap(s -> {
-            s.setStatus(Status.NON_ACTIVE.name());
-            return shopRepo.save(s);
+        return shopRepo.findById(id).flatMap(shop -> {
+            shop.setStatus(Status.NON_ACTIVE.name());
+            return shopRepo.updateShop(shop).
+                    flatMap(ok ->{
+                        if (ok) return shopRepo.findById(shop.getId());
+                        //TODO возвращать пустой хорощо ли это??
+                        return Mono.empty();
+                    });
         });
     }
 
@@ -63,5 +73,19 @@ public class ShopServiceImpl implements ShopService {
         return getShopById(shopId).
                 flatMap(shop -> userService.getPrincipal().
                           flatMap(user -> Mono.just(shop.getUserId() == user.getId())));
+    }
+
+    @Override
+    public Mono<Shop> restoreShop(Long shopId) {
+        return shopRepo.findById(shopId).
+                flatMap(shop -> {
+                    shop.setStatus(Status.ACTIVE.name());
+                    return shopRepo.updateShop(shop).
+                            flatMap(ok ->{
+                                if (ok) return shopRepo.findById(shop.getId());
+                                //TODO возвращать пустой хорощо ли это??
+                                return Mono.empty();
+                            });
+                });
     }
 }

@@ -261,6 +261,31 @@ public class ShopCtrl {
                 });
     }
 
+    @GetMapping("shoppage/{id}/restore")
+    public Mono<String> restoreShop(@PathVariable String id) {
+        Long shopId;
+
+        try {
+            shopId = Long.parseLong(id);
+        } catch (NumberFormatException e) {
+            return Mono.just(utilService.FORBIDEN_PAGE);
+        }
+
+        return shopService.isOwnerOfShop(shopId)
+                .flatMap(owner ->{
+                    if (!owner) return Mono.just(utilService.FORBIDEN_PAGE);
+
+                    return userService.getPrincipal().
+                            flatMap(principal ->{
+                               return shopService.restoreShop(shopId).
+                                       flatMap(shop -> {
+                                           return Mono.just("redirect:/account/accountpage/" + principal.getId());
+                                       }).switchIfEmpty(Mono.just("redirect:/account/accountpage/" + principal.getId()));
+                            });
+                })
+                .switchIfEmpty(Mono.just(utilService.FORBIDEN_PAGE));
+    }
+
     @GetMapping("shoppage/{idSh}/stockpage/{idSt}")
     public Mono<String> getStockPage(@PathVariable String idSh, @PathVariable String idSt, Model model) {
         Long shopId, stockId;
