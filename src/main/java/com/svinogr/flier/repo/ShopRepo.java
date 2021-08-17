@@ -28,4 +28,7 @@ public interface ShopRepo extends ReactiveCrudRepository<Shop, Long> {
             " where id= :#{#shop.id}")
     Mono<Boolean> updateShop(Shop shop);
 
+    Flux<Shop> findByTitleContains(String title);
+
+    Flux<Shop> findByAddressContains(String address);
 }

@@ -1,6 +1,7 @@
 package com.svinogr.flier.services;
 
 import com.svinogr.flier.model.shop.Shop;
+import org.springframework.util.MultiValueMap;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -15,4 +16,10 @@ public interface ShopService {
     Mono<Boolean> isOwnerOfShop(Long shopId);
 
     Mono<Shop> restoreShop(Long shopId);
+
+    Flux<Shop> getShopByTitle(String title);
+
+    Flux<Shop> getShopByAddress(String address);
+
+    Flux<Shop> searchByValue(MultiValueMap<String, String> map);
 }

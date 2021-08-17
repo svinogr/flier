@@ -6,10 +6,15 @@ import com.svinogr.flier.model.shop.Shop;
 import com.svinogr.flier.repo.ShopRepo;
 import com.svinogr.flier.services.ShopService;
 import com.svinogr.flier.services.UserService;
+import org.apache.logging.log4j.util.Strings;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.MultiValueMap;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+
+import java.util.List;
+import java.util.Map;
 
 @Service
 public class ShopServiceImpl implements ShopService {
@@ -27,7 +32,7 @@ public class ShopServiceImpl implements ShopService {
     @Override
     public Mono<Shop> updateShop(Shop shop) {
         return shopRepo.updateShop(shop).
-                flatMap(ok ->{
+                flatMap(ok -> {
                     if (ok) return getShopById(shop.getId());
                     //TODO возвращать пустой хорощо ли это??
                     return Mono.empty();
@@ -40,7 +45,7 @@ public class ShopServiceImpl implements ShopService {
         return shopRepo.findById(id).flatMap(shop -> {
             shop.setStatus(Status.NON_ACTIVE.name());
             return shopRepo.updateShop(shop).
-                    flatMap(ok ->{
+                    flatMap(ok -> {
                         if (ok) return getShopById(shop.getId());
                         //TODO возвращать пустой хорощо ли это??
                         return Mono.empty();
@@ -72,7 +77,7 @@ public class ShopServiceImpl implements ShopService {
     public Mono<Boolean> isOwnerOfShop(Long shopId) {
         return getShopById(shopId).
                 flatMap(shop -> userService.getPrincipal().
-                          flatMap(user -> Mono.just(shop.getUserId() == user.getId())));
+                        flatMap(user -> Mono.just(shop.getUserId() == user.getId())));
     }
 
     @Override
@@ -81,11 +86,71 @@ public class ShopServiceImpl implements ShopService {
                 flatMap(shop -> {
                     shop.setStatus(Status.ACTIVE.name());
                     return shopRepo.updateShop(shop).
-                            flatMap(ok ->{
+                            flatMap(ok -> {
                                 if (ok) return shopRepo.findById(shop.getId());
                                 //TODO возвращать пустой хорощо ли это??
                                 return Mono.empty();
                             });
                 });
+    }
+
+    @Override
+    public Flux<Shop> getShopByTitle(String title) {
+        return shopRepo.findByTitleContains(title);
+    }
+
+    @Override
+    public Flux<Shop> getShopByAddress(String address) {
+        return shopRepo.findByAddressContains(address);
+    }
+
+    @Override
+    public Flux<Shop> searchByValue(MultiValueMap<String, String> map) {
+
+
+        String type = Strings.EMPTY;
+        String value = Strings.EMPTY;
+
+
+        for (Map.Entry<String, List<String>> entry : map.entrySet()) {
+            System.out.println(entry.getKey() + "/" + entry.getValue());
+            if (entry.getValue().get(0).equals("on")) {
+                type = entry.getKey();
+                value = map.get("searchValue").get(0);
+                break;
+
+            }
+
+        }
+
+        System.out.println(type + "--"+ value);
+
+        switch (type) {
+            case "searchId":
+                long id;
+                System.out.println(1);
+                try {
+                    id = Long.parseLong(value);
+                } catch (NumberFormatException e) {
+                    return Flux.empty();
+                }
+
+                return getShopById(id).flux();
+
+            case "searchTitle":
+
+                System.out.println(2);
+
+                return getShopByTitle(value);
+            case "searchAddress":
+
+                System.out.println(3);
+
+                return getShopByAddress(value);
+            default:
+                System.out.println(4);
+                return Flux.empty();
+
+        }
     }
 }

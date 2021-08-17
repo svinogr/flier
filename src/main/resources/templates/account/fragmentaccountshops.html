@@ -9,7 +9,6 @@
             var id = $(".searchValue").prop("value");
             window.location.href = "/shop/shops/" + id + "search";
         });
-
     });
     </script>
     <h4>Магазины:</h4>
@@ -115,17 +114,41 @@
 
         </div>
         <div class="col-3 ">
-            <div>
-                <div class="input-group mb-3">
-                    <input type="text" class="form-control searchValue" placeholder="Поиск по ID"
-                           aria-label="Поиск по ID">
-                    <div class="input-group-append">
-                        <button class="btn btn-outline-secondary searhById" type="button" id="button-addon2">
-                            Найти
-                        </button>
+            <form  method="post" action="/account/accountpage/" th:attrappend="action=${principal.id} + '/searchshops'">
+                    <div class="form-check">
+                        <input class="form-check-input"  type="checkbox" name="searchId" id="searchId">
+                        <label class="form-check-label" for="searchId">
+                            по ID
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="searchTitle" id="searchTitle">
+                        <label class="form-check-label" for="searchTitle">
+                            по Названию
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="searchAddress" id="searchAddress">
+                        <label class="form-check-label" for="searchAddress">
+                            по Адресу
+                        </label>
+                    </div>
+
+                <div>
+                    <div class="input-group mb-3">
+                        <input type="text" class="form-control" name="searchValue" placeholder="Поиск"
+                               aria-label="Поиск по ID">
+                        <div class="input-group-append">
+                            <button class="btn btn-outline-secondary " type="submit" id="button-addon2">
+                                Найти
+                            </button>
+                        </div>
                     </div>
                 </div>
-            </div>
+                <input hidden="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+            </form>
+
+
             <a href="/shop/shoppage/0/update" class="btn btn-outline-success form-control" role="button">Добавить
                 Магазин</a>
 

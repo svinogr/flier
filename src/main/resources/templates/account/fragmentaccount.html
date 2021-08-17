@@ -6,7 +6,7 @@
             <span class="text-muted">ID: </span>
         </div>
         <div class="col-6">
-            <span th:text="${user.id}" type="text"></span>
+            <span th:text="${principal.id}" type="text"></span>
         </div>
     </div>
     <div class="row">
@@ -14,7 +14,7 @@
             <span class="text-muted">Телефон: </span>
         </div>
         <div class="col-6">
-            <span th:text="${user.phone}"  type="text"></span>
+            <span th:text="${principal.phone}"  type="text"></span>
         </div>
     </div>
     <div class="row">
@@ -22,7 +22,7 @@
             <span class="text-muted">Имя: </span>
         </div>
         <div class="col-6">
-            <span th:text="${user.name}" type="text"></span>
+            <span th:text="${principal.name}" type="text"></span>
         </div>
     </div>
     <div class="row">
@@ -30,7 +30,7 @@
             <span class="text-muted">Фамилия: </span>
         </div>
         <div class="col-6">
-            <span th:text="${user.surname}" type="text"></span>
+            <span th:text="${principal.surname}" type="text"></span>
         </div>
     </div>
     <div class="row">
@@ -38,7 +38,7 @@
             <span class="text-muted">Логин: </span>
         </div>
         <div class="col-6">
-            <span th:text="${user.username}" type="text"></span>
+            <span th:text="${principal.username}" type="text"></span>
         </div>
     </div>
     <div class="row">
@@ -46,7 +46,7 @@
             <span class="text-muted">Статус: </span>
         </div>
         <div class="col-6">
-            <span th:text="${user.status}" type="text"></span>
+            <span th:text="${principal.status}" type="text"></span>
         </div>
     </div>
     <div class="row">
@@ -54,12 +54,12 @@
             <span class="text-muted">Email: </span>
         </div>
         <div class="col-6">
-            <span th:text="${user.email}" type="text"></span>
+            <span th:text="${principal.email}" type="text"></span>
         </div>
     </div>
     <div class="row">
         <div class="col-12">
-            <a href="/account/accountpage/" th:attrappend="href=${user.id} +'/update'"
+            <a href="/account/accountpage/" th:attrappend="href=${principal.id} +'/update'"
                class="btn btn-outline-success form-control mt-4"
             >Изменить</a>
         </div>

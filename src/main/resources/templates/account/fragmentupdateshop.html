@@ -9,14 +9,12 @@
                     <img id="img" style="width:100%; height:250px" src="/img/shop/"
                          th:attrappend="src=${shop.img}">
                 </div>
-
                 <div class="input-group-append">
                     <label class="  btn btn-outline-success btn-block form-control mt-2" for="imgShop">Выбрать
                         картинку</label>
                     <input class="updateimg" onchange="preview()" style="display: none"
                            type="file" name="file" id="imgShop">
                 </div>
-
                 <br>
                 <div>
                     <button th:attrappend="hidden=${shop.img} == '0.png'?@{'hidden'}" id="deleteImg" class="btn btn-outline-danger btn-block form-control deleteImg"

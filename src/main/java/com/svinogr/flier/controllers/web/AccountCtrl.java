@@ -7,9 +7,13 @@ import com.svinogr.flier.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.reactive.function.server.ServerRequest;
+import org.springframework.web.server.ServerWebExchange;
 import org.thymeleaf.spring5.context.webflux.IReactiveDataDriverContextVariable;
 import org.thymeleaf.spring5.context.webflux.ReactiveDataDriverContextVariable;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 @Controller
@@ -52,14 +56,14 @@ public class AccountCtrl {
                     return userService.isOwnerOfAccount(userId).flatMap(ok -> {
                         if (!ok) return Mono.just(utilService.FORBIDEN_PAGE);
 
-                                    // с этим не работает обьект в нексколькх местах сразу
+                        // с этим не работает обьект в нексколькх местах сразу
                                   /*  IReactiveDataDriverContextVariable shops =
                                             new ReactiveDataDriverContextVariable(shopService.
                                                     getShopByUserId(userPrincipal.getId()), 10, 1);*/
 
                         model.addAttribute("shops", shopService.
                                 getShopByUserId(userPrincipal.getId()));
-                        model.addAttribute("user", userPrincipal);
+                     //   model.addAttribute("user", userPrincipal);
                         //  model.addAttribute("admin", admin);
 
                         return Mono.just("accountpage");
@@ -82,9 +86,10 @@ public class AccountCtrl {
                 flatMap(userPrincipal -> {
                     return userService.isOwnerOfAccount(userId).flatMap(ok -> {
                         if (!ok) return Mono.just(utilService.FORBIDEN_PAGE);
+
                         return userService.isAdmin().flatMap(admin -> {
 
-                                    model.addAttribute("user", userPrincipal);
+                                 //   model.addAttribute("user", userPrincipal);
                                     //   model.addAttribute("admin", admin);
 
                                     return Mono.just("accountuserpage");
@@ -139,5 +144,18 @@ public class AccountCtrl {
         });
     }
 
-}
+    @PostMapping("accountpage/{id}/searchshops")
+    public Mono<String> searchShops(ServerWebExchange webExchange, Model model, @PathVariable String id) {
+        Mono<MultiValueMap<String, String>> formData = webExchange.getFormData();
+        return formData.
+                flatMap(map -> {
+                    return userService.getPrincipal().flatMap(principal -> {
+                        //     model.addAttribute("user", userService.getPrincipal());
+                 //       model.addAttribute("shops", shopService.searchByValue(map).filter(shop -> shop.getUserId() == principal.getId()));
+                        model.addAttribute("shops", shopService.searchByValue(map));
 
+                        return Mono.just("accountpage");
+                    });
+                });
+    }
+}

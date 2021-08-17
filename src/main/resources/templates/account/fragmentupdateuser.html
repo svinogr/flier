@@ -3,43 +3,43 @@
         <div class="col-6">
             <form class="" id="update" th:action="update" method="post">
                 <div class="form-floating">
-                    <input readonly="readonly" class="form-control mt-3" th:value="${user.id}" type="text" id="id"
+                    <input readonly="readonly" class="form-control mt-3" th:value="${principal.id}" type="text" id="id"
                            name="id" placeholder="id">
                     <label for="id">ID</label>
                 </div>
                 <div class="form-floating">
-                    <input class="form-control mt-3" th:value="${user.phone}" id="phone" type="text" name="phone"
+                    <input class="form-control mt-3" th:value="${principal.phone}" id="phone" type="text" name="phone"
                            placeholder="Номер">
                     <label for="phone">Телефон</label>
                 </div>
                 <div class="form-floating">
-                    <input class="form-control mt-3" th:value="${user.name}" id="name" type="text" name="name"
+                    <input class="form-control mt-3" th:value="${principal.name}" id="name" type="text" name="name"
                            placeholder="Имя">
                     <label for="name">Имя</label>
                 </div>
                 <div class="form-floating">
-                    <input class="form-control mt-3" th:value="${user.surname}" id="surname" type="text" name="surname"
+                    <input class="form-control mt-3" th:value="${principal.surname}" id="surname" type="text" name="surname"
                            placeholder="Фамилия">
                     <label for="surname">Фамилия</label>
                 </div>
                 <div class="form-floating">
-                    <input class="form-control mt-3" th:value="${user.username}" id="username" type="text"
+                    <input class="form-control mt-3" th:value="${principal.username}" id="username" type="text"
                            name="username"
                            placeholder="name">
                     <label for="username">Логин</label>
                 </div>
                 <div class="form-floating">
-                    <input hidden="hidden" class="form-control mt-3" th:value="${user.status}" id="status" type="text" name="status"
+                    <input hidden="hidden" class="form-control mt-3" th:value="${principal.status}" id="status" type="text" name="status"
                            placeholder="Статус">
                     <label for="status">Статус</label>
                 </div>
                 <div class="form-floating">
-                    <input class="form-control mt-3" th:value="${user.email}" id="email" type="text" placeholder="email"
+                    <input class="form-control mt-3" th:value="${principal.email}" id="email" type="text" placeholder="email"
                            name="Email">
                     <label for="email">Email</label>
                 </div>
 
-                <select hidden="hidden" class="form-control selectpicker mt-3" th:field="*{user.roles[0].name}"
+                <select hidden="hidden" class="form-control selectpicker mt-3" th:field="*{principal.roles[0].name}"
                         id="roles">
                     <option value="">Nothing selected</option>
                     <option th:each="role : ${T(com.svinogr.flier.model.UserRole).values()}"
