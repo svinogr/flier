@@ -9,11 +9,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.server.ServerWebExchange;
-import org.thymeleaf.spring5.context.webflux.IReactiveDataDriverContextVariable;
-import org.thymeleaf.spring5.context.webflux.ReactiveDataDriverContextVariable;
-import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 @Controller
@@ -48,13 +44,13 @@ public class AccountCtrl {
         try {
             userId = Long.parseLong(id);
         } catch (NumberFormatException e) {
-            return Mono.just(utilService.FORBIDEN_PAGE);
+            return Mono.just(utilService.FORBIDDEN_PAGE);
         }
 
         return userService.getPrincipal().
                 flatMap(userPrincipal -> {
                     return userService.isOwnerOfAccount(userId).flatMap(ok -> {
-                        if (!ok) return Mono.just(utilService.FORBIDEN_PAGE);
+                        if (!ok) return Mono.just(utilService.FORBIDDEN_PAGE);
 
                         // с этим не работает обьект в нексколькх местах сразу
                                   /*  IReactiveDataDriverContextVariable shops =
@@ -79,13 +75,13 @@ public class AccountCtrl {
             userId = Long.parseLong(id);
 
         } catch (NumberFormatException e) {
-            return Mono.just(utilService.FORBIDEN_PAGE);
+            return Mono.just(utilService.FORBIDDEN_PAGE);
         }
 
         return userService.getPrincipal().
                 flatMap(userPrincipal -> {
                     return userService.isOwnerOfAccount(userId).flatMap(ok -> {
-                        if (!ok) return Mono.just(utilService.FORBIDEN_PAGE);
+                        if (!ok) return Mono.just(utilService.FORBIDDEN_PAGE);
 
                         return userService.isAdmin().flatMap(admin -> {
 
@@ -109,13 +105,13 @@ public class AccountCtrl {
             userId = Long.parseLong(id);
 
         } catch (NumberFormatException e) {
-            return Mono.just(utilService.FORBIDEN_PAGE);
+            return Mono.just(utilService.FORBIDDEN_PAGE);
         }
 
         return userService.getPrincipal()
                 .flatMap(userPrincipal -> {
                     return userService.isOwnerOfAccount(userId).flatMap(ok -> {
-                        if (!ok) return Mono.just(utilService.FORBIDEN_PAGE);
+                        if (!ok) return Mono.just(utilService.FORBIDDEN_PAGE);
 
                         return userService.update(user)
                                 .flatMap(u1 -> Mono.just("redirect:/account/accountpage/" + userPrincipal.getId()))

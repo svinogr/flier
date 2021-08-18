@@ -75,7 +75,7 @@ public class AdminCtrl {
             shopId = Long.parseLong(id);
 
         } catch (NumberFormatException e) {
-            return Mono.just(utilService.FORBIDEN_PAGE);
+            return Mono.just(utilService.FORBIDDEN_PAGE);
         }
 
         return shopService.getShopById(shopId).
@@ -98,7 +98,7 @@ public class AdminCtrl {
             parseId = Long.parseLong(id);
 
         } catch (NumberFormatException e) {
-            return Mono.just(utilService.FORBIDEN_PAGE);
+            return Mono.just(utilService.FORBIDDEN_PAGE);
         }
 
         Mono<Shop> shopById;
@@ -135,7 +135,7 @@ public class AdminCtrl {
             shopId = Long.parseLong(id);
 
         } catch (NumberFormatException e) {
-            return Mono.just(utilService.FORBIDEN_PAGE);
+            return Mono.just(utilService.FORBIDDEN_PAGE);
         }
 
         if (shopId == 0) { // создание нового
@@ -214,7 +214,7 @@ public class AdminCtrl {
             shopId = Long.parseLong(id);
 
         } catch (NumberFormatException e) {
-            return Mono.just(utilService.FORBIDEN_PAGE);
+            return Mono.just(utilService.FORBIDDEN_PAGE);
         }
 
         return shopService.deleteShopById(shopId).
@@ -231,7 +231,7 @@ public class AdminCtrl {
             shopId = Long.parseLong(idSh);
             stockId = Long.parseLong(idSt);
         } catch (NumberFormatException e) {
-            return Mono.just(utilService.FORBIDEN_PAGE);
+            return Mono.just(utilService.FORBIDDEN_PAGE);
         }
 
         Mono<Stock> stockById;
@@ -286,7 +286,7 @@ public class AdminCtrl {
             stockId = Long.parseLong(idSt);
 
         } catch (NumberFormatException e) {
-            return Mono.just(utilService.FORBIDEN_PAGE);
+            return Mono.just(utilService.FORBIDDEN_PAGE);
         }
 
         if (stock.getId() == 0) { // создание нового
@@ -369,7 +369,7 @@ public class AdminCtrl {
             stockId = Long.parseLong(id);
 
         } catch (NumberFormatException e) {
-            return Mono.just(utilService.FORBIDEN_PAGE);
+            return Mono.just(utilService.FORBIDDEN_PAGE);
         }
 
         return stockService.deleteStockById(stockId)
@@ -399,7 +399,7 @@ public class AdminCtrl {
             userId = Long.parseLong(id);
 
         } catch (NumberFormatException e) {
-            return Mono.just(utilService.FORBIDEN_PAGE);
+            return Mono.just(utilService.FORBIDDEN_PAGE);
         }
 
         if (userId == 0) {
@@ -438,7 +438,7 @@ public class AdminCtrl {
             userId = Long.parseLong(id);
 
         } catch (NumberFormatException e) {
-            return Mono.just(utilService.FORBIDEN_PAGE);
+            return Mono.just(utilService.FORBIDDEN_PAGE);
         }
 
         return userService.deleteUser(userId).

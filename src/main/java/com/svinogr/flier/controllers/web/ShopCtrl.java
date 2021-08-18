@@ -77,7 +77,7 @@ public class ShopCtrl {
         return userService.getPrincipal().
                 flatMap(user -> {
                     return shopService.isOwnerOfShop(shopId).flatMap(ok -> {
-                        if (!ok) return Mono.just(utilService.FORBIDEN_PAGE);
+                        if (!ok) return Mono.just(utilService.FORBIDDEN_PAGE);
                         return shopService.getShopById(shopId).
                                 flatMap(s -> {
                                     return userService.isAdmin().flatMap(isAdmin -> {
@@ -102,7 +102,7 @@ public class ShopCtrl {
             shopid = Long.parseLong(id);
 
         } catch (NumberFormatException e) {
-            return Mono.just(utilService.FORBIDEN_PAGE);
+            return Mono.just(utilService.FORBIDDEN_PAGE);
         }
 
 
@@ -123,7 +123,7 @@ public class ShopCtrl {
 
             return userService.getPrincipal().flatMap(user -> shopService.isOwnerOfShop(shopid).
                     flatMap(ok -> {
-                        if (!ok) return Mono.just(utilService.FORBIDEN_PAGE);
+                        if (!ok) return Mono.just(utilService.FORBIDDEN_PAGE);
 
                         return shopService.getShopById(shopid).flatMap(s -> {
                             //   model.addAttribute("admin", userService.isAdmin());
@@ -155,7 +155,7 @@ public class ShopCtrl {
             parseShopId = Long.parseLong(id);
 
         } catch (NumberFormatException e) {
-            return Mono.just(utilService.FORBIDEN_PAGE);
+            return Mono.just(utilService.FORBIDDEN_PAGE);
         }
 
         return userService.getPrincipal().
@@ -186,13 +186,13 @@ public class ShopCtrl {
                                     // сброс на дефолтную картинку и удаление старой из базы
                                     return Mono.just("redirect:/account/accountpage");
                                 default:
-                                    return Mono.just(utilService.FORBIDEN_PAGE);
+                                    return Mono.just(utilService.FORBIDDEN_PAGE);
                             }
                         });
                     } else { // обновление уже созданого
                         return shopService.isOwnerOfShop(parseShopId).flatMap(ok -> {
                             if (!ok) {
-                                return Mono.just(utilService.FORBIDEN_PAGE);
+                                return Mono.just(utilService.FORBIDDEN_PAGE);
                             } else {
                                 return shopService.updateShop(shop).flatMap(s -> {
                                     switch (imgTypeAction) {
@@ -224,7 +224,7 @@ public class ShopCtrl {
                                             ).flatMap(sh1 -> shopService.updateShop(shop).flatMap(sh -> Mono.just("redirect:/account/accountpage/" + userPrincipal.getId())));
 
                                         default:
-                                            return Mono.just(utilService.FORBIDEN_PAGE);
+                                            return Mono.just(utilService.FORBIDDEN_PAGE);
                                     }
                                 });
                             }
@@ -242,12 +242,12 @@ public class ShopCtrl {
         try {
             shopId = Long.parseLong(id);
         } catch (NumberFormatException e) {
-            return Mono.just(utilService.FORBIDEN_PAGE);
+            return Mono.just(utilService.FORBIDDEN_PAGE);
         }
 
         return shopService.isOwnerOfShop(shopId).
                 flatMap(owner -> {
-                    if (!owner) return Mono.just(utilService.FORBIDEN_PAGE);
+                    if (!owner) return Mono.just(utilService.FORBIDDEN_PAGE);
 
                     return userService.getPrincipal().
                             flatMap(principal -> {
@@ -266,12 +266,12 @@ public class ShopCtrl {
         try {
             shopId = Long.parseLong(id);
         } catch (NumberFormatException e) {
-            return Mono.just(utilService.FORBIDEN_PAGE);
+            return Mono.just(utilService.FORBIDDEN_PAGE);
         }
 
         return shopService.isOwnerOfShop(shopId)
                 .flatMap(owner ->{
-                    if (!owner) return Mono.just(utilService.FORBIDEN_PAGE);
+                    if (!owner) return Mono.just(utilService.FORBIDDEN_PAGE);
 
                     return userService.getPrincipal().
                             flatMap(principal ->{
@@ -281,7 +281,7 @@ public class ShopCtrl {
                                        }).switchIfEmpty(Mono.just("redirect:/account/accountpage/" + principal.getId()));
                             });
                 })
-                .switchIfEmpty(Mono.just(utilService.FORBIDEN_PAGE));
+                .switchIfEmpty(Mono.just(utilService.FORBIDDEN_PAGE));
     }
 
     @GetMapping("shoppage/{idSh}/stockpage/{idSt}")
@@ -292,7 +292,7 @@ public class ShopCtrl {
             shopId = Long.parseLong(idSh);
             stockId = Long.parseLong(idSt);
         } catch (NumberFormatException e) {
-            return Mono.just(utilService.FORBIDEN_PAGE);
+            return Mono.just(utilService.FORBIDDEN_PAGE);
         }
 
         Mono<Stock> stockById;
@@ -331,7 +331,7 @@ public class ShopCtrl {
 
                     return Mono.just("stockpage");
                 })
-                .switchIfEmpty(Mono.just(utilService.FORBIDEN_PAGE));
+                .switchIfEmpty(Mono.just(utilService.FORBIDDEN_PAGE));
     }
 
     /**
@@ -348,12 +348,12 @@ public class ShopCtrl {
             shopId = Long.parseLong(idSh);
             stockId = Long.parseLong(idSt);
         } catch (NumberFormatException e) {
-            return Mono.just(utilService.FORBIDEN_PAGE);
+            return Mono.just(utilService.FORBIDDEN_PAGE);
         }
 
         return shopService.isOwnerOfShop(shopId).
                 flatMap(shopOwner -> {
-                    if (!shopOwner) return Mono.just(utilService.FORBIDEN_PAGE);
+                    if (!shopOwner) return Mono.just(utilService.FORBIDDEN_PAGE);
 
                     if (stockId == 0) { // создание нового
                         stock.setId(null);
@@ -385,13 +385,13 @@ public class ShopCtrl {
                                     // странное место тоже
                                     return Mono.just("redirect:/shop/shoppage/" + shopId);
                                 default:
-                                    return Mono.just(utilService.FORBIDEN_PAGE);
+                                    return Mono.just(utilService.FORBIDDEN_PAGE);
                             }
                         });
                     } else { // обновление уже созданого
                         return stockService.isOwnerOfStock(shopId, stockId).
                                 flatMap(stockOwner -> {
-                                    if (!stockOwner) return Mono.just(utilService.FORBIDEN_PAGE);
+                                    if (!stockOwner) return Mono.just(utilService.FORBIDDEN_PAGE);
 
                                     return stockService.updateStock(stock).flatMap(s -> {
                                         System.out.println(stock);
@@ -431,7 +431,7 @@ public class ShopCtrl {
                                                         }
                                                 ).flatMap(sh1 -> stockService.updateStock(stock).flatMap(sh -> Mono.just("redirect:/shop/shoppage/" + shopId)));
                                             default:
-                                                return Mono.just(utilService.FORBIDEN_PAGE);
+                                                return Mono.just(utilService.FORBIDDEN_PAGE);
                                         }
                                     });
 
@@ -449,16 +449,16 @@ public class ShopCtrl {
             shopId = Long.parseLong(idSh);
 
         } catch (NumberFormatException e) {
-            return Mono.just(utilService.FORBIDEN_PAGE);
+            return Mono.just(utilService.FORBIDDEN_PAGE);
         }
 
         return shopService.isOwnerOfShop(shopId).
                 flatMap(shopOwner -> {
-                    if (!shopOwner) return Mono.just(utilService.FORBIDEN_PAGE);
+                    if (!shopOwner) return Mono.just(utilService.FORBIDDEN_PAGE);
 
                     return stockService.isOwnerOfStock(shopId, stockId).
                             flatMap(stockOwner -> {
-                                if (!stockOwner) return Mono.just(utilService.FORBIDEN_PAGE);
+                                if (!stockOwner) return Mono.just(utilService.FORBIDDEN_PAGE);
 
                                 return stockService.deleteStockById(stockId).
                                         flatMap(stock -> Mono.just("redirect:/shop/shoppage/" + shopId)).
@@ -476,16 +476,16 @@ public class ShopCtrl {
             shopId = Long.parseLong(idSh);
 
         } catch (NumberFormatException e) {
-            return Mono.just(utilService.FORBIDEN_PAGE);
+            return Mono.just(utilService.FORBIDDEN_PAGE);
         }
 
         return shopService.isOwnerOfShop(shopId).
                 flatMap(shopOwner -> {
-                    if (!shopOwner) return Mono.just(utilService.FORBIDEN_PAGE);
+                    if (!shopOwner) return Mono.just(utilService.FORBIDDEN_PAGE);
 
                     return stockService.isOwnerOfStock(shopId, stockId).
                             flatMap(stockOwner -> {
-                                if (!stockOwner) return Mono.just(utilService.FORBIDEN_PAGE);
+                                if (!stockOwner) return Mono.just(utilService.FORBIDDEN_PAGE);
 
                                 return stockService.restoreStockById(stockId).
                                         flatMap(stock -> Mono.just("redirect:/shop/shoppage/" + shopId)).
