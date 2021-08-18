@@ -143,12 +143,13 @@ public class AccountCtrl {
     @PostMapping("accountpage/{id}/searchshops")
     public Mono<String> searchShops(ServerWebExchange webExchange, Model model, @PathVariable String id) {
         Mono<MultiValueMap<String, String>> formData = webExchange.getFormData();
+
         return formData.
                 flatMap(map -> {
                     return userService.getPrincipal().flatMap(principal -> {
                         //     model.addAttribute("user", userService.getPrincipal());
                  //       model.addAttribute("shops", shopService.searchByValue(map).filter(shop -> shop.getUserId() == principal.getId()));
-                        model.addAttribute("shops", shopService.searchByValue(map));
+                        model.addAttribute("shops", shopService.searchPersonalByValue(map));
 
                         return Mono.just("accountpage");
                     });

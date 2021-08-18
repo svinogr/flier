@@ -1,7 +1,6 @@
 package com.svinogr.flier.services.impl;
 
 import com.svinogr.flier.model.Status;
-import com.svinogr.flier.model.User;
 import com.svinogr.flier.model.shop.Shop;
 import com.svinogr.flier.repo.ShopRepo;
 import com.svinogr.flier.services.ShopService;
@@ -63,6 +62,7 @@ public class ShopServiceImpl implements ShopService {
         return shopRepo.findAll();
     }
 
+    //TODO переделать под актив саму sql
     @Override
     public Flux<Shop> getAllActiveShops() {
         return shopRepo.findAll().filter(s -> s.getStatus().equals(Status.ACTIVE.name()));
@@ -95,17 +95,28 @@ public class ShopServiceImpl implements ShopService {
     }
 
     @Override
-    public Flux<Shop> getShopByTitle(String title) {
-        return shopRepo.findByTitleContains(title);
+    public Flux<Shop> getPersonalShopByTitle(String title) {
+        return shopRepo.findByPersonalTitleContains(title);
     }
 
     @Override
-    public Flux<Shop> getShopByAddress(String address) {
-        return shopRepo.findByAddressContains(address);
+    public Flux<Shop> getPersonalShopByAddress(String address) {
+        return userService.getPrincipal().
+                flatMapMany(principal -> {
+                    return shopRepo.findByPersonalAddressContains(address,principal );
+                });
     }
 
     @Override
-    public Flux<Shop> searchByValue(MultiValueMap<String, String> map) {
+    public Mono<Shop> getPersonalShopById(Long id) {
+        return userService.getPrincipal().
+                flatMapMany(principal -> {
+                    return shopRepo.findPersonalBydContains(id,principal).take(0);
+                });
+    }
+
+    @Override
+    public Flux<Shop> searchPersonalByValue(MultiValueMap<String, String> map) {
 
 
         String type = Strings.EMPTY;
@@ -118,9 +129,7 @@ public class ShopServiceImpl implements ShopService {
                 type = entry.getKey();
                 value = map.get("searchValue").get(0);
                 break;
-
             }
-
         }
 
         System.out.println(type + "--"+ value);
@@ -135,18 +144,18 @@ public class ShopServiceImpl implements ShopService {
                     return Flux.empty();
                 }
 
-                return getShopById(id).flux();
+                return getPersonalShopById(id).flux();
 
             case "searchTitle":
 
                 System.out.println(2);
 
-                return getShopByTitle(value);
+                return getPersonalShopByTitle(value);
             case "searchAddress":
 
                 System.out.println(3);
 
-                return getShopByAddress(value);
+                return getPersonalShopByAddress(value);
             default:
                 System.out.println(4);
                 return Flux.empty();

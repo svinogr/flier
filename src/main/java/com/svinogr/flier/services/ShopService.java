@@ -7,19 +7,28 @@ import reactor.core.publisher.Mono;
 
 public interface ShopService {
     Mono<Shop> createShop(Shop shop);
+
     Mono<Shop> updateShop(Shop shop);
+
     Mono<Shop> deleteShopById(Long shopId);
+
     Mono<Shop> getShopById(Long shopId);
+
     Flux<Shop> getAllShops();
+
     Flux<Shop> getAllActiveShops();
+
     Flux<Shop> getShopByUserId(Long shopId);
+
     Mono<Boolean> isOwnerOfShop(Long shopId);
 
     Mono<Shop> restoreShop(Long shopId);
 
-    Flux<Shop> getShopByTitle(String title);
+    Flux<Shop> getPersonalShopByTitle(String title);
 
-    Flux<Shop> getShopByAddress(String address);
+    Flux<Shop> getPersonalShopByAddress(String address);
 
-    Flux<Shop> searchByValue(MultiValueMap<String, String> map);
+    Flux<Shop> searchPersonalByValue(MultiValueMap<String, String> map);
+
+    Mono<Shop> getPersonalShopById(Long shopId);
 }
