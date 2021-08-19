@@ -163,4 +163,37 @@ public class ShopServiceImpl implements ShopService {
 
         }
     }
+
+    @Override
+    public Flux<Shop> searchPersonalByValue(String type, String value) {
+        System.out.println(type + "--"+ value);
+
+        switch (type) {
+            case "searchId":
+                long id;
+                System.out.println(1);
+                try {
+                    id = Long.parseLong(value);
+                } catch (NumberFormatException e) {
+                    return Flux.empty();
+                }
+                System.out.println("type " + type  + "*" + "value " + id);
+                return getPersonalShopById(id).flux();
+
+            case "searchTitle":
+
+                System.out.println(2);
+
+                return getPersonalShopByTitle(value);
+            case "searchAddress":
+
+                System.out.println(3);
+
+                return getPersonalShopByAddress(value);
+            default:
+                System.out.println(4);
+                return Flux.empty();
+
+        }
+    }
 }

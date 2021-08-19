@@ -59,7 +59,7 @@ public class AccountCtrl {
 
                         model.addAttribute("shops", shopService.
                                 getShopByUserId(userPrincipal.getId()));
-                     //   model.addAttribute("user", userPrincipal);
+                        //   model.addAttribute("user", userPrincipal);
                         //  model.addAttribute("admin", admin);
 
                         return Mono.just("accountpage");
@@ -85,7 +85,7 @@ public class AccountCtrl {
 
                         return userService.isAdmin().flatMap(admin -> {
 
-                                 //   model.addAttribute("user", userPrincipal);
+                                    //   model.addAttribute("user", userPrincipal);
                                     //   model.addAttribute("admin", admin);
 
                                     return Mono.just("accountuserpage");
@@ -146,13 +146,18 @@ public class AccountCtrl {
 
         return formData.
                 flatMap(map -> {
+                    //     model.addAttribute("user", userService.getPrincipal());
+                    //       model.addAttribute("shops", shopService.searchByValue(map).filter(shop -> shop.getUserId() == principal.getId()));
+                    model.addAttribute("shops", shopService.searchPersonalByValue(map));
 
-                        //     model.addAttribute("user", userService.getPrincipal());
-                 //       model.addAttribute("shops", shopService.searchByValue(map).filter(shop -> shop.getUserId() == principal.getId()));
-                        model.addAttribute("shops", shopService.searchPersonalByValue(map));
-
-                        return Mono.just("accountpage");
-
+                    return Mono.just("accountpage");
                 });
+    }
+
+    @GetMapping("accountpage/{id}/searchshops")
+    public Mono<String> searchShops2(@RequestParam("type") String type, @RequestParam("value") String value, Model model, @PathVariable String id) {
+        System.out.println(type + " " + value);
+        model.addAttribute("shops", shopService.searchPersonalByValue(type, value));
+        return Mono.just("accountpage");
     }
 }

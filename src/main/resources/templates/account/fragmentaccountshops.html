@@ -5,11 +5,33 @@
             window.location.href = "/shop/shoppage/" + id;
         });
 
-        $(".searhById").click(function () {
-            var id = $(".searchValue").prop("value");
-            window.location.href = "/shop/shops/" + id + "search";
+        $(".searchBy").click(function () {
+            var value = $("#searchValue").prop("value");
+            var type;
+            var go = false;
+            var id = $(".searchBy").prop('id');
+
+            if ($('#searchId').is(':checked')) {
+                type = "searchId";
+                go = true;
+            }
+            if ($('#searchTitle').is(':checked')) {
+                type = "searchTitle";
+                go = true;
+            }
+
+            if ($('#searchAddress').is(':checked')) {
+                type = "searchAddress";
+                go = true;
+            }
+
+            if (go) {
+                window.location.href = "/account/accountpage/"+ id+ "/searchshops?type=" + type + "&value=" + value;
+            }
+
         });
     });
+
     </script>
     <h4>Магазины:</h4>
     <brr/>
@@ -114,44 +136,37 @@
 
         </div>
         <div class="col-3 ">
-            <form  method="post" action="/account/accountpage/" th:attrappend="action=${principal.id} + '/searchshops'">
-                    <div class="form-check">
-                        <input class="form-check-input"  type="checkbox" name="searchId" id="searchId">
-                        <label class="form-check-label" for="searchId">
-                            по ID
-                        </label>
-                    </div>
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" name="searchTitle" id="searchTitle">
-                        <label class="form-check-label" for="searchTitle">
-                            по Названию
-                        </label>
-                    </div>
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" name="searchAddress" id="searchAddress">
-                        <label class="form-check-label" for="searchAddress">
-                            по Адресу
-                        </label>
-                    </div>
 
-                <div>
-                    <div class="input-group mb-3">
-                        <input type="text" class="form-control" name="searchValue" placeholder="Поиск"
-                               aria-label="Поиск по ID">
-                        <div class="input-group-append">
-                            <button class="btn btn-outline-secondary " type="submit" id="button-addon2">
-                                Найти
-                            </button>
-                        </div>
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" name="searchId" id="searchId">
+                <label class="form-check-label" for="searchId">
+                    по ID
+                </label>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" name="searchTitle" id="searchTitle">
+                <label class="form-check-label" for="searchTitle">
+                    по Названию
+                </label>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" name="searchAddress" id="searchAddress">
+                <label class="form-check-label" for="searchAddress">
+                    по Адресу
+                </label>
+            </div>
+            <div>
+                <div class="input-group mb-3">
+                    <input type="text" class="form-control" id="searchValue" name="searchValue" placeholder="Поиск"
+                           aria-label="Поиск по ID">
+                    <div class="input-group-append">
+                        <button  th:id="${principal.id}"
+                           class="btn btn-outline-success form-control searchBy" role="button">Найти</button>
                     </div>
                 </div>
-                <input hidden="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
-            </form>
-
-
+            </div>
             <a href="/shop/shoppage/0/update" class="btn btn-outline-success form-control" role="button">Добавить
                 Магазин</a>
-
         </div>
     </div>
 </div>
