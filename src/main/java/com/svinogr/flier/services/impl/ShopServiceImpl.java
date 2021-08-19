@@ -96,32 +96,33 @@ public class ShopServiceImpl implements ShopService {
 
     @Override
     public Flux<Shop> getPersonalShopByTitle(String title) {
-        return shopRepo.findByPersonalTitleContains(title);
+        return userService.getPrincipal().
+                flatMapMany(principal -> {
+                    return shopRepo.findByTitleContainsIgnoreCaseAndUserId(title, principal.getId());
+                });
     }
 
     @Override
     public Flux<Shop> getPersonalShopByAddress(String address) {
+        System.out.println(address);
         return userService.getPrincipal().
                 flatMapMany(principal -> {
-                    return shopRepo.findByPersonalAddressContains(address,principal );
+                    return shopRepo.findByAddressContainingIgnoreCaseAndUserId(address,principal.getId());
                 });
     }
 
     @Override
     public Mono<Shop> getPersonalShopById(Long id) {
         return userService.getPrincipal().
-                flatMapMany(principal -> {
-                    return shopRepo.findPersonalBydContains(id,principal).take(0);
+                flatMap(principal -> {
+                    return shopRepo.findByIdAndUserId(id,principal.getId());
                 });
     }
 
     @Override
     public Flux<Shop> searchPersonalByValue(MultiValueMap<String, String> map) {
-
-
         String type = Strings.EMPTY;
         String value = Strings.EMPTY;
-
 
         for (Map.Entry<String, List<String>> entry : map.entrySet()) {
             System.out.println(entry.getKey() + "/" + entry.getValue());
@@ -143,7 +144,7 @@ public class ShopServiceImpl implements ShopService {
                 } catch (NumberFormatException e) {
                     return Flux.empty();
                 }
-
+                System.out.println("type " + type  + "*" + "value " + id);
                 return getPersonalShopById(id).flux();
 
             case "searchTitle":

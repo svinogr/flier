@@ -146,13 +146,13 @@ public class AccountCtrl {
 
         return formData.
                 flatMap(map -> {
-                    return userService.getPrincipal().flatMap(principal -> {
+
                         //     model.addAttribute("user", userService.getPrincipal());
                  //       model.addAttribute("shops", shopService.searchByValue(map).filter(shop -> shop.getUserId() == principal.getId()));
                         model.addAttribute("shops", shopService.searchPersonalByValue(map));
 
                         return Mono.just("accountpage");
-                    });
+
                 });
     }
 }
