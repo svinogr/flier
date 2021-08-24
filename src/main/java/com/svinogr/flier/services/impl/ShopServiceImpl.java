@@ -168,6 +168,9 @@ public class ShopServiceImpl implements ShopService {
     public Flux<Shop> searchPersonalByValue(String type, String value) {
         System.out.println(type + "--"+ value);
 
+        if (value.equals(Strings.EMPTY)) return userService.getPrincipal().
+                flatMapMany(principal -> getShopByUserId(principal.getId()));
+
         switch (type) {
             case "searchId":
                 long id;
@@ -192,8 +195,8 @@ public class ShopServiceImpl implements ShopService {
                 return getPersonalShopByAddress(value);
             default:
                 System.out.println(4);
-                return Flux.empty();
-
+                return userService.getPrincipal().
+                        flatMapMany(principal -> getShopByUserId(principal.getId()));
         }
     }
 }
