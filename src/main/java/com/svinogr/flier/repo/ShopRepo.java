@@ -1,6 +1,8 @@
 package com.svinogr.flier.repo;
 
 import com.svinogr.flier.model.shop.Shop;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.r2dbc.repository.Modifying;
 import org.springframework.data.r2dbc.repository.Query;
 import org.springframework.data.repository.reactive.ReactiveCrudRepository;
@@ -35,4 +37,8 @@ public interface ShopRepo extends ReactiveCrudRepository<Shop, Long> {
     Flux<Shop> findByAddressContainingIgnoreCaseAndUserId(String address, Long userId);
 
     Mono<Shop> findByIdAndUserId(Long id, Long userId);
+
+    Mono<Long> countByUserId(Long shopId);
+
+    Flux<Shop> findByUserId(Long userId, Pageable pageable);
 }

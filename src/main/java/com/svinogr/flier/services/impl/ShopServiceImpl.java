@@ -7,6 +7,10 @@ import com.svinogr.flier.services.ShopService;
 import com.svinogr.flier.services.UserService;
 import org.apache.logging.log4j.util.Strings;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.MultiValueMap;
 import reactor.core.publisher.Flux;
@@ -69,7 +73,7 @@ public class ShopServiceImpl implements ShopService {
     }
 
     @Override
-    public Flux<Shop> getShopByUserId(Long id) {
+    public Flux<Shop> getShopsByUserId(Long id) {
         return shopRepo.findAllByUserId(id);
     }
 
@@ -107,7 +111,7 @@ public class ShopServiceImpl implements ShopService {
         System.out.println(address);
         return userService.getPrincipal().
                 flatMapMany(principal -> {
-                    return shopRepo.findByAddressContainingIgnoreCaseAndUserId(address,principal.getId());
+                    return shopRepo.findByAddressContainingIgnoreCaseAndUserId(address, principal.getId());
                 });
     }
 
@@ -115,8 +119,40 @@ public class ShopServiceImpl implements ShopService {
     public Mono<Shop> getPersonalShopById(Long id) {
         return userService.getPrincipal().
                 flatMap(principal -> {
-                    return shopRepo.findByIdAndUserId(id,principal.getId());
+                    return shopRepo.findByIdAndUserId(id, principal.getId());
                 });
+    }
+
+
+    @Override
+    public Mono<Page<Shop>> getPageShopsByUserId(Pageable pageable, Long userId) {
+   /*         return shopRepo.countByUserId(userId).
+                flatMap(count -> {
+
+                    int pageSize = pageable.getPageSize();
+                    int currentPage = pageable.getPageNumber();
+                    int startItem = currentPage * pageSize;
+                    Flux<Shop> listShops;
+
+                    if (count < startItem) {
+                        listShops = Flux.empty();
+                    } else {
+                        long toIindex = Math.min(startItem + pageSize, count);
+                        listShops = getShopsByUserId(userId).skip(startItem).take(pageSize);
+
+                        Page<Shop> shopPage = new PageImpl(listShops, PageRequest.of(currentPage, pageSize), count));
+                    }
+                    return shopRepo.findByUserId(userId, pageable);
+
+                });
+
+        return shopRepo.findByUserId(userId, pageable);*/
+        return Mono.empty();
+    }
+
+    @Override
+    public Mono<Long> getCountShopsByUserId(Long userId) {
+        return shopRepo.countByUserId(userId);
     }
 
     @Override
@@ -133,7 +169,7 @@ public class ShopServiceImpl implements ShopService {
             }
         }
 
-        System.out.println(type + "--"+ value);
+        System.out.println(type + "--" + value);
 
         switch (type) {
             case "searchId":
@@ -144,7 +180,7 @@ public class ShopServiceImpl implements ShopService {
                 } catch (NumberFormatException e) {
                     return Flux.empty();
                 }
-                System.out.println("type " + type  + "*" + "value " + id);
+                System.out.println("type " + type + "*" + "value " + id);
                 return getPersonalShopById(id).flux();
 
             case "searchTitle":
@@ -166,10 +202,10 @@ public class ShopServiceImpl implements ShopService {
 
     @Override
     public Flux<Shop> searchPersonalByValue(String type, String value) {
-        System.out.println(type + "--"+ value);
+        System.out.println(type + "--" + value);
 
         if (value.equals(Strings.EMPTY)) return userService.getPrincipal().
-                flatMapMany(principal -> getShopByUserId(principal.getId()));
+                flatMapMany(principal -> getShopsByUserId(principal.getId()));
 
         switch (type) {
             case "searchId":
@@ -180,7 +216,7 @@ public class ShopServiceImpl implements ShopService {
                 } catch (NumberFormatException e) {
                     return Flux.empty();
                 }
-                System.out.println("type " + type  + "*" + "value " + id);
+                System.out.println("type " + type + "*" + "value " + id);
                 return getPersonalShopById(id).flux();
 
             case "searchTitle":
@@ -196,7 +232,7 @@ public class ShopServiceImpl implements ShopService {
             default:
                 System.out.println(4);
                 return userService.getPrincipal().
-                        flatMapMany(principal -> getShopByUserId(principal.getId()));
+                        flatMapMany(principal -> getShopsByUserId(principal.getId()));
         }
     }
 }

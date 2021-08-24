@@ -4,6 +4,7 @@ import com.svinogr.flier.model.User;
 import com.svinogr.flier.services.ShopService;
 import com.svinogr.flier.services.StockService;
 import com.svinogr.flier.services.UserService;
+import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -39,16 +40,20 @@ public class AccountCtrl {
 
     //ver 2
     @GetMapping("accountpage/{id}")
-    public Mono<String> accountPage(@PathVariable String id, Model model) {
+    public Mono<String> accountPage(@PathVariable String id,
+                                    @RequestParam(value = "page", defaultValue = "0") String page,
+                                    Model model) {
         long userId;
+        int numberPage;
         try {
             userId = Long.parseLong(id);
+            numberPage = Integer.parseInt(page);
         } catch (NumberFormatException e) {
             return Mono.just(utilService.FORBIDDEN_PAGE);
         }
 
         return userService.getPrincipal().
-                flatMap(userPrincipal -> {
+                flatMap(principal -> {
                     return userService.isOwnerOfAccount(userId).flatMap(ok -> {
                         if (!ok) return Mono.just(utilService.FORBIDDEN_PAGE);
 
@@ -58,13 +63,34 @@ public class AccountCtrl {
                                                     getShopByUserId(userPrincipal.getId()), 10, 1);*/
 
                         model.addAttribute("shops", shopService.
-                                getShopByUserId(userPrincipal.getId()));
-                        //   model.addAttribute("user", userPrincipal);
-                        //  model.addAttribute("admin", admin);
+                                getShopsByUserId(principal.getId()).skip(numberPage * utilService.LIMIT_ENTITY_REQUEST).take(utilService.LIMIT_ENTITY_REQUEST));
+                      /*  model.addAttribute("pages",shopService.
+                                getPageShopsByUserId(principal.getId()));*/
+
+                        Mono<MyPage> myPageMono = shopService.getCountShopsByUserId(principal.getId()).flatMap(count -> {
+                            MyPage myPage = new MyPage();
+                            myPage.curentPage = numberPage;
+                            myPage.totalItem = count;
+                            myPage.pages = Math.ceil(myPage.totalItem/10);
+
+                            System.out.println(myPage);
+
+
+                            return Mono.just(myPage);
+                        });
+
+                        model.addAttribute("pages", myPageMono);
 
                         return Mono.just("accountpage");
                     });
                 });
+    }
+
+    @Data
+    private class MyPage {
+        long curentPage;
+        long totalItem;
+        double pages;
     }
 
     // ver 2
@@ -155,9 +181,17 @@ public class AccountCtrl {
     }
 
     @GetMapping("accountpage/{id}/searchshops")
-    public Mono<String> searchShops2(@RequestParam("type") String type, @RequestParam("value") String value, Model model, @PathVariable String id) {
+    public Mono<String> searchShops2(@RequestParam("type") String type, @RequestParam("value") String value, @RequestParam(value = "page", defaultValue = "0") String page, Model model, @PathVariable String id) {
         System.out.println(type + " " + value);
-        model.addAttribute("shops", shopService.searchPersonalByValue(type, value));
+        int pageNumber = 0;
+        try {
+            pageNumber = Integer.parseInt(page);
+        } catch (NumberFormatException e) {
+        }
+
+        model.addAttribute("shops", shopService.searchPersonalByValue(type, value)
+                .skip(pageNumber * utilService.LIMIT_ENTITY_REQUEST).take(utilService.LIMIT_ENTITY_REQUEST));
+
         return Mono.just("accountpage");
     }
 }

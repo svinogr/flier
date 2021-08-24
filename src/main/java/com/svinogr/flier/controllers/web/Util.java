@@ -23,6 +23,7 @@ public class Util {
     public final String SEARCH_BY_TITLE = "searchByTitle";
     public final String SEARCH_BY_ADDRESS = "searchByAddress";
     public final String SEARCH_ACTIVE_CHECKBOX = "on";
+    public  final long LIMIT_ENTITY_REQUEST = 10;
 
     /*
     return List. 0 el = typeSearch, 1 el = value

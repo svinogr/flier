@@ -1,6 +1,8 @@
 package com.svinogr.flier.services;
 
 import com.svinogr.flier.model.shop.Shop;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.util.MultiValueMap;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -18,7 +20,7 @@ public interface ShopService {
 
     Flux<Shop> getAllActiveShops();
 
-    Flux<Shop> getShopByUserId(Long shopId);
+    Flux<Shop> getShopsByUserId(Long shopId);
 
     Mono<Boolean> isOwnerOfShop(Long shopId);
 
@@ -33,4 +35,8 @@ public interface ShopService {
     Flux<Shop> searchPersonalByValue(String type, String value);
 
     Mono<Shop> getPersonalShopById(Long shopId);
+
+    Mono<Page<Shop>> getPageShopsByUserId(Pageable pageable, Long userId);
+
+    Mono<Long> getCountShopsByUserId(Long userId);
 }
