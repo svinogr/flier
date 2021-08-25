@@ -1,13 +1,67 @@
-<div th:if="${pages}" xmlns:th="http://www.thymeleaf.org" th:fragment="fragmentpagination" class="">
-    <nav aria-label="Page navigation example">
-        <ul class="pagination justify-content-center" th:each="page : ${#numbers.sequence(0,10)}">
-         <!--   <li class="page-item disabled">
-                <a class="page-link" href="#" tabindex="-1" aria-disabled="true">Previous</a>
-            </li>-->
-            <li class="page-item"><a class="page-link" href="/" th:attrappend="href=${page}">1</a></li>
-          <!--  <li class="page-item">
-                <a class="page-link" href="#">Next</a>
-            </li>-->
-        </ul>
-    </nav>
+<div th:if="${pages}" class="row" xmlns:th="http://www.thymeleaf.org" th:fragment="fragmentpagination">
+    <script> $(document).ready(function () {
+        $(".pageclick").click(function () {
+            var url = document.URL;
+            var page = $(this).prop("id");
+            alert(url);
+            var newUrl;
+
+            if (url.includes("?")) {
+                alert(1);
+                if (url.includes("page")){
+                    newUrl = replaceQueryParam("page", page, url)
+                } else {
+                    newUrl = url + "&page=" + page;
+                }
+
+
+            }else {
+                alert(2);
+/*
+                if (url.includes("page")){
+                    alert(21);
+
+                    newUrl = replaceQueryParam("page", page, url)
+                } else {
+                    alert(22);
+
+                    newUrl = url + "?page=" + page;
+                }*/
+                newUrl = url + "?page=" + page;
+            }
+
+            alert(newUrl);
+
+
+            window.location.href = newUrl;
+        });
+
+        function replaceQueryParam(param, newval, search) {
+            var regex = new RegExp("([?;&])" + param + "[^&;]*[;&]?");
+            var query = search.replace(regex, "$1").replace(/&$/, '');
+
+            return (query.length > 2 ? query + "&" : "?") + (newval ? param + "=" + newval : '');
+        }
+    });
+    </script>
+    <div class="col-3"></div>
+    <div class="col-6">
+        <nav aria-label="Page navigation example">
+            <ul class="pagination justify-content-center">
+                <!--   <li class="page-item disabled">
+                       <a class="page-link" href="#" tabindex="-1" aria-disabled="true">Previous</a>
+                   </li>-->
+                <li class="page-item" th:classappend="${pages.curentPage == state.index ? 'active' : ''}"
+                    th:each="page, state : ${#numbers.sequence(0, pages.pages)}">
+                    <a class="page-link pageclick" th:id="${state.index}" aria-current="page" th:text="${state.index}"></a>
+                </li>
+                <!--  <li class="page-item">
+                      <a class="page-link" href="#">Next</a>
+                  </li>-->
+            </ul>
+        </nav>
+    </div>
+    <div class="col-3"></div>
 </div>
+
+

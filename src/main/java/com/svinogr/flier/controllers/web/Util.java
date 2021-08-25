@@ -17,7 +17,7 @@ public class Util {
     @Value("${upload.stock.defaultImg}")
     public String defaultStockImg;
 
-    public final String FORBIDDEN_PAGE = "forbiddenPage";
+    public final String FORBIDDEN_PAGE = "forbiddenpage";
     public final String SEARCH_VALUE = "searchValue";
     public final String SEARCH_BY_ID = "searchById";
     public final String SEARCH_BY_TITLE = "searchByTitle";

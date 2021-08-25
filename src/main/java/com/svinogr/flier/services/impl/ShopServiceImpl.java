@@ -123,39 +123,61 @@ public class ShopServiceImpl implements ShopService {
                 });
     }
 
-
-    @Override
-    public Mono<Page<Shop>> getPageShopsByUserId(Pageable pageable, Long userId) {
-   /*         return shopRepo.countByUserId(userId).
-                flatMap(count -> {
-
-                    int pageSize = pageable.getPageSize();
-                    int currentPage = pageable.getPageNumber();
-                    int startItem = currentPage * pageSize;
-                    Flux<Shop> listShops;
-
-                    if (count < startItem) {
-                        listShops = Flux.empty();
-                    } else {
-                        long toIindex = Math.min(startItem + pageSize, count);
-                        listShops = getShopsByUserId(userId).skip(startItem).take(pageSize);
-
-                        Page<Shop> shopPage = new PageImpl(listShops, PageRequest.of(currentPage, pageSize), count));
-                    }
-                    return shopRepo.findByUserId(userId, pageable);
-
-                });
-
-        return shopRepo.findByUserId(userId, pageable);*/
-        return Mono.empty();
-    }
-
     @Override
     public Mono<Long> getCountShopsByUserId(Long userId) {
         return shopRepo.countByUserId(userId);
     }
 
     @Override
+    public Mono<Long> getCountSearchPersonalByValue(String type, String value) {
+        System.out.println(type + "--" + value);
+
+        if (value.equals(Strings.EMPTY)) return Mono.empty();
+
+        switch (type) {
+            case "searchId":
+                long id;
+                System.out.println(1);
+                try {
+                    id = Long.parseLong(value);
+                } catch (NumberFormatException e) {
+                    return Mono.empty();
+                }
+                System.out.println("type " + type + "*" + "value " + id);
+                return getCountPersonalShopById(id);
+
+            case "searchTitle":
+
+                System.out.println(2);
+
+                return getCountPersonalShopByTitle(value);
+            case "searchAddress":
+
+                System.out.println(3);
+
+                return getCountPersonalShopByAddress(value);
+            default:
+                System.out.println(4);
+                return Mono.empty();
+        }
+    }
+
+    private Mono<Long> getCountPersonalShopByAddress(String value) {
+        return null;
+    }
+
+    private Mono<Long> getCountPersonalShopByTitle(String value) {
+        return null;
+    }
+
+    private Mono<Long> getCountPersonalShopById(long id) {
+   return userService.getPrincipal().
+                flatMap(principal -> {
+                    return shopRepo.countByUserIdAndId(principal.getId(), id);
+                });
+    }
+
+  /*  @Override
     public Flux<Shop> searchPersonalByValue(MultiValueMap<String, String> map) {
         String type = Strings.EMPTY;
         String value = Strings.EMPTY;
@@ -198,7 +220,7 @@ public class ShopServiceImpl implements ShopService {
                 return Flux.empty();
 
         }
-    }
+    }*/
 
     @Override
     public Flux<Shop> searchPersonalByValue(String type, String value) {

@@ -38,7 +38,9 @@ public interface ShopRepo extends ReactiveCrudRepository<Shop, Long> {
 
     Mono<Shop> findByIdAndUserId(Long id, Long userId);
 
-    Mono<Long> countByUserId(Long shopId);
+    Mono<Long> countByUserId(Long userId);
 
     Flux<Shop> findByUserId(Long userId, Pageable pageable);
+
+    Mono<Long> countByUserIdAndId(long userId, Long id);
 }

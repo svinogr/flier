@@ -45,6 +45,7 @@ public class AccountCtrl {
                                     Model model) {
         long userId;
         int numberPage;
+
         try {
             userId = Long.parseLong(id);
             numberPage = Integer.parseInt(page);
@@ -166,7 +167,7 @@ public class AccountCtrl {
         });
     }
 
-    @PostMapping("accountpage/{id}/searchshops")
+ /*   @PostMapping("accountpage/{id}/searchshops")
     public Mono<String> searchShops(ServerWebExchange webExchange, Model model, @PathVariable String id) {
         Mono<MultiValueMap<String, String>> formData = webExchange.getFormData();
 
@@ -179,18 +180,38 @@ public class AccountCtrl {
                     return Mono.just("accountpage");
                 });
     }
-
+*/
     @GetMapping("accountpage/{id}/searchshops")
     public Mono<String> searchShops2(@RequestParam("type") String type, @RequestParam("value") String value, @RequestParam(value = "page", defaultValue = "0") String page, Model model, @PathVariable String id) {
         System.out.println(type + " " + value);
-        int pageNumber = 0;
+        long userId;
+        int numberPage;
+
         try {
-            pageNumber = Integer.parseInt(page);
+            userId = Long.parseLong(id);
+            numberPage = Integer.parseInt(page);
         } catch (NumberFormatException e) {
+            return Mono.just(utilService.FORBIDDEN_PAGE);
         }
 
+
         model.addAttribute("shops", shopService.searchPersonalByValue(type, value)
-                .skip(pageNumber * utilService.LIMIT_ENTITY_REQUEST).take(utilService.LIMIT_ENTITY_REQUEST));
+                .skip(numberPage * utilService.LIMIT_ENTITY_REQUEST).take(utilService.LIMIT_ENTITY_REQUEST));
+
+        Mono<MyPage> myPageMono = shopService.getCountSearchPersonalByValue(type, value).flatMap(count -> {
+            MyPage myPage = new MyPage();
+            myPage.curentPage = numberPage;
+            myPage.totalItem = count;
+            myPage.pages = Math.ceil(myPage.totalItem/10);
+
+            System.out.println(myPage);
+
+
+            return Mono.just(myPage);
+        });
+
+        model.addAttribute("pages", myPageMono);
+
 
         return Mono.just("accountpage");
     }

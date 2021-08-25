@@ -30,13 +30,13 @@ public interface ShopService {
 
     Flux<Shop> getPersonalShopByAddress(String address);
 
-    Flux<Shop> searchPersonalByValue(MultiValueMap<String, String> map);
+    //Flux<Shop> searchPersonalByValue(MultiValueMap<String, String> map);
 
     Flux<Shop> searchPersonalByValue(String type, String value);
 
     Mono<Shop> getPersonalShopById(Long shopId);
 
-    Mono<Page<Shop>> getPageShopsByUserId(Pageable pageable, Long userId);
-
     Mono<Long> getCountShopsByUserId(Long userId);
+
+    Mono<Long>  getCountSearchPersonalByValue(String type, String value);
 }
