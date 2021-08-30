@@ -7,10 +7,6 @@
                     aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
-            <form action="/signout" method="post">
-                <button type="submit">ПОст</button>
-                <input hidden="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
-            </form>
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
                 <a class="btn btn-outline-success" href="#" role="button">Новости</a>
                 <a th:if="${admin}" class="btn btn-outline-danger" href="/admin/users" role="button">Пользователи</a>
@@ -19,8 +15,10 @@
             </div>
                 <div class="align-items-center d-flex">
                     <p th:text=" ${principal.getEmail}" class="m-0 px-2"></p>
-                    <a class="btn btn-outline-success" href="/logout" id="logout" type="button">Выйти
-                    </a>
+                    <form action="/logout" method="post">
+                        <button class="btn btn-outline-info" type="submit">Выйти</button>
+                        <input hidden="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                    </form>
                 </div>
         </div>
     </nav>

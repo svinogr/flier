@@ -72,7 +72,7 @@ public class WebSecurityConfig {
                 csrf().tokenFromMultipartDataEnabled(true).and().
                 logout(logout -> {
                     logout.logoutHandler(logoutHandler).
-                            logoutUrl("/signout")
+                            logoutUrl("/logout")
                             .logoutSuccessHandler(new ServerLogoutSuccessHandler() {
                                 @Override
                                 public Mono<Void> onLogoutSuccess(WebFilterExchange exchange, Authentication authentication) {
