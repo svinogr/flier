@@ -1,10 +1,11 @@
 package com.svinogr.flier.controllers.web;
 
+import com.svinogr.flier.controllers.web.utils.PaginationUtil;
+import com.svinogr.flier.controllers.web.utils.Util;
 import com.svinogr.flier.model.User;
 import com.svinogr.flier.services.ShopService;
 import com.svinogr.flier.services.StockService;
 import com.svinogr.flier.services.UserService;
-import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -64,30 +65,18 @@ public class AccountCtrl {
                         model.addAttribute("shops", shopService.
                                 getShopsByUserId(principal.getId()).skip((numberPage -1) * utilService.LIMIT_ENTITY_REQUEST).take(utilService.LIMIT_ENTITY_REQUEST));
 
-                        Mono<MyPage> myPageMono = shopService.getCountShopsByUserId(principal.getId()).flatMap(count -> {
-                            MyPage myPage = new MyPage();
-                            myPage.currentPage = numberPage;
-                            myPage.totalItem = count;
-                            myPage.pages = (long) Math.ceil((double) myPage.totalItem/10);
-
+                        Mono<PaginationUtil> myPageMono = shopService.getCountShopsByUserId(principal.getId()).flatMap(count -> {
+                            PaginationUtil myPage = new PaginationUtil(numberPage, count);
                             System.out.println(myPage);
-                            System.out.println(24/10);
 
                             return Mono.just(myPage);
                         });
 
-                        model.addAttribute("pages", myPageMono);
+                        model.addAttribute("pagination", myPageMono);
 
                         return Mono.just("accountpage");
                     });
                 });
-    }
-
-    @Data
-    private class MyPage {
-        long currentPage;
-        long totalItem;
-        long pages;
     }
 
     // ver 2
@@ -190,21 +179,16 @@ public class AccountCtrl {
             return Mono.just(utilService.FORBIDDEN_PAGE);
         }
 
-
         model.addAttribute("shops", shopService.searchPersonalByValue(type, value)
                 .skip(numberPage * utilService.LIMIT_ENTITY_REQUEST).take(utilService.LIMIT_ENTITY_REQUEST));
 
-        Mono<MyPage> myPageMono = shopService.getCountSearchPersonalByValue(type, value).flatMap(count -> {
-            MyPage myPage = new MyPage();
-            myPage.currentPage = numberPage;
-            myPage.totalItem = count;
-            myPage.pages = (long) Math.ceil((double) myPage.totalItem/10);
+        Mono<PaginationUtil> myPageMono = shopService.getCountSearchPersonalByValue(type, value).flatMap(count -> {
+            PaginationUtil myPage = new PaginationUtil(numberPage, count);
 
             return Mono.just(myPage);
         });
 
-        model.addAttribute("pages", myPageMono);
-
+        model.addAttribute("pagination", myPageMono);
 
         return Mono.just("accountpage");
     }

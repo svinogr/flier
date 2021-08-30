@@ -1,5 +1,6 @@
 package com.svinogr.flier.controllers.web;
 
+import com.svinogr.flier.controllers.web.utils.Util;
 import com.svinogr.flier.model.Status;
 import com.svinogr.flier.model.User;
 import com.svinogr.flier.model.shop.Shop;

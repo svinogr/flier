@@ -1,4 +1,4 @@
-<div th:if="${pages}" class="row" xmlns:th="http://www.thymeleaf.org" th:fragment="fragmentpagination">
+<div th:if="${pagination}" class="row" xmlns:th="http://www.thymeleaf.org" th:fragment="fragmentpagination">
     <script> $(document).ready(function () {
         $(".pageclick").click(function () {
             var url = document.URL;
@@ -8,25 +8,25 @@
 
             if (url.includes("?")) {
                 alert(1);
-                if (url.includes("page")){
+                if (url.includes("page")) {
                     newUrl = replaceQueryParam("page", page, url)
                 } else {
                     newUrl = url + "&page=" + page;
                 }
 
 
-            }else {
+            } else {
                 alert(2);
-/*
-                if (url.includes("page")){
-                    alert(21);
+                /*
+                                if (url.includes("page")){
+                                    alert(21);
 
-                    newUrl = replaceQueryParam("page", page, url)
-                } else {
-                    alert(22);
+                                    newUrl = replaceQueryParam("page", page, url)
+                                } else {
+                                    alert(22);
 
-                    newUrl = url + "?page=" + page;
-                }*/
+                                    newUrl = url + "?page=" + page;
+                                }*/
                 newUrl = url + "?page=" + page;
             }
 
@@ -49,42 +49,44 @@
         <nav aria-label="Page navigation example">
             <ul class="pagination justify-content-center">
                 <li class="page-item">
-                    <a th:if="${pages.currentPage &gt; 3}" class="page-link pageclick" th:id="1" aria-label="Previous">
+                    <a th:if="${pagination.currentPage &gt; 3}" class="page-link pageclick" th:id="1"
+                       aria-label="Previous">
                         <span aria-hidden="true">&laquo;&laquo;</span>
                     </a>
                 </li>
                 <li class="page-item">
-                    <a th:if="${pages.currentPage &gt; 1}" class="page-link pageclick" th:id="${pages.currentPage} - 1" aria-label="Previous">
+                    <a th:if="${pagination.currentPage &gt; 1}" class="page-link pageclick"
+                       th:id="${pagination.currentPage} - 1" aria-label="Previous">
                         <span aria-hidden="true">&laquo;</span>
                     </a>
                 </li>
                 <li class="page-item">
-                    <a th:if="${pages.currentPage &gt; 3}" class="page-link" th:id="${pages.currentPage} - 1" aria-label="Previous">
+                    <a th:if="${pagination.currentPage &gt; 3}" class="page-link" th:id="${pagination.currentPage} - 1"
+                       aria-label="Previous">
                         <span aria-hidden="true">&hellip;</span>
                     </a>
                 </li>
-                <li  class="page-item" th:classappend="${pages.currentPage == state.current ? 'active' : ''}"
-                    th:each="page, state : ${#numbers.sequence(1, (pages.pages ))}">
-<!--
-                    <a th:if="(${pages.currentPage - state.current } &lt; 3  and ${state.current - pages.currentPage} &lt; 3) or ${pages.currentPage} ==  1 or ${pages.currentPage} == 2 or ${pages.currentPage == pages.pages}" class="page-link pageclick" th:id="${state.current}" aria-current="page" th:text="${state.current}"></a>
--->
-                    <a th:if="(${pages.currentPage - state.current } &lt; 3  and ${state.current - pages.currentPage} &lt; 3)" class="page-link pageclick" th:id="${state.current}" aria-current="page" th:text="${state.current}"></a>
-
+                <li class="page-item" th:classappend="${pagination.currentPage == state.current ? 'active' : ''}"
+                    th:each="page, state : ${#numbers.sequence(1, (pagination.pages ))}">
+                    <a th:if="(${pagination.currentPage - state.current } &lt; 3  and ${state.current - pagination.currentPage} &lt; 3)"
+                       class="page-link pageclick" th:id="${state.current}" aria-current="page"
+                       th:text="${state.current}"></a>
                 </li>
-
                 <li class="page-item">
-                    <a th:if="${pages.pages - pages.currentPage &gt; 2}" class="page-link" th:id="${pages.currentPage} - 1" aria-label="Previous">
+                    <a th:if="${pagination.pages - pagination.currentPage &gt; 2}" class="page-link"
+                       th:id="${pagination.currentPage} - 1" aria-label="Previous">
                         <span aria-hidden="true">&hellip;</span>
                     </a>
                 </li>
-
                 <li class="page-item">
-                    <a th:if="${pages.currentPage &lt; pages.pages}" th:id="${pages.currentPage} + 1" class="page-link pageclick" href="#" aria-label="Next">
+                    <a th:if="${pagination.currentPage &lt; pagination.pages}" th:id="${pagination.currentPage} + 1"
+                       class="page-link pageclick" href="#" aria-label="Next">
                         <span aria-hidden="true">&raquo;</span>
                     </a>
                 </li>
                 <li class="page-item">
-                    <a th:if="${pages.pages &gt; 6}" class="page-link pageclick" th:id="${pages.pages}" aria-label="Previous">
+                    <a th:if="${pagination.pages &gt; 6}" class="page-link pageclick" th:id="${pagination.pages}"
+                       aria-label="Previous">
                         <span aria-hidden="true">&raquo;&raquo;</span>
                     </a>
                 </li>

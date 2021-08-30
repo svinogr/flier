@@ -1,32 +1,24 @@
 package com.svinogr.flier.controllers.web;
 
 import com.svinogr.flier.config.jwt.JwtUtil;
+import com.svinogr.flier.controllers.web.utils.Util;
 import com.svinogr.flier.model.Role;
 import com.svinogr.flier.model.User;
 import com.svinogr.flier.model.UserRole;
 import com.svinogr.flier.services.UserService;
-import io.netty.handler.codec.http.cookie.Cookie;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.web.reactive.WebFluxProperties;
-import org.springframework.boot.web.servlet.server.Session;
 import org.springframework.http.ResponseCookie;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.context.ReactiveSecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.util.MultiValueMap;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 
 import javax.validation.Valid;
-import java.net.HttpCookie;
-import java.net.http.HttpResponse;
 import java.util.Map;
 
 @Controller
