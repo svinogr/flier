@@ -48,16 +48,46 @@
     <div class="col-6">
         <nav aria-label="Page navigation example">
             <ul class="pagination justify-content-center">
-                <!--   <li class="page-item disabled">
-                       <a class="page-link" href="#" tabindex="-1" aria-disabled="true">Previous</a>
-                   </li>-->
-                <li class="page-item" th:classappend="${pages.curentPage == state.index ? 'active' : ''}"
-                    th:each="page, state : ${#numbers.sequence(0, pages.pages)}">
-                    <a class="page-link pageclick" th:id="${state.index}" aria-current="page" th:text="${state.index}"></a>
+                <li class="page-item">
+                    <a th:if="${pages.currentPage &gt; 3}" class="page-link pageclick" th:id="1" aria-label="Previous">
+                        <span aria-hidden="true">&laquo;&laquo;</span>
+                    </a>
                 </li>
-                <!--  <li class="page-item">
-                      <a class="page-link" href="#">Next</a>
-                  </li>-->
+                <li class="page-item">
+                    <a th:if="${pages.currentPage &gt; 1}" class="page-link pageclick" th:id="${pages.currentPage} - 1" aria-label="Previous">
+                        <span aria-hidden="true">&laquo;</span>
+                    </a>
+                </li>
+                <li class="page-item">
+                    <a th:if="${pages.currentPage &gt; 3}" class="page-link" th:id="${pages.currentPage} - 1" aria-label="Previous">
+                        <span aria-hidden="true">&hellip;</span>
+                    </a>
+                </li>
+                <li  class="page-item" th:classappend="${pages.currentPage == state.current ? 'active' : ''}"
+                    th:each="page, state : ${#numbers.sequence(1, (pages.pages ))}">
+<!--
+                    <a th:if="(${pages.currentPage - state.current } &lt; 3  and ${state.current - pages.currentPage} &lt; 3) or ${pages.currentPage} ==  1 or ${pages.currentPage} == 2 or ${pages.currentPage == pages.pages}" class="page-link pageclick" th:id="${state.current}" aria-current="page" th:text="${state.current}"></a>
+-->
+                    <a th:if="(${pages.currentPage - state.current } &lt; 3  and ${state.current - pages.currentPage} &lt; 3)" class="page-link pageclick" th:id="${state.current}" aria-current="page" th:text="${state.current}"></a>
+
+                </li>
+
+                <li class="page-item">
+                    <a th:if="${pages.pages - pages.currentPage &gt; 2}" class="page-link" th:id="${pages.currentPage} - 1" aria-label="Previous">
+                        <span aria-hidden="true">&hellip;</span>
+                    </a>
+                </li>
+
+                <li class="page-item">
+                    <a th:if="${pages.currentPage &lt; pages.pages}" th:id="${pages.currentPage} + 1" class="page-link pageclick" href="#" aria-label="Next">
+                        <span aria-hidden="true">&raquo;</span>
+                    </a>
+                </li>
+                <li class="page-item">
+                    <a th:if="${pages.pages &gt; 6}" class="page-link pageclick" th:id="${pages.pages}" aria-label="Previous">
+                        <span aria-hidden="true">&raquo;&raquo;</span>
+                    </a>
+                </li>
             </ul>
         </nav>
     </div>

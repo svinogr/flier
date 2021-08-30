@@ -8,9 +8,7 @@ import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 
 @Controller
@@ -41,7 +39,7 @@ public class AccountCtrl {
     //ver 2
     @GetMapping("accountpage/{id}")
     public Mono<String> accountPage(@PathVariable String id,
-                                    @RequestParam(value = "page", defaultValue = "0") String page,
+                                    @RequestParam(value = "page", defaultValue = "1") String page,
                                     Model model) {
         long userId;
         int numberPage;
@@ -64,18 +62,16 @@ public class AccountCtrl {
                                                     getShopByUserId(userPrincipal.getId()), 10, 1);*/
 
                         model.addAttribute("shops", shopService.
-                                getShopsByUserId(principal.getId()).skip(numberPage * utilService.LIMIT_ENTITY_REQUEST).take(utilService.LIMIT_ENTITY_REQUEST));
-                      /*  model.addAttribute("pages",shopService.
-                                getPageShopsByUserId(principal.getId()));*/
+                                getShopsByUserId(principal.getId()).skip((numberPage -1) * utilService.LIMIT_ENTITY_REQUEST).take(utilService.LIMIT_ENTITY_REQUEST));
 
                         Mono<MyPage> myPageMono = shopService.getCountShopsByUserId(principal.getId()).flatMap(count -> {
                             MyPage myPage = new MyPage();
-                            myPage.curentPage = numberPage;
+                            myPage.currentPage = numberPage;
                             myPage.totalItem = count;
-                            myPage.pages = Math.ceil(myPage.totalItem/10);
+                            myPage.pages = (long) Math.ceil((double) myPage.totalItem/10);
 
                             System.out.println(myPage);
-
+                            System.out.println(24/10);
 
                             return Mono.just(myPage);
                         });
@@ -89,9 +85,9 @@ public class AccountCtrl {
 
     @Data
     private class MyPage {
-        long curentPage;
+        long currentPage;
         long totalItem;
-        double pages;
+        long pages;
     }
 
     // ver 2
@@ -189,7 +185,7 @@ public class AccountCtrl {
 
         try {
             userId = Long.parseLong(id);
-            numberPage = Integer.parseInt(page);
+            numberPage = Integer.parseInt(page) - 1;
         } catch (NumberFormatException e) {
             return Mono.just(utilService.FORBIDDEN_PAGE);
         }
@@ -200,12 +196,9 @@ public class AccountCtrl {
 
         Mono<MyPage> myPageMono = shopService.getCountSearchPersonalByValue(type, value).flatMap(count -> {
             MyPage myPage = new MyPage();
-            myPage.curentPage = numberPage;
+            myPage.currentPage = numberPage;
             myPage.totalItem = count;
-            myPage.pages = Math.ceil(myPage.totalItem/10);
-
-            System.out.println(myPage);
-
+            myPage.pages = (long) Math.ceil((double) myPage.totalItem/10);
 
             return Mono.just(myPage);
         });
