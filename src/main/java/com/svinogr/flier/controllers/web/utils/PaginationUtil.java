@@ -4,7 +4,7 @@ import lombok.Data;
 
 @Data
 public class PaginationUtil {
-    private static final long ITEM_ON_PAGE= 10;
+    public static final long ITEM_ON_PAGE= 10;
     private long currentPage;
     private long totalItem;
     private long pages;

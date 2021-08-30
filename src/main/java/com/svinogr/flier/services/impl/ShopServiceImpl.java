@@ -125,7 +125,7 @@ public class ShopServiceImpl implements ShopService {
 
     @Override
     public Mono<Long> getCountShopsByUserId(Long userId) {
-        return shopRepo.countByUserId(userId);
+        return shopRepo.countByUserId(userId).switchIfEmpty(Mono.empty());
     }
 
     @Override
@@ -162,12 +162,18 @@ public class ShopServiceImpl implements ShopService {
         }
     }
 
-    private Mono<Long> getCountPersonalShopByAddress(String value) {
-        return null;
+    private Mono<Long> getCountPersonalShopByAddress(String address) {
+        return userService.getPrincipal().
+                flatMap(principal -> {
+                    return shopRepo. countByUserIdAndAddressContainsIgnoreCase(principal.getId(), address);
+                });
     }
 
-    private Mono<Long> getCountPersonalShopByTitle(String value) {
-        return null;
+    private Mono<Long> getCountPersonalShopByTitle(String title) {
+        return userService.getPrincipal().
+                flatMap(principal -> {
+                    return shopRepo.countByUserIdAndTitleContainsIgnoreCase(principal.getId(), title);
+                });
     }
 
     private Mono<Long> getCountPersonalShopById(long id) {

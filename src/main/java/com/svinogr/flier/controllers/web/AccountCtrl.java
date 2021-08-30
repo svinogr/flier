@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 @Controller
@@ -51,35 +52,42 @@ public class AccountCtrl {
         } catch (NumberFormatException e) {
             return Mono.just(utilService.FORBIDDEN_PAGE);
         }
-
-        return userService.getPrincipal().
-                flatMap(principal -> {
-                    return userService.isOwnerOfAccount(userId).flatMap(ok -> {
-                        if (!ok) return Mono.just(utilService.FORBIDDEN_PAGE);
-
-                        // с этим не работает обьект в нексколькх местах сразу
+        // с этим не работает обьект в нексколькх местах сразу
                                   /*  IReactiveDataDriverContextVariable shops =
                                             new ReactiveDataDriverContextVariable(shopService.
                                                     getShopByUserId(userPrincipal.getId()), 10, 1);*/
+        return userService.getPrincipal().
+                flatMap(principal -> {
+                    return userService.isOwnerOfAccount(userId).
+                            flatMap(ok -> {
+                                if (!ok) return Mono.just(utilService.FORBIDDEN_PAGE);
 
-                        model.addAttribute("shops", shopService.
-                                getShopsByUserId(principal.getId()).skip((numberPage -1) * utilService.LIMIT_ENTITY_REQUEST).take(utilService.LIMIT_ENTITY_REQUEST));
+                                return Mono.just("ok");
+                            }).
+                            flatMap(ok -> {
+                                return shopService.getCountShopsByUserId(principal.getId()).
+                                        flatMap(count -> {
+                                            System.out.println(count);
+                                            PaginationUtil myPage = new PaginationUtil(numberPage, count);
 
-                        Mono<PaginationUtil> myPageMono = shopService.getCountShopsByUserId(principal.getId()).flatMap(count -> {
-                            PaginationUtil myPage = new PaginationUtil(numberPage, count);
-                            System.out.println(myPage);
+                                            if (myPage.getPages() > 0) {
+                                                model.addAttribute("pagination", myPage);
+                                            }
 
-                            return Mono.just(myPage);
-                        });
+                                            return Mono.just(myPage);
+                                        }).
+                                        flatMap(myPage -> {
+                                            if (myPage.getPages() > 0) {
+                                                model.addAttribute("shops", shopService.getShopsByUserId(principal.getId())
+                                                        .skip((numberPage - 1) * PaginationUtil.ITEM_ON_PAGE).take(PaginationUtil.ITEM_ON_PAGE));
+                                            }
 
-                        model.addAttribute("pagination", myPageMono);
-
-                        return Mono.just("accountpage");
-                    });
+                                            return Mono.just("accountpage");
+                                        });
+                            });
                 });
     }
 
-    // ver 2
     @GetMapping("accountpage/{id}/update")
     public Mono<String> updateAccountPage(@PathVariable String id, Model model) {
         Long userId;
@@ -96,12 +104,7 @@ public class AccountCtrl {
                         if (!ok) return Mono.just(utilService.FORBIDDEN_PAGE);
 
                         return userService.isAdmin().flatMap(admin -> {
-
-                                    //   model.addAttribute("user", userPrincipal);
-                                    //   model.addAttribute("admin", admin);
-
                                     return Mono.just("accountuserpage");
-
                                 }
                         );
                     });
@@ -152,44 +155,42 @@ public class AccountCtrl {
         });
     }
 
- /*   @PostMapping("accountpage/{id}/searchshops")
-    public Mono<String> searchShops(ServerWebExchange webExchange, Model model, @PathVariable String id) {
-        Mono<MultiValueMap<String, String>> formData = webExchange.getFormData();
-
-        return formData.
-                flatMap(map -> {
-                    //     model.addAttribute("user", userService.getPrincipal());
-                    //       model.addAttribute("shops", shopService.searchByValue(map).filter(shop -> shop.getUserId() == principal.getId()));
-                    model.addAttribute("shops", shopService.searchPersonalByValue(map));
-
-                    return Mono.just("accountpage");
-                });
-    }
-*/
     @GetMapping("accountpage/{id}/searchshops")
-    public Mono<String> searchShops2(@RequestParam("type") String type, @RequestParam("value") String value, @RequestParam(value = "page", defaultValue = "0") String page, Model model, @PathVariable String id) {
+    public Mono<String> searchShops(@RequestParam("type") String type,
+                                    @RequestParam("value") String value,
+                                    @RequestParam(value = "page", defaultValue = "1") String page, Model model, @PathVariable String id) {
         System.out.println(type + " " + value);
         long userId;
         int numberPage;
 
         try {
             userId = Long.parseLong(id);
-            numberPage = Integer.parseInt(page) - 1;
+            numberPage = Integer.parseInt(page);
         } catch (NumberFormatException e) {
             return Mono.just(utilService.FORBIDDEN_PAGE);
         }
 
-        model.addAttribute("shops", shopService.searchPersonalByValue(type, value)
-                .skip(numberPage * utilService.LIMIT_ENTITY_REQUEST).take(utilService.LIMIT_ENTITY_REQUEST));
+        return shopService.getCountSearchPersonalByValue(type, value).
+                flatMap(count -> {
+                    System.out.println(count);
+                    PaginationUtil myPage = new PaginationUtil(numberPage, count);
 
-        Mono<PaginationUtil> myPageMono = shopService.getCountSearchPersonalByValue(type, value).flatMap(count -> {
-            PaginationUtil myPage = new PaginationUtil(numberPage, count);
+                    if (myPage.getPages() > 0) {
+                        model.addAttribute("pagination", myPage);
+                    }
 
-            return Mono.just(myPage);
-        });
+                    return Mono.just(myPage);
+                }).
+                flatMap(myPage -> {
+                    if (myPage.getPages() > 0) {
 
-        model.addAttribute("pagination", myPageMono);
+                        model.addAttribute("shops", shopService.searchPersonalByValue(type, value)
+                                .skip((numberPage - 1) * PaginationUtil.ITEM_ON_PAGE).take(PaginationUtil.ITEM_ON_PAGE));
+                    }
 
-        return Mono.just("accountpage");
+                    return Mono.just("accountpage");
+                }).
+                switchIfEmpty(
+                        userService.getPrincipal().flatMap(principal -> Mono.just("redirect:/account/accountpage/" + principal.getId())));
     }
 }

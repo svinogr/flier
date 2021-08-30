@@ -7,32 +7,14 @@
             var newUrl;
 
             if (url.includes("?")) {
-                alert(1);
                 if (url.includes("page")) {
                     newUrl = replaceQueryParam("page", page, url)
                 } else {
                     newUrl = url + "&page=" + page;
                 }
-
-
             } else {
-                alert(2);
-                /*
-                                if (url.includes("page")){
-                                    alert(21);
-
-                                    newUrl = replaceQueryParam("page", page, url)
-                                } else {
-                                    alert(22);
-
-                                    newUrl = url + "?page=" + page;
-                                }*/
                 newUrl = url + "?page=" + page;
             }
-
-            alert(newUrl);
-
-
             window.location.href = newUrl;
         });
 
