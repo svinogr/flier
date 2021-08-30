@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.security.AccessControlException;
+
 @Controller
 @RequestMapping("/account/")
 public class AccountCtrl {
@@ -60,7 +62,7 @@ public class AccountCtrl {
                 flatMap(principal -> {
                     return userService.isOwnerOfAccount(userId).
                             flatMap(ok -> {
-                                if (!ok) return Mono.just(utilService.FORBIDDEN_PAGE);
+                                if (!ok) return Mono.error(new AccessControlException("access denied"));
 
                                 return Mono.just("ok");
                             }).
@@ -84,7 +86,7 @@ public class AccountCtrl {
 
                                             return Mono.just("accountpage");
                                         });
-                            });
+                            }).onErrorReturn(utilService.FORBIDDEN_PAGE);
                 });
     }
 
