@@ -1,38 +1,6 @@
 <div xmlns:th="http://www.thymeleaf.org" th:fragment="fragmentaccountshops" class=" col-9">
-    <script> $(document).ready(function () {
-        $(".clickable-row").click(function () {
-            var id = $(this).prop("id");
-            window.location.href = "/shop/shoppage/" + id;
-        });
-
-        $(".searchBy").click(function () {
-            var value = $("#searchValue").prop("value");
-            var type;
-            var go = false;
-            var id = $(".searchBy").prop('id');
-
-            if ($('#searchId').is(':checked')) {
-                type = "searchId";
-                go = true;
-            }
-            if ($('#searchTitle').is(':checked')) {
-                type = "searchTitle";
-                go = true;
-            }
-
-            if ($('#searchAddress').is(':checked')) {
-                type = "searchAddress";
-                go = true;
-            }
-
-            if (go) {
-                window.location.href = "/account/accountpage/"+ id+ "/searchshops?type=" + type + "&value=" + value;
-            }
-        });
-    });
-
-    </script>
-
+    <script src="/js/shop/clickableRow.js" type="text/javascript"></script>
+    <script src="/js/shop/search.js" type="text/javascript"></script>
     <h4>Магазины:</h4>
     <brr/>
     <div class="row">
@@ -68,20 +36,20 @@
                             <tbody>
                             <tr th:each="shop : ${shops}" th:if="${shop.status}
                             == 'ACTIVE'">
-                                <th class="clickable-row" th:id="${shop.id}" th:text="${shop.id}" scope="row">d</th>
-                                <th class="clickable-row" th:id="${shop.id}" scope="row"><img
+                                <th onclick="clickableRow(this.id)" class="clickable-row" th:id="${shop.id}" th:text="${shop.id}" scope="row">id</th>
+                                <th onclick="clickableRow(this.id)" class="clickable-row" th:id="${shop.id}" scope="row"><img
                                         style="width: 50px;height: 50px"
                                         src="/img/shop/"
                                         th:attrappend="src=${shop.img}">
                                 </th>
-                                <td class="clickable-row" th:id="${shop.id}" th:text="${shop.title}">title</td>
-                                <td class="clickable-row" th:id="${shop.id}" th:text="${shop.description}">description
+                                <td onclick="clickableRow(this.id)" class="clickable-row" th:id="${shop.id}" th:text="${shop.title}">title</td>
+                                <td onclick="clickableRow(this.id)" class="clickable-row" th:id="${shop.id}" th:text="${shop.description}">description
                                 </td>
-                                <td class="clickable-row" th:id="${shop.id}" th:text="${shop.address}">address</td>
-                                <td class="clickable-row" th:id="${shop.id}" th:text="${shop.coordLat}">lat</td>
-                                <td class="clickable-row" th:id="${shop.id}" th:text="${shop.coordLng}">lng</td>
-                                <td class="clickable-row" th:id="${shop.id}" th:text="${shop.status}">status</td>
-                                <td class="clickable-row" th:id="${shop.id}">
+                                <td onclick="clickableRow(this.id)" class="clickable-row" th:id="${shop.id}" th:text="${shop.address}">address</td>
+                                <td onclick="clickableRow(this.id)" class="clickable-row" th:id="${shop.id}" th:text="${shop.coordLat}">lat</td>
+                                <td onclick="clickableRow(this.id)" class="clickable-row" th:id="${shop.id}" th:text="${shop.coordLng}">lng</td>
+                                <td onclick="clickableRow(this.id)" class="clickable-row" th:id="${shop.id}" th:text="${shop.status}">status</td>
+                                <td onclick="clickableRow(this.id)" class="clickable-row" th:id="${shop.id}">
                                     <a href="//" th:attrappend="href=${shop.url}">Сайт</a>
                                 </td>
                             </tr>
@@ -109,31 +77,28 @@
                             <tbody>
                             <tr th:each="shop : ${shops}" th:if="${shop.status}
                             == 'NON_ACTIVE'">
-                                <th class="clickable-row" th:id="${shop.id}" th:text="${shop.id}" scope="row">d</th>
-                                <th class="clickable-row" th:id="${shop.id}" scope="row"><img
+                                <th onclick="clickableRow(this.id)" class="clickable-row" th:id="${shop.id}" th:text="${shop.id}" scope="row">d</th>
+                                <th onclick="clickableRow(this.id)" class="clickable-row" th:id="${shop.id}" scope="row"><img
                                         style="width: 50px;height: 50px"
                                         src="/img/shop/"
                                         th:attrappend="src=${shop.img}">
                                 </th>
-                                <td class="clickable-row" th:id="${shop.id}" th:text="${shop.title}">title</td>
-                                <td class="clickable-row" th:id="${shop.id}" th:text="${shop.description}">description
+                                <td onclick="clickableRow(this.id)" class="clickable-row" th:id="${shop.id}" th:text="${shop.title}">title</td>
+                                <td onclick="clickableRow(this.id)" class="clickable-row" th:id="${shop.id}" th:text="${shop.description}">description
                                 </td>
-                                <td class="clickable-row" th:id="${shop.id}" th:text="${shop.address}">address</td>
-                                <td class="clickable-row" th:id="${shop.id}" th:text="${shop.coordLat}">lat</td>
-                                <td class="clickable-row" th:id="${shop.id}" th:text="${shop.coordLng}">lng</td>
-                                <td class="clickable-row" th:id="${shop.id}" th:text="${shop.status}">status</td>
-                                <td class="clickable-row" th:id="${shop.id}">
+                                <td onclick="clickableRow(this.id)" class="clickable-row" th:id="${shop.id}" th:text="${shop.address}">address</td>
+                                <td onclick="clickableRow(this.id)" class="clickable-row" th:id="${shop.id}" th:text="${shop.coordLat}">lat</td>
+                                <td onclick="clickableRow(this.id)" class="clickable-row" th:id="${shop.id}" th:text="${shop.coordLng}">lng</td>
+                                <td onclick="clickableRow(this.id)" class="clickable-row" th:id="${shop.id}" th:text="${shop.status}">status</td>
+                                <td onclick="clickableRow(this.id)" class="clickable-row" th:id="${shop.id}">
                                     <a href="//" th:attrappend="href=${shop.url}">Сайт</a>
                                 </td>
                             </tr>
                             </tbody>
                         </table>
-
                     </div>
-
                 </div>
             </div>
-
         </div>
         <div class="col-3 ">
             <div class="form-check">
@@ -160,7 +125,7 @@
                            aria-label="Поиск по ID">
                     <div class="input-group-append">
                         <button  th:id="${principal.id}"
-                           class="btn btn-outline-success form-control searchBy" role="button">Найти</button>
+                           class="btn btn-outline-success form-control" onclick="search()" role="button">Найти</button>
                     </div>
                 </div>
             </div>
