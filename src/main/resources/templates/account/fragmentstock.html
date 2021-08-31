@@ -1,5 +1,5 @@
 <div xmlns:th="http://www.thymeleaf.org" th:fragment="fragmentupdatestock" class="container mt-4">
-    <script src="/static/js/preview.js" type="text/javascript"></script>
+    <script src="/js/preview.js" type="text/javascript"></script>
     <h4>Акция:</h4>
     <form class="" enctype="multipart/form-data" id="update" th:action="${stock.id}" method="post">
         <div class="row">
@@ -90,7 +90,7 @@
     <div class="row">
         <div class="col-3"></div>
         <div class="col-9">
-            <form class="" id="del" action="/static/js/shop/shoppage/"
+            <form class="" id="del" action="/shop/shoppage/"
                   th:attrappend="action=${stock.shopId}+'/stockpage/'+${stock.id}+'/delete'"
                   th:if="${stock.status} == 'ACTIVE'" method="post">
                 <input hidden="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
@@ -104,7 +104,7 @@
     <div class="row">
         <div class="col-3"></div>
         <div class="col-9">
-            <form class="" id="restore" action="/static/js/shop/shoppage/"
+            <form class="" id="restore" action="/shop/shoppage/"
                   th:attrappend="action=${stock.shopId}+'/stockpage/'+${stock.id}+'/restore'"
                   th:if="${stock.status} == 'NON_ACTIVE'" method="post">
                 <input hidden="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">

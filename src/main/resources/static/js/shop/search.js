@@ -1,8 +1,7 @@
-function search() {
+function search(id) {
          var value = $("#searchValue").prop("value");
       var type;
       var go = false;
-      var id = $(".searchBy").prop('id');
 
       if ($('#searchId').is(':checked')) {
           type = "searchId";

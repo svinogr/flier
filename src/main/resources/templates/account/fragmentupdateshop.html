@@ -102,7 +102,7 @@
     <div class="row">
         <div class="col-3"></div>
         <div class="col-9">
-            <a href="/static/js/shop/shoppage/" class="btn btn-outline-danger form-control mt-2" id="del"
+            <a href="/shop/shoppage/" class="btn btn-outline-danger form-control mt-2" id="del"
                th:attrappend="href=${shop.id}+'/delete'" th:if="${shop.status == 'ACTIVE'}"
             >Удалить</a>
 
@@ -113,7 +113,7 @@
     <div class="row">
         <div class="col-3"></div>
         <div class="col-9">
-            <a th:if="${shop.status == 'NON_ACTIVE'}" href="/static/js/shop/shoppage/" class="btn btn-outline-danger form-control mt-2" id="restore"
+            <a th:if="${shop.status == 'NON_ACTIVE'}" href="/shop/shoppage/" class="btn btn-outline-danger form-control mt-2" id="restore"
                th:attrappend="href=${shop.id}+'/restore'"
             >Востановить</a>
         </div>
