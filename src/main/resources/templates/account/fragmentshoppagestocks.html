@@ -1,11 +1,4 @@
 <div xmlns:th="http://www.thymeleaf.org" th:fragment="fragmentshoppagestocks" class="col-9">
-  <!--  <script> $(document).ready(function () {
-        $(".clickable-row").click(function () {
-            var id = $(this).prop("id");
-            window.location.href = "/shop/shoppage/" + [[${shop.id}]] + "/stockpage/" + id;
-        });
-    });
-    </script>-->
     <script src="/js/stock/clickableRow.js" type="text/javascript"></script>
     <script src="/js/stock/search.js" type="text/javascript"></script>
     <h4>Акции магазина:</h4> <br>
@@ -38,16 +31,16 @@
                             <tbody>
                             <tr th:each="stock : ${stocks}" th:if="${stock.status}
                                     == 'ACTIVE'">
-                                <th onclick="clickableRow(this.id)" class="clickable-row" th:id="${stock.id}" th:text="${stock.id}" scope="row">id</th>
-                                <th onclick="clickableRow(this.id)" class="clickable-row" th:id="${stock.id}" scope="row"><img
+                                <th onclick="clickableRow(this.id)"  class="clickable-row" th:id=" ${stock.shopId}+'/stockpage/'+ ${stock.id}" th:text="${stock.id}" scope="row">id</th>
+                                <th onclick="clickableRow(this.id, this.shopId)" th:id=" ${stock.shopId}+'/stockpage/'+ ${stock.id}" class="clickable-row" scope="row"><img
                                         style="width: 50px;height: 50px" src="/img/stock/"
                                         th:attrappend="src=${stock.img}">
                                 </th>
-                                <td onclick="clickableRow(this.id)" class="clickable-row" th:id="${stock.id}" th:text="${stock.title}">title</td>
-                                <td onclick="clickableRow(this.id)" class="clickable-row" th:id="${stock.id}" th:text="${stock.description}">description
+                                <td onclick="clickableRow(this.id)" class="clickable-row" th:id=" ${stock.shopId}+'/stockpage/'+ ${stock.id}" th:text="${stock.title}">title</td>
+                                <td onclick="clickableRow(this.id)" class="clickable-row" th:id=" ${stock.shopId}+'/stockpage/'+ ${stock.id}" th:text="${stock.description}">description
                                 </td>
-                                <td onclick="clickableRow(this.id)" class="clickable-row" th:id="${stock.id}" th:text="${stock.status}">status</td>
-                                <td onclick="clickableRow(this.id)" class="clickable-row" th:id="${stock.id}">
+                                <td onclick="clickableRow(this.id)" class="clickable-row" th:id=" ${stock.shopId}+'/stockpage/'+ ${stock.id}" th:text="${stock.status}">status</td>
+                                <td onclick="clickableRow(this.id)" class="clickable-row" th:id=" ${stock.shopId}+'/stockpage/'+ ${stock.id}">
                                     <a href="//" th:attrappend="href=${stock.url}">Сайт</a>
                                 </td>
                             </tr>
@@ -71,16 +64,16 @@
                             <tbody>
                             <tr th:each="stock : ${stocks}"  th:if="${stock.status}
                                     == 'NON_ACTIVE'">
-                                <th onclick="clickableRow(this.id)" class="clickable-row" th:id="${stock.id}" th:text="${stock.id}" scope="row">id</th>
-                                <th onclick="clickableRow(this.id)" class="clickable-row" th:id="${stock.id}" scope="row"><img
+                                <th onclick="clickableRow(this.id, ${shop.id})" class="clickable-row"th:id=" ${stock.shopId}+'/stockpage/'+ ${stock.id}" th:text="${stock.id}" scope="row">id</th>
+                                <th onclick="clickableRow(this.id)" class="clickable-row" th:id=" ${stock.shopId}+'/stockpage/'+ ${stock.id}" scope="row"><img
                                         style="width: 50px;height: 50px" src="/img/stock/"
                                         th:attrappend="src=${stock.img}">
                                 </th>
-                                <td onclick="clickableRow(this.id)" class="clickable-row" th:id="${stock.id}" th:text="${stock.title}">title</td>
-                                <td onclick="clickableRow(this.id)" class="clickable-row" th:id="${stock.id}" th:text="${stock.description}">description
+                                <td onclick="clickableRow(this.id)" class="clickable-row" th:id=" ${stock.shopId}+'/stockpage/'+ ${stock.id}" th:text="${stock.title}">title</td>
+                                <td onclick="clickableRow(this.id)" class="clickable-row" th:id=" ${stock.shopId}+'/stockpage/'+ ${stock.id}" th:text="${stock.description}">description
                                 </td>
-                                <td onclick="clickableRow(this.id)" class="clickable-row" th:id="${stock.id}" th:text="${stock.status}">status</td>
-                                <td onclick="clickableRow(this.id)" class="clickable-row" th:id="${stock.id}">
+                                <td onclick="clickableRow(this.id)" class="clickable-row" th:id=" ${stock.shopId}+'/stockpage/'+ ${stock.id}" th:text="${stock.status}">status</td>
+                                <td onclick="clickableRow(this.id)" class="clickable-row"th:id=" ${stock.shopId}+'/stockpage/'+ ${stock.id}">
                                     <a href="//" th:attrappend="href=${stock.url}">Сайт</a>
                                 </td>
                             </tr>
@@ -92,22 +85,31 @@
             </div>
         </div>
         <div class="col-3">
-            <div class="row">
-                <div class="form-check">
-                    <input class="form-check-input" type="radio" name="searchId" id="searchId">
-                    <label class="form-check-label" for="searchId">
-                        по ID
-                    </label>
-                </div>
+            <div class="form-check">
+                <input class="form-check-input" type="radio" checked name="searchradio" id="searchId">
+                <label class="form-check-label" for="searchId">
+                    по ID
+                </label>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="searchradio" id="searchTitle">
+                <label class="form-check-label" for="searchTitle">
+                    по Названию
+                </label>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="searchradio" id="searchDescription">
+                <label class="form-check-label" for="searchDescription">
+                    по Описанию
+                </label>
             </div>
             <div>
                 <div class="input-group mb-3">
-                    <input type="text" class="form-control searchValue" placeholder="Поиск по ID"
+                    <input type="text" class="form-control" id="searchValue" name="searchValue" placeholder="Поиск"
                            aria-label="Поиск по ID">
                     <div class="input-group-append">
-                        <button class="btn btn-outline-secondary searhById" type="button" id="button-addon2">
-                            Найти
-                        </button>
+                        <button  th:id="${principal.id}"
+                                 class="btn btn-outline-success form-control" onclick="search()" role="button">Найти</button>
                     </div>
                 </div>
             </div>

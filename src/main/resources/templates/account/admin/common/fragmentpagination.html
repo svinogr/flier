@@ -34,8 +34,14 @@
                         <span aria-hidden="true">&hellip;</span>
                     </a>
                 </li>
+                <!--<li class="page-item">
+                    <a th:if="${pagination.pages &gt; 4} and " class="page-link" onclick="pageClick(this.id)" th:id="${pagination.pages}"
+                       aria-label="Previous">
+                        <span aria-hidden="true" th:text="${pagination.pages}">&raquo;&raquo;</span>
+                    </a>
+                </li>-->
                 <li class="page-item">
-                    <a th:if="${pagination.pages &gt; 6}" class="page-link" onclick="pageClick(this.id)" th:id="${pagination.pages}"
+                    <a th:if="${(pagination.pages - pagination.currentPage) &gt; 2}" class="page-link" onclick="pageClick(this.id)" th:id="${pagination.pages}"
                        aria-label="Previous">
                         <span aria-hidden="true" th:text="${pagination.pages}">&raquo;&raquo;</span>
                     </a>

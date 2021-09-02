@@ -26,4 +26,16 @@ public interface StockRepo extends ReactiveCrudRepository<Stock, Long> {
             " updated = DEFAULT" +
             " where id= :#{#stock.id}")
     Mono<Boolean> updateStock(Stock stock);
+
+    Mono<Long> countByShopId(Long id);
+
+    Mono<Long> countByShopIdAndDescriptionContainsIgnoreCase(Long id, String description);
+
+    Mono<Long> countByShopIdAndTitleContainsIgnoreCase(Long id, String title);
+
+    Mono<Long> countByShopIdAndId(Long id, long id1);
+
+    Mono<Stock> findByShopIdAndId(long shopId, long id);
+
+    Flux<Stock> findByTitleContainingIgnoreCaseAndShopId(String title, long shopId);
 }

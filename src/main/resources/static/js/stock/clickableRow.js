@@ -1,6 +1,5 @@
 function clickableRow(id) {
-    var url = document.URL;
-    window.location.href = url + "/stockpage/" + id;
+    window.location.href = "/shop/shoppage/" + id;
     }
 
 

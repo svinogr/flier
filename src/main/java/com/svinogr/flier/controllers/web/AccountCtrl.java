@@ -10,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.security.AccessControlException;
@@ -64,12 +63,11 @@ public class AccountCtrl {
                             flatMap(ok -> {
                                 if (!ok) return Mono.error(new AccessControlException("access denied"));
 
-                                return Mono.just("ok");
+                                return Mono.just(ok);
                             }).
                             flatMap(ok -> {
                                 return shopService.getCountShopsByUserId(principal.getId()).
                                         flatMap(count -> {
-                                            System.out.println(count);
                                             PaginationUtil myPage = new PaginationUtil(numberPage, count);
 
                                             if (myPage.getPages() > 0) {
@@ -159,9 +157,8 @@ public class AccountCtrl {
 
     @GetMapping("accountpage/{id}/searchshops")
     public Mono<String> searchShops(@RequestParam("type") String type,
-                                    @RequestParam("value") String value,
+                                    @RequestParam(value = "value", defaultValue = "") String value,
                                     @RequestParam(value = "page", defaultValue = "1") String page, Model model, @PathVariable String id) {
-        System.out.println(type + " " + value);
         long userId;
         int numberPage;
 
@@ -186,7 +183,7 @@ public class AccountCtrl {
                 flatMap(myPage -> {
                     if (myPage.getPages() > 0) {
 
-                        model.addAttribute("shops", shopService.searchPersonalByValue(type, value)
+                        model.addAttribute("shops", shopService.searchPersonalByValueAndType(type, value)
                                 .skip((numberPage - 1) * PaginationUtil.ITEM_ON_PAGE).take(PaginationUtil.ITEM_ON_PAGE));
                     }
 

@@ -81,7 +81,7 @@ public class ShopServiceImpl implements ShopService {
     public Mono<Boolean> isOwnerOfShop(Long shopId) {
         return getShopById(shopId).
                 flatMap(shop -> userService.getPrincipal().
-                        flatMap(user -> Mono.just(shop.getUserId() == user.getId())));
+                        flatMap(user -> Mono.just(shop.getUserId() == user.getId()))).switchIfEmpty(Mono.just(false));
     }
 
     @Override
@@ -183,53 +183,8 @@ public class ShopServiceImpl implements ShopService {
                 });
     }
 
-  /*  @Override
-    public Flux<Shop> searchPersonalByValue(MultiValueMap<String, String> map) {
-        String type = Strings.EMPTY;
-        String value = Strings.EMPTY;
-
-        for (Map.Entry<String, List<String>> entry : map.entrySet()) {
-            System.out.println(entry.getKey() + "/" + entry.getValue());
-            if (entry.getValue().get(0).equals("on")) {
-                type = entry.getKey();
-                value = map.get("searchValue").get(0);
-                break;
-            }
-        }
-
-        System.out.println(type + "--" + value);
-
-        switch (type) {
-            case "searchId":
-                long id;
-                System.out.println(1);
-                try {
-                    id = Long.parseLong(value);
-                } catch (NumberFormatException e) {
-                    return Flux.empty();
-                }
-                System.out.println("type " + type + "*" + "value " + id);
-                return getPersonalShopById(id).flux();
-
-            case "searchTitle":
-
-                System.out.println(2);
-
-                return getPersonalShopByTitle(value);
-            case "searchAddress":
-
-                System.out.println(3);
-
-                return getPersonalShopByAddress(value);
-            default:
-                System.out.println(4);
-                return Flux.empty();
-
-        }
-    }*/
-
     @Override
-    public Flux<Shop> searchPersonalByValue(String type, String value) {
+    public Flux<Shop> searchPersonalByValueAndType(String type, String value) {
         System.out.println(type + "--" + value);
 
         if (value.equals(Strings.EMPTY)) return userService.getPrincipal().

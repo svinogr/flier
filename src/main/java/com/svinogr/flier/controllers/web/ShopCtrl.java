@@ -1,5 +1,6 @@
 package com.svinogr.flier.controllers.web;
 
+import com.svinogr.flier.controllers.web.utils.PaginationUtil;
 import com.svinogr.flier.controllers.web.utils.Util;
 import com.svinogr.flier.model.Status;
 import com.svinogr.flier.model.User;
@@ -16,6 +17,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
 
+import java.security.AccessControlException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 
@@ -65,36 +67,71 @@ public class ShopCtrl {
      * @return shop page for shop with id
      */
     @GetMapping("shoppage/{id}")
-    public Mono<String> getShopPage(@PathVariable String id, Model model) {
+    public Mono<String> getShopPage(@PathVariable String id, @RequestParam(value = "page", defaultValue = "1") String page, Model model) {
         Long shopId;
+        int numberPage;
 
         try {
             shopId = Long.parseLong(id);
-
+            numberPage = Integer.parseInt(page);
         } catch (NumberFormatException e) {
             return userService.getPrincipal().flatMap(user -> Mono.just("redirect:/account/accountpage/" + user.getId()));
         }
 
-        return userService.getPrincipal().
-                flatMap(user -> {
-                    return shopService.isOwnerOfShop(shopId).flatMap(ok -> {
-                        if (!ok) return Mono.just(utilService.FORBIDDEN_PAGE);
+        return userService.getPrincipal().flatMap(user -> {
+            return shopService.isOwnerOfShop(shopId).
+                    flatMap(ok -> {
+                        System.out.println(ok);
+                        if (!ok) return Mono.error(new AccessControlException("access denied"));
+
                         return shopService.getShopById(shopId).
+                                flatMap(shop -> {
+                                    model.addAttribute("shop", shop);
+                                    return Mono.just(shop);
+                                }).
+                                flatMap(shop -> {
+                                    return stockService.getCountStocksByShopId(shop.getId()).
+                                            flatMap(count -> {
+                                                PaginationUtil myPage = new PaginationUtil(numberPage, count);
+                                                System.out.println(myPage);
+                                                if (myPage.getPages() > 0) {
+                                                    model.addAttribute("pagination", myPage);
+                                                }
+
+                                                return Mono.just(myPage);
+                                            }).
+                                            flatMap(myPage -> {
+                                                if (myPage.getPages() > 0) {
+                                                    model.addAttribute("stocks", stockService.findStocksByShopId(shopId)
+                                                            .skip((numberPage - 1) * PaginationUtil.ITEM_ON_PAGE).take(PaginationUtil.ITEM_ON_PAGE));
+                                                }
+
+                                                return Mono.just("shoppage");
+                                            });
+                                });
+                    }).
+                    onErrorReturn(utilService.FORBIDDEN_PAGE);
+        });
+
+    }
+
+
+
+                /*        return shopService.getShopById(shopId).
                                 flatMap(s -> {
                                     return userService.isAdmin().flatMap(isAdmin -> {
                                         //    model.addAttribute("admin", isAdmin);
                                         model.addAttribute("shop", s);
 
-                                      /*  IReactiveDataDriverContextVariable reactiveDataDrivenMode =
-                                                new ReactiveDataDriverContextVariable(stockService.findStocksByShopId(shopId), 1, 1);*/
+                                      *//*  IReactiveDataDriverContextVariable reactiveDataDrivenMode =
+                                                new ReactiveDataDriverContextVariable(stockService.findStocksByShopId(shopId), 1, 1);*//*
                                         model.addAttribute("stocks", stockService.findStocksByShopId(shopId));
 
                                         return Mono.just("shoppage");
                                     });
                                 }).switchIfEmpty(Mono.just("redirect:account/accountpage/" + user.getId()));
                     });
-                });
-    }
+                });*/
 
     @GetMapping("shoppage/{id}/update")
     public Mono<String> getUpdateShopPage(@PathVariable String id, Model model) {
@@ -271,15 +308,15 @@ public class ShopCtrl {
         }
 
         return shopService.isOwnerOfShop(shopId)
-                .flatMap(owner ->{
+                .flatMap(owner -> {
                     if (!owner) return Mono.just(utilService.FORBIDDEN_PAGE);
 
                     return userService.getPrincipal().
-                            flatMap(principal ->{
-                               return shopService.restoreShop(shopId).
-                                       flatMap(shop -> {
-                                           return Mono.just("redirect:/account/accountpage/" + principal.getId());
-                                       }).switchIfEmpty(Mono.just("redirect:/account/accountpage/" + principal.getId()));
+                            flatMap(principal -> {
+                                return shopService.restoreShop(shopId).
+                                        flatMap(shop -> {
+                                            return Mono.just("redirect:/account/accountpage/" + principal.getId());
+                                        }).switchIfEmpty(Mono.just("redirect:/account/accountpage/" + principal.getId()));
                             });
                 })
                 .switchIfEmpty(Mono.just(utilService.FORBIDDEN_PAGE));
@@ -342,7 +379,9 @@ public class ShopCtrl {
      * 1 set new from file
      */
     @PostMapping("shoppage/{idSh}/stockpage/{idSt}")
-    public Mono<String> updateStock(@PathVariable String idSh, @PathVariable String idSt, @RequestPart("imgTypeAction") String imgTypeAction, @RequestPart("file") Mono<FilePart> file, Stock stock) {
+    public Mono<String> updateStock(@PathVariable String idSh, @PathVariable String
+            idSt, @RequestPart("imgTypeAction") String imgTypeAction, @RequestPart("file") Mono<FilePart> file, Stock
+                                            stock) {
         long shopId, stockId;
 
         try {
@@ -493,5 +532,57 @@ public class ShopCtrl {
                                         switchIfEmpty(Mono.just("redirect:/shop/shoppage/" + shopId));
                             });
                 });
+    }
+
+    @GetMapping("shoppage/{id}/searchstocks")
+    public Mono<String> searchShops(@RequestParam("type") String type,
+                                    @RequestParam(value = "value", defaultValue = "") String value,
+                                    @RequestParam(value = "page", defaultValue = "1") String page, Model model, @PathVariable String id) {
+        System.out.println(type + " " + value);
+        long shopId;
+        int numberPage;
+
+        try {
+            shopId = Long.parseLong(id);
+            numberPage = Integer.parseInt(page);
+        } catch (NumberFormatException e) {
+            return Mono.just(utilService.FORBIDDEN_PAGE);
+        }
+
+        return userService.getPrincipal().flatMap(user -> {
+            return shopService.isOwnerOfShop(shopId).
+                    flatMap(ok -> {
+                        System.out.println(ok);
+                        if (!ok) return Mono.error(new AccessControlException("access denied"));
+
+                        return shopService.getShopById(shopId).
+                                flatMap(shop -> {
+                                    model.addAttribute("shop", shop);
+                                    return Mono.just(shop);
+                                }).flatMap(shop -> {
+                            return stockService.getCountSearchPersonalByValue(type, value, shop.getId()).
+                                    flatMap(count -> {
+                                        PaginationUtil myPage = new PaginationUtil(numberPage, count);
+                                        System.out.println(myPage);
+                                        if (myPage.getPages() > 0) {
+                                            model.addAttribute("pagination", myPage);
+                                        }
+
+                                        return Mono.just(myPage);
+                                    }).
+                                    flatMap(myPage -> {
+                                        if (myPage.getPages() > 0) {
+                                            model.addAttribute("stocks", stockService.searchPersonalByValueAndType(type, value, shopId)
+                                                    .skip((numberPage - 1) * PaginationUtil.ITEM_ON_PAGE).take(PaginationUtil.ITEM_ON_PAGE));
+                                        }
+
+                                        return Mono.just("shoppage");
+                                    });
+                        });
+                    }).
+                    switchIfEmpty(
+                            userService.getPrincipal().flatMap(principal -> Mono.just("redirect:/shop/shoppage/" + shopId))).
+                    onErrorReturn(utilService.FORBIDDEN_PAGE);
+        });
     }
 }

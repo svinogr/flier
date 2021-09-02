@@ -32,7 +32,7 @@ public interface ShopService {
 
     //Flux<Shop> searchPersonalByValue(MultiValueMap<String, String> map);
 
-    Flux<Shop> searchPersonalByValue(String type, String value);
+    Flux<Shop> searchPersonalByValueAndType(String type, String value);
 
     Mono<Shop> getPersonalShopById(Long shopId);
 
