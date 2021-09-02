@@ -3,7 +3,7 @@ function search(id) {
     var type;
     var go = false;
     var url = document.URL;
-    alert("search");
+
     if ($('#searchId').is(':checked')) {
         type = "searchId";
         go = true;

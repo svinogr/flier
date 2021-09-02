@@ -77,7 +77,7 @@ public class StockServiceImpl implements StockService {
                 try {
                     id = Long.parseLong(value);
                 } catch (NumberFormatException e) {
-                    return Mono.empty();
+                    return Mono.just(0L);
                 }
                 System.out.println("type " + type + "*" + "value " + id);
                 return getCountPersonalStockById(id, shopId);

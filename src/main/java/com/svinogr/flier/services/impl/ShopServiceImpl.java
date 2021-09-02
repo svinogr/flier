@@ -141,7 +141,7 @@ public class ShopServiceImpl implements ShopService {
                 try {
                     id = Long.parseLong(value);
                 } catch (NumberFormatException e) {
-                    return Mono.empty();
+                    return Mono.just(0L);
                 }
                 System.out.println("type " + type + "*" + "value " + id);
                 return getCountPersonalShopById(id);
@@ -197,6 +197,7 @@ public class ShopServiceImpl implements ShopService {
                 try {
                     id = Long.parseLong(value);
                 } catch (NumberFormatException e) {
+
                     return Flux.empty();
                 }
                 System.out.println("type " + type + "*" + "value " + id);
