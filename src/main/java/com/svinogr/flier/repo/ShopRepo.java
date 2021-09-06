@@ -45,4 +45,6 @@ public interface ShopRepo extends ReactiveCrudRepository<Shop, Long> {
     Mono<Long> countByUserIdAndTitleContainsIgnoreCase(Long userId, String title);
 
     Mono<Long> countByUserIdAndAddressContainsIgnoreCase(Long userId, String address);
+
+    Mono<Long> countById(long id);
 }

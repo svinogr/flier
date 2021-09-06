@@ -115,24 +115,6 @@ public class ShopCtrl {
 
     }
 
-
-
-                /*        return shopService.getShopById(shopId).
-                                flatMap(s -> {
-                                    return userService.isAdmin().flatMap(isAdmin -> {
-                                        //    model.addAttribute("admin", isAdmin);
-                                        model.addAttribute("shop", s);
-
-                                      *//*  IReactiveDataDriverContextVariable reactiveDataDrivenMode =
-                                                new ReactiveDataDriverContextVariable(stockService.findStocksByShopId(shopId), 1, 1);*//*
-                                        model.addAttribute("stocks", stockService.findStocksByShopId(shopId));
-
-                                        return Mono.just("shoppage");
-                                    });
-                                }).switchIfEmpty(Mono.just("redirect:account/accountpage/" + user.getId()));
-                    });
-                });*/
-
     @GetMapping("shoppage/{id}/update")
     public Mono<String> getUpdateShopPage(@PathVariable String id, Model model) {
         Long shopid;
@@ -170,12 +152,6 @@ public class ShopCtrl {
                         });
                     }));
         }
-
-      /*      return shopById.flatMap(s -> {
-                model.addAttribute("admin", utilService.isAdmin());
-                model.addAttribute("shop", s);
-                return Mono.just("updateshoppage");
-            }).switchIfEmpty(Mono.just("redirect:/account/accountpage"));*/
     }
 
     /**

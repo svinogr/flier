@@ -60,11 +60,6 @@ public class AdminCtrl {
 
     @GetMapping("shops")
     public Mono<String> getAllShop(@RequestParam(value = "page", defaultValue = "1") String page, Model model) {
-       /* Flux<Shop> all = shopService.getAllShops().sort(Comparator.comparingLong(Shop::getId));
-
-        IReactiveDataDriverContextVariable reactiveDataDrivenMode =
-                new ReactiveDataDriverContextVariable(all, 1, 1);
-        model.addAttribute("shops", reactiveDataDrivenMode);*/
         int numberPage;
 
         try {
@@ -95,12 +90,13 @@ public class AdminCtrl {
     }
 
     @GetMapping("shop/shoppage/{id}")
-    public Mono<String> getShopPage(@PathVariable String id, Model model) {
+    public Mono<String> getShopPage(@PathVariable String id, @RequestParam(value = "page", defaultValue = "1") String page, Model model) {
         Long shopId;
+        int numberPage;
 
         try {
             shopId = Long.parseLong(id);
-
+            numberPage = Integer.parseInt(page);
         } catch (NumberFormatException e) {
             return Mono.just(utilService.FORBIDDEN_PAGE);
         }
@@ -108,12 +104,27 @@ public class AdminCtrl {
         return shopService.getShopById(shopId).
                 flatMap(shop -> {
                     model.addAttribute("shop", shop);
+                    return Mono.just(shop);
+                }).
+                flatMap(shop -> {
+                    return stockService.getCountStocksByShopId(shop.getId()).
+                            flatMap(count -> {
+                                PaginationUtil myPage = new PaginationUtil(numberPage, count);
+                                System.out.println(myPage);
+                                if (myPage.getPages() > 0) {
+                                    model.addAttribute("pagination", myPage);
+                                }
 
-                    IReactiveDataDriverContextVariable reactiveDataDrivenMode =
-                            new ReactiveDataDriverContextVariable(stockService.findStocksByShopId(shop.getId()), 1, 1);
-                    model.addAttribute("stocks", reactiveDataDrivenMode);
+                                return Mono.just(myPage);
+                            }).
+                            flatMap(myPage -> {
+                                if (myPage.getPages() > 0) {
+                                    model.addAttribute("stocks", stockService.findStocksByShopId(shopId).sort(Comparator.comparingLong(Stock::getId))
+                                            .skip((numberPage - 1) * PaginationUtil.ITEM_ON_PAGE).take(PaginationUtil.ITEM_ON_PAGE));
+                                }
 
-                    return Mono.just("adminshoppage");
+                                return Mono.just("adminshoppage");
+                            });
                 });
     }
 
@@ -222,10 +233,6 @@ public class AdminCtrl {
                                     return Mono.just(shop);
                                 }
                         ).flatMap(sh1 -> shopService.updateShop(shop).flatMap(sh -> Mono.just("redirect:/admin/shop/shoppage/" + shop.getId())));
-                 /*
-                        shop.setImg(defaultShopImg);
-                        shopService.updateShop(shop).subscribe();
-                        return Mono.just("redirect:/admin/shops");*/
                     default:
                         return Mono.just("forbidenpage");
                 }
@@ -249,6 +256,43 @@ public class AdminCtrl {
                     return Mono.just("redirect:/admin/shops");
                 });
     }
+
+    @GetMapping("shops/searchshops")
+    public Mono<String> searchShops(@RequestParam("type") String type,
+                                    @RequestParam(value = "value", defaultValue = "") String value,
+                                    @RequestParam(value = "page", defaultValue = "1") String page, Model model) {
+        int numberPage;
+
+        try {
+            numberPage = Integer.parseInt(page);
+        } catch (NumberFormatException e) {
+            return Mono.just(utilService.FORBIDDEN_PAGE);
+        }
+
+        return shopService.getCountSearchByValue(type, value).
+                flatMap(count -> {
+                    System.out.println(count);
+                    PaginationUtil myPage = new PaginationUtil(numberPage, count);
+
+                    if (myPage.getPages() > 0) {
+                        model.addAttribute("pagination", myPage);
+                    }
+
+                    return Mono.just(myPage);
+                }).
+                flatMap(myPage -> {
+                    if (myPage.getPages() > 0) {
+
+                        model.addAttribute("shops", shopService.searchByValueAndType(type, value)
+                                .skip((numberPage - 1) * PaginationUtil.ITEM_ON_PAGE).take(PaginationUtil.ITEM_ON_PAGE));
+                    }
+
+                    return Mono.just("adminshopspage");
+                }).
+                switchIfEmpty(
+                         Mono.just("redirect:/admin/adminshopspage"));
+    }
+
 
     @GetMapping("shop/shoppage/{idSh}/stockpage/{idSt}")
     public Mono<String> getStockPage(@PathVariable String idSh, @PathVariable String idSt, Model model) {

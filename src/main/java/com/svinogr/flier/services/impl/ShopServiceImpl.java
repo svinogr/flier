@@ -7,17 +7,9 @@ import com.svinogr.flier.services.ShopService;
 import com.svinogr.flier.services.UserService;
 import org.apache.logging.log4j.util.Strings;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import org.springframework.util.MultiValueMap;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-
-import java.util.List;
-import java.util.Map;
 
 @Service
 public class ShopServiceImpl implements ShopService {
@@ -130,8 +122,6 @@ public class ShopServiceImpl implements ShopService {
 
     @Override
     public Mono<Long> getCountSearchPersonalByValue(String type, String value) {
-        System.out.println(type + "--" + value);
-
         if (value.equals(Strings.EMPTY)) return Mono.empty();
 
         switch (type) {
@@ -167,6 +157,50 @@ public class ShopServiceImpl implements ShopService {
         return shopRepo.count();
     }
 
+    @Override
+    public Mono<Long> getCountSearchByValue(String type, String value) {
+        if (value.equals(Strings.EMPTY)) return Mono.empty();
+
+        switch (type) {
+            case "searchId":
+                long id;
+                System.out.println(1);
+                try {
+                    id = Long.parseLong(value);
+                } catch (NumberFormatException e) {
+                    return Mono.just(0L);
+                }
+                System.out.println("type " + type + "*" + "value " + id);
+                return getCountShopById(id);
+            default:
+                return Mono.empty();
+        }
+    }
+
+    private Mono<Long> getCountShopById(long id) {
+        return shopRepo.countById(id);
+    }
+
+    @Override
+    public Flux<Shop> searchByValueAndType(String type, String value) {
+        switch (type) {
+            case "searchId":
+                long id;
+                System.out.println(1);
+                try {
+                    id = Long.parseLong(value);
+                } catch (NumberFormatException e) {
+
+                    return Flux.empty();
+                }
+                System.out.println("type " + type + "*" + "value " + id);
+                return getShopById(id).flux();
+            default:
+                System.out.println(4);
+                return Flux.empty();
+        }
+    }
+
     private Mono<Long> getCountPersonalShopByAddress(String address) {
         return userService.getPrincipal().
                 flatMap(principal -> {
@@ -190,11 +224,6 @@ public class ShopServiceImpl implements ShopService {
 
     @Override
     public Flux<Shop> searchPersonalByValueAndType(String type, String value) {
-        System.out.println(type + "--" + value);
-
-        if (value.equals(Strings.EMPTY)) return userService.getPrincipal().
-                flatMapMany(principal -> getShopsByUserId(principal.getId()));
-
         switch (type) {
             case "searchId":
                 long id;

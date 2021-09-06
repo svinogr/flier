@@ -7,6 +7,8 @@ import org.springframework.util.MultiValueMap;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.io.InputStream;
+
 public interface ShopService {
     Mono<Shop> createShop(Shop shop);
 
@@ -39,4 +41,9 @@ public interface ShopService {
     Mono<Long>  getCountSearchPersonalByValue(String type, String value);
 
     Mono<Long> getCountShops();
+
+    Mono<Long> getCountSearchByValue(String type, String value);
+
+    Flux<Shop> searchByValueAndType(String type, String value);
+
 }

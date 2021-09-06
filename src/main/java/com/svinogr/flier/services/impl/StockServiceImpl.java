@@ -73,7 +73,7 @@ public class StockServiceImpl implements StockService {
         switch (type) {
             case "searchId":
                 long id;
-                System.out.println(1);
+
                 try {
                     id = Long.parseLong(value);
                 } catch (NumberFormatException e) {
@@ -83,17 +83,10 @@ public class StockServiceImpl implements StockService {
                 return getCountPersonalStockById(id, shopId);
 
             case "searchTitle":
-
-                System.out.println(2);
-
                 return getCountPersonalStockByTitle(value, shopId);
             case "searchAddress":
-
-                System.out.println(3);
-
                 return getCountPersonalStockByDescription(value, shopId);
             default:
-                System.out.println(4);
                 return Mono.empty();
         }
     }
@@ -106,20 +99,6 @@ public class StockServiceImpl implements StockService {
     }
 
     private Mono<Long> getCountPersonalStockByTitle(String title, long shopId) {
-/*
-        return userService.getPrincipal().
-                flatMap(principal -> {
-                    return stockRepo.countByShopIdAndTitleContainsIgnoreCase(principal.getId(), title);
-                });
-        return isOwnerOfStock(shopId, id).
-                flatMap(owner ->{
-                    // if (!owner) return  Mono.error(new AccessControlException("access denied"));
-                    if (!owner) return  Mono.just(0L);
-
-                    return stockRepo.countByShopIdAndId(shopId, id);
-                });
-*/
-
         return stockRepo.findByTitleContainingIgnoreCaseAndShopId(title, shopId).filterWhen(stock -> {
           return isOwnerOfStock(shopId, stock.getId());
           }).count();
@@ -143,10 +122,7 @@ public class StockServiceImpl implements StockService {
     public Flux<Stock> searchPersonalByValueAndType(String type, String value, long shopId) {
         System.out.println(type + "--" + value);
 
-     /*   if (value.equals(Strings.EMPTY)) return userService.getPrincipal().
-                flatMapMany(principal -> getShopsByUserId(principal.getId()));*/
-
-        switch (type) {
+         switch (type) {
             case "searchId":
                 long id;
                 System.out.println(1);
@@ -170,9 +146,6 @@ public class StockServiceImpl implements StockService {
                 return getPersonalStockByDescription(value, shopId);
             default:
                 return Flux.empty();
-             /*   System.out.println(4);
-                return userService.getPrincipal().
-                        flatMapMany(principal -> getShopsByUserId(principal.getId()));*/
         }
     }
 
