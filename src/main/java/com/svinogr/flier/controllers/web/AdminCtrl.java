@@ -290,7 +290,7 @@ public class AdminCtrl {
                     return Mono.just("adminshopspage");
                 }).
                 switchIfEmpty(
-                         Mono.just("redirect:/admin/adminshopspage"));
+                         Mono.just("redirect:/admin/shops"));
     }
 
 
