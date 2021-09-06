@@ -162,6 +162,11 @@ public class ShopServiceImpl implements ShopService {
         }
     }
 
+    @Override
+    public Mono<Long> getCountShops() {
+        return shopRepo.count();
+    }
+
     private Mono<Long> getCountPersonalShopByAddress(String address) {
         return userService.getPrincipal().
                 flatMap(principal -> {

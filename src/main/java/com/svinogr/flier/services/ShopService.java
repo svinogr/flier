@@ -37,4 +37,6 @@ public interface ShopService {
     Mono<Long> getCountShopsByUserId(Long userId);
 
     Mono<Long>  getCountSearchPersonalByValue(String type, String value);
+
+    Mono<Long> getCountShops();
 }

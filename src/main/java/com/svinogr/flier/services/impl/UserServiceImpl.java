@@ -206,4 +206,5 @@ public class UserServiceImpl implements UserService {
     public Mono<Boolean> isOwnerOfAccount(Long accountId) {
         return  getPrincipal().flatMap(user -> Mono.just(user.getId() == accountId));
     }
+
 }

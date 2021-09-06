@@ -1,5 +1,6 @@
 package com.svinogr.flier.controllers.web;
 
+import com.svinogr.flier.controllers.web.utils.PaginationUtil;
 import com.svinogr.flier.controllers.web.utils.Util;
 import com.svinogr.flier.model.Role;
 import com.svinogr.flier.model.Status;
@@ -58,14 +59,39 @@ public class AdminCtrl {
     }
 
     @GetMapping("shops")
-    public String getAllShop(Model model) {
-        Flux<Shop> all = shopService.getAllShops().sort(Comparator.comparingLong(Shop::getId));
+    public Mono<String> getAllShop(@RequestParam(value = "page", defaultValue = "1") String page, Model model) {
+       /* Flux<Shop> all = shopService.getAllShops().sort(Comparator.comparingLong(Shop::getId));
 
         IReactiveDataDriverContextVariable reactiveDataDrivenMode =
                 new ReactiveDataDriverContextVariable(all, 1, 1);
-        model.addAttribute("shops", reactiveDataDrivenMode);
+        model.addAttribute("shops", reactiveDataDrivenMode);*/
+        int numberPage;
 
-        return "adminshopspage";
+        try {
+            numberPage = Integer.parseInt(page);
+        } catch (NumberFormatException e) {
+            return Mono.just(utilService.FORBIDDEN_PAGE);
+        }
+
+        return shopService.getCountShops().
+                flatMap(count -> {
+                    PaginationUtil myPage = new PaginationUtil(numberPage, count);
+                    System.out.println(myPage);
+                    if (myPage.getPages() > 0) {
+                        model.addAttribute("pagination", myPage);
+                    }
+
+                    return Mono.just(myPage);
+                }).
+                flatMap(myPage -> {
+                    if (myPage.getPages() > 0) {
+                        model.addAttribute("shops", shopService.getAllShops().sort(Comparator.comparingLong(Shop::getId))
+                                .skip((numberPage - 1) * PaginationUtil.ITEM_ON_PAGE).take(PaginationUtil.ITEM_ON_PAGE));
+                    }
+                    System.out.println(myPage);
+                    return Mono.just("adminshopspage");
+                }).
+                onErrorReturn(utilService.FORBIDDEN_PAGE);
     }
 
     @GetMapping("shop/shoppage/{id}")
