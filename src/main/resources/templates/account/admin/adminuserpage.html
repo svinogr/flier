@@ -1,13 +1,11 @@
-
 <!DOCTYPE html>
 <html  xmlns:th="http://www.thymeleaf.org" lang="en" xmlns="http://www.w3.org/1999/html">
-<head th:replace="head::head">
-
-</head>
-
+<head th:replace="common/head::head">
 <body>
-<nav th:insert="menu::menu">
+<nav th:replace="common/menu::menu">
 </nav>
+<div class="container mt-4">
+    <div class="row">
 <section th:insert="fragmentadminupdateuser::fragmentadminupdateuser">
 
 </section>

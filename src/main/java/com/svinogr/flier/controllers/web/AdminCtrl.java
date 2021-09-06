@@ -241,7 +241,7 @@ public class AdminCtrl {
 
     }
 
-    @PostMapping("shops/del/{id}")
+    @GetMapping("shop/shoppage/{id}/delete")
     public Mono<String> delShopById(@PathVariable String id) {
         Long shopId;
         try {
@@ -257,7 +257,7 @@ public class AdminCtrl {
                 });
     }
 
-    @GetMapping("shops/searchshops")
+    @GetMapping("shop/searchshops")
     public Mono<String> searchShops(@RequestParam("type") String type,
                                     @RequestParam(value = "value", defaultValue = "") String value,
                                     @RequestParam(value = "page", defaultValue = "1") String page, Model model) {
@@ -341,6 +341,21 @@ public class AdminCtrl {
                     return Mono.just("adminstockpage");
                 })
                 .switchIfEmpty(Mono.just("redirect:/admin/shop/shoppage/" + shopId));
+    }
+
+    @GetMapping("shop/shoppage/{id}/restore")
+    public Mono<String> restoreShop(@PathVariable String id) {
+        Long shopId;
+
+        try {
+            shopId = Long.parseLong(id);
+        } catch (NumberFormatException e) {
+            return Mono.just(utilService.FORBIDDEN_PAGE);
+        }
+        return shopService.restoreShop(shopId).
+                flatMap(shop -> {
+                    return Mono.just("redirect:/admin/shops/");
+                }).switchIfEmpty(Mono.just("redirect:/admin/shops/"));
     }
 
     /**
@@ -449,6 +464,22 @@ public class AdminCtrl {
 
     }
 
+    @PostMapping("shop/shoppage/{idSh}/stockpage/{idSt}/restore")
+    public Mono<String> restoreStockById(@PathVariable String idSh, @PathVariable String idSt) {
+        long stockId;
+        long shopId;
+        try {
+            stockId = Long.parseLong(idSt);
+            shopId = Long.parseLong(idSh);
+
+        } catch (NumberFormatException e) {
+            return Mono.just(utilService.FORBIDDEN_PAGE);
+        }
+
+        return stockService.restoreStockById(stockId).
+                flatMap(stock -> Mono.just("redirect:/admin/shop/shoppage/" + shopId)).
+                switchIfEmpty(Mono.just("redirect:/admin/shop/shoppage/" + shopId));
+    }
 
     @GetMapping("users")
     public String getAllUser(Model model) {

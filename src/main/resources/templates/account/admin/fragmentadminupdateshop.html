@@ -104,8 +104,17 @@
     <div class="row">
         <div class="col-3"></div>
         <div class="col-9">
-            <a href="/admin/shop/shoppage/" class="btn btn-outline-danger form-control mt-4"
-               th:attrappend="href=${shop.id}+'/delete'" th:if="${shop.id} != 0">Удалить</a>
+            <a href="/admin/shop/shoppage/"   th:if="${shop.id} != 0 and ${shop.status} != 'NON_ACTIVE'" class="btn btn-outline-danger form-control mt-4"
+               th:attrappend="href=${shop.id}+'/delete'" >Удалить</a>
+        </div>
+        <div></div>
+    </div>
+    <div class="row">
+        <div class="col-3"></div>
+        <div class="col-9">
+            <a th:if="${shop.status == 'NON_ACTIVE'}" href="/admin/shop/shoppage/" class="btn btn-outline-danger form-control mt-4" id="restore"
+               th:attrappend="href=${shop.id}+'/restore'"
+            >Востановить</a>
         </div>
         <div></div>
     </div>

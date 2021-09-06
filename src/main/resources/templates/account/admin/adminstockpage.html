@@ -1,16 +1,15 @@
-
 <!DOCTYPE html>
-<html  xmlns:th="http://www.thymeleaf.org" lang="en" xmlns="http://www.w3.org/1999/html">
-<head th:replace="head::head">
-
-</head>
-
-<body style="overflow-y:hidden;">
-<nav th:replace="menu::menu"></nav>
+<html xmlns:th="http://www.thymeleaf.org" lang="en" xmlns="http://www.w3.org/1999/html">
+<head th:replace="common/head::head">
+<body>
+<nav th:replace="common/menu::menu">
+</nav>
 <div class="container mt-4">
-<section th:replace="fragmentadminstock::fragmentadminstock"/>
-</div>
+    <div class="row">
+        <section th:replace="fragmentadminstock::fragmentadminstock"/>
+    </div>
 
-<footer th:insert="footer::footer"></footer>
+    <footer th:insert="footer::footer"></footer>
+</div>
 </body>
 </html>

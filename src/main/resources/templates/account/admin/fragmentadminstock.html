@@ -1,104 +1,127 @@
 <div xmlns:th="http://www.thymeleaf.org" th:fragment="fragmentadminstock" class="container mt-4">
     <script src="/js/preview.js" type="text/javascript"></script>
 
-            <form class="" enctype="multipart/form-data" id="update" th:action="${stock.id}" method="post">
-                <div class="row">
-                    <div class="col-3">
-                        <div class="mt-3">
-                            <img id="img" style="width:100%; height:250px" src="/img/stock/"
-                                 th:attrappend="src=${stock.img}">
-                        </div>
-                        <div class="input-group-append">
-                            <label class="  btn btn-outline-success btn-block form-control mt-2" for="imgStock">Выбрать
-                                картинку</label>
-                            <input class="updateimg" onchange="preview()" style="display: none"
-                                   type="file" name="file" id="imgStock">
-                        </div>
-
-                        <br>
-                        <div>
-                            <button class="btn btn-outline-danger btn-block form-control deleteImg"
-                                    onclick="deleteImgPreview('/img/stock/0.png')" type="button">
-                                Удалить
-                                картинку
-                            </button>
-                        </div>
-                    </div>
-                    <div class="col-9">
-                        <div>
-                            <input  class="form-control mt-3" th:value="${stock.id}"
-                                   type="text"
-                                   name="id" placeholder="id">
-                            <input  class="form-control mt-3" th:value="${stock.shopId}" type="text"
-                                   name="shopId"
-                                   placeholder="userId">
-                            <div>
-                                <div class="form-floating ">
-                                    <input class="form-control mt-3" th:field="*{stock.title}"
-                                           th:errorclass="is-invalid"
-                                           th:value="${stock.title}" type="text" name="title"
-                                           id="title" placeholder="title">
-                                    <label for="title">Название</label>
-                                </div>
-                                <div>
-                                    <p th:if="${#fields.hasErrors('stock.title')}" th:errors="*{stock.title}"></p>
-                                </div>
-                            </div>
-                            <div class="form-floating">
-                                <input type="datetime-local" class="form-control mt-3" th:field="${stock.dateStart}"
-                                       name="dateStart"
-                                       id="dateStart" placeholder="начало">
-                                <label for="dateStart">Начало</label>
-                            </div>
-                            <div class="form-floating">
-                                <input type="datetime-local" class="form-control mt-3" th:field="${stock.dateFinish}"
-                                       name="dateFinish"
-                                       id="dateFinish" placeholder="конец">
-                                <label for="dateFinish">Начало</label>
-                            </div>
-                            <div class="form-floating ">
-                                <input class="form-control mt-3" th:value="${stock.description}" type="text"
-                                       placeholder="description" name="description">
-                                <label for="title">Описание</label>
-                            </div>
-                            <input class="form-control mt-3" value="0" type="text" placeholder="imgAction"
-                                   name="imgTypeAction" id="imgTypeAction">
-                        </div>
-
-                        <div>
-                            <input class="form-control mt-3" th:value="${stock.status}" type="text" placeholder="status"
-                                   name="status">
-
-                            <input class="form-control mt-3" th:value="${stock.img}" type="text"
-                                   placeholder="com.svinogr.flier.img"
-                                   name="img">
-                            <div class="form-floating">
-                                <input class="form-control mt-3" th:value="${stock.url}" type="text" placeholder="url"
-                                       id="url" name="url">
-                                <label for="url">Сайт</label>
-                            </div>
-                            <input class="btn btn-outline-primary form-control mt-4" type="submit" value="Сохранить">
-                            <input hidden="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
-                        </div>
-                    </div>
+    <form class="" enctype="multipart/form-data" id="update" th:action="${stock.id}" method="post">
+        <div class="row">
+            <div class="col-3">
+                <div class="mt-3">
+                    <img id="img" style="width:100%; height:250px" src="/img/stock/"
+                         th:attrappend="src=${stock.img}">
                 </div>
-            </form>
-            <div class="row">
-                <div class="col-3"></div>
-                <div class="col-9">
-                    <form class="" id="del" action="/admin/stock/stockpage/"
-                          th:attrappend="action=${stock.id}+'/delete'"
-                          th:if="${stock.id} != 0" method="post">
-                        <input hidden="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
-                        <input th:if="${stock.id} != null" type="submit"
-                               class="btn btn-outline-danger form-control mt-4"
-                               value="Удалить">
-                    </form>
+                <div class="input-group-append">
+                    <label class="  btn btn-outline-success btn-block form-control mt-2" for="imgStock">Выбрать
+                        картинку</label>
+                    <input class="updateimg" onchange="preview()" style="display: none"
+                           type="file" name="file" id="imgStock">
                 </div>
-                <div></div>
+
+                <br>
+                <div>
+                    <button class="btn btn-outline-danger btn-block form-control deleteImg"
+                            onclick="deleteImgPreview('/img/stock/0.png')" type="button">
+                        Удалить
+                        картинку
+                    </button>
+                </div>
+            </div>
+            <div class="col-9">
+                <div class="form-floating ">
+                    <input class="form-control mt-3" id="id" th:value="${stock.id}"
+                           type="text"
+                           name="id" placeholder="id">
+                    <label for="id">Id Акции</label>
+                </div>
+                <div class="form-floating ">
+                    <input class="form-control mt-3" id="shopId" th:value="${stock.shopId}" type="text"
+                           name="shopId"
+                           placeholder="shopId">
+                    <label for="shopId">Id Магазина</label>
+                </div>
+                <div class="form-floating ">
+                    <input class="form-control mt-3" th:field="*{stock.title}"
+                           th:errorclass="is-invalid"
+                           th:value="${stock.title}" type="text" name="title"
+                           id="title" placeholder="title">
+                    <label for="title">Название</label>
+                </div>
+                <div>
+                    <p th:if="${#fields.hasErrors('stock.title')}" th:errors="*{stock.title}"></p>
+                </div>
+
+                <div class="form-floating">
+                    <input type="datetime-local" class="form-control mt-3" th:field="${stock.dateStart}"
+                           name="dateStart"
+                           id="dateStart" placeholder="начало">
+                    <label for="dateStart">Начало</label>
+                </div>
+                <div class="form-floating">
+                    <input type="datetime-local" class="form-control mt-3" th:field="${stock.dateFinish}"
+                           name="dateFinish"
+                           id="dateFinish" placeholder="конец">
+                    <label for="dateFinish">Начало</label>
+                </div>
+                <div class="form-floating ">
+                    <input class="form-control mt-3" id="description" th:value="${stock.description}" type="text"
+                           placeholder="description" name="description">
+                    <label for="description">Описание</label>
+                </div>
+                <input class="form-control mt-3" value="0" type="text" placeholder="imgAction"
+                       name="imgTypeAction" id="imgTypeAction">
+
+
+                <div>
+                    <input class="form-control mt-3" th:value="${stock.status}" type="text" placeholder="status"
+                           name="status">
+                </div>
+                <div>
+                    <input class="form-control mt-3" th:value="${stock.img}" type="text"
+                           placeholder="com.svinogr.flier.img"
+                           name="img">
+                </div>
+
+                <div class="form-floating">
+                    <input class="form-control mt-3" th:value="${stock.url}" type="text" placeholder="url"
+                           id="url" name="url">
+                    <label for="url">Сайт</label>
+                </div>
+                <div>
+                    <input class="btn btn-outline-primary form-control mt-4" type="submit" value="Сохранить">
+                </div>
+                <div>
+                    <input hidden="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+                </div>
             </div>
         </div>
-
+    </form>
+    <div class="row">
+        <div class="col-3"></div>
+        <div class="col-9">
+            <form class="" id="del" action="/admin/stock/stockpage/"
+                  th:attrappend="action=${stock.id}+'/delete'"
+                  th:if="${stock.id} != 0 and ${stock.status} != 'NON_ACTIVE'" method="post">
+                <input hidden="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+                <input th:if="${stock.id} != null" type="submit"
+                       class="btn btn-outline-danger form-control mt-4"
+                       value="Удалить">
+            </form>
+        </div>
+        <div></div>
+    </div>
+    <div class="row">
+        <div class="col-3"></div>
+        <div class="col-9">
+            <form class="" id="restore" action="/admin/shop/shoppage/"
+                  th:attrappend="action=${stock.shopId}+'/stockpage/'+${stock.id}+'/restore'"
+                  th:if="${stock.status} == 'NON_ACTIVE'" method="post">
+                <input hidden="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+                <input th:if="${stock.id} != null" type="submit"
+                       class="btn btn-outline-danger form-control mt-4"
+                       value="Востановить">
+            </form>
+        </div>
+        <div></div>
+    </div>
+</div>
 </div>
 
 
