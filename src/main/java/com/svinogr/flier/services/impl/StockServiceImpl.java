@@ -175,6 +175,16 @@ public class StockServiceImpl implements StockService {
     }
 
     @Override
+    public Mono<Long> getCountStocks() {
+       return stockRepo.count();
+    }
+
+    @Override
+    public Flux<Stock> findAll() {
+        return stockRepo.findAll();
+    }
+
+    @Override
     public Mono<Stock> restoreStockById(Long stockId) {
         return stockRepo.findById(stockId)
                 .flatMap(stock -> {

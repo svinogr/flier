@@ -11,6 +11,7 @@
                 <a class="btn btn-outline-success" href="#" role="button">Новости</a>
                 <a th:if="${admin}" class="btn btn-outline-danger" href="/admin/users" role="button">Пользователи</a>
                 <a th:if="${admin}"  class="btn btn-outline-danger" href="/admin/shops" role="button">Магазины</a>
+                <a th:if="${admin}"  class="btn btn-outline-danger" href="/admin/stocks" role="button">Акции</a>
                 <a class="btn btn-outline-success" href="/account/accountpage/" th:attrappend="href=${principal.getId}" role="button">Акаунт</a>
             </div>
                 <div class="align-items-center d-flex">

@@ -26,4 +26,8 @@ public interface StockService {
     Flux<Stock> searchPersonalByValueAndType(String type, String value, long shopId);
 
     Mono<Long> getCountStocksByShopId(Long id);
+
+    Mono<Long> getCountStocks();
+
+    Flux<Stock> findAll();
 }

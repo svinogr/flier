@@ -381,6 +381,8 @@ public class AdminCtrl {
             return stockService.createStock(stock).flatMap(s -> {
                 switch (imgTypeAction) {
                     case "0":
+                        if (shopId == 0) return  Mono.just("redirect:/admin/stocks/");
+
                         return Mono.just("redirect:/admin/shop/shoppage/" + shopId);
                     case "1":
                         return file.flatMap(f -> {
@@ -397,7 +399,11 @@ public class AdminCtrl {
                             );
                         })
                                 .flatMap(sh -> stockService.updateStock(sh)
-                                        .flatMap(sf -> Mono.just("redirect:/admin/shop/shoppage/" + shopId)));
+                                        .flatMap(sf ->{
+                                            if (shopId == 0) return  Mono.just("redirect:/admin/stocks/");
+
+                                            return Mono.just("redirect:/admin/shop/shoppage/" + shopId);
+                                        }));
 
                     case "-1":
                         // сброс на дефолтную картинку и удаление старой из базы
@@ -483,15 +489,6 @@ public class AdminCtrl {
 
     @GetMapping("users")
     public Mono<String> getAllUser(@RequestParam(value = "page", defaultValue = "1") String page,  Model model) {
-/*        Flux<User> all = userService.findAll().sort(Comparator.comparingLong(User::getId));
-
-
-
-        IReactiveDataDriverContextVariable reactiveDataDrivenMode =
-                new ReactiveDataDriverContextVariable(all, 1, 1);
-        model.addAttribute("users", reactiveDataDrivenMode);
-
-        return "adminuserspage";*/
         int numberPage;
 
         try {
@@ -578,4 +575,37 @@ public class AdminCtrl {
                     return Mono.just("redirect:/admin/users");
                 });
     }
+
+    @GetMapping("stocks")
+    public Mono<String> getAllStocks(@RequestParam(value = "page", defaultValue = "1") String page,  Model model) {
+        int numberPage;
+
+        try {
+            numberPage = Integer.parseInt(page);
+        } catch (NumberFormatException e) {
+            return Mono.just(utilService.FORBIDDEN_PAGE);
+        }
+
+        return stockService.getCountStocks().
+                flatMap(count -> {
+                    PaginationUtil myPage = new PaginationUtil(numberPage, count);
+                    System.out.println(myPage);
+                    if (myPage.getPages() > 0) {
+                        model.addAttribute("pagination", myPage);
+                    }
+
+                    return Mono.just(myPage);
+                }).
+                flatMap(myPage -> {
+                    if (myPage.getPages() > 0) {
+                        model.addAttribute("stocks", stockService.findAll().sort(Comparator.comparingLong(Stock::getId))
+                                .skip((numberPage - 1) * PaginationUtil.ITEM_ON_PAGE).take(PaginationUtil.ITEM_ON_PAGE));
+                    }
+                    System.out.println(myPage);
+                    return Mono.just("adminstockspage");
+                }).
+                onErrorReturn(utilService.FORBIDDEN_PAGE);
+
+    }
+
 }
