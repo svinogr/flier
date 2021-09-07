@@ -40,10 +40,8 @@ public class UserServiceImpl implements UserService {
     @Override
     public Flux<User> findAll() {
         return userRepo.findAll().flatMap(user -> {
-            System.out.println("user id " + user.getId());
             return userRolesRepo.findByUserId(user.getId()).
                     flatMap(ur -> {
-                        System.out.println("ur id " + ur.getId());
                         return roleRepo.findById(ur.getRoleId()).
                                 flatMap(r -> {
                                     Role role = new Role();
@@ -55,10 +53,9 @@ public class UserServiceImpl implements UserService {
                                 });
 
                     });
-
         });
     }
-
+ 
     @Override
     public Mono<User> findUserById(Long id) {
         return userRepo.findById(id)
@@ -205,6 +202,11 @@ public class UserServiceImpl implements UserService {
     @Override
     public Mono<Boolean> isOwnerOfAccount(Long accountId) {
         return  getPrincipal().flatMap(user -> Mono.just(user.getId() == accountId));
+    }
+
+    @Override
+    public Mono<Long> getCountUsers() {
+        return userRepo.count();
     }
 
 }

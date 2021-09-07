@@ -16,4 +16,5 @@ public interface UserService {
     Mono<User> getPrincipal();
     Mono<Boolean> isAdmin();
     Mono<Boolean> isOwnerOfAccount(Long userId);
+    Mono<Long> getCountUsers();
 }

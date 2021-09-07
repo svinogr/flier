@@ -482,14 +482,44 @@ public class AdminCtrl {
     }
 
     @GetMapping("users")
-    public String getAllUser(Model model) {
-        Flux<User> all = userService.findAll().sort(Comparator.comparingLong(User::getId));
+    public Mono<String> getAllUser(@RequestParam(value = "page", defaultValue = "1") String page,  Model model) {
+/*        Flux<User> all = userService.findAll().sort(Comparator.comparingLong(User::getId));
+
+
 
         IReactiveDataDriverContextVariable reactiveDataDrivenMode =
                 new ReactiveDataDriverContextVariable(all, 1, 1);
         model.addAttribute("users", reactiveDataDrivenMode);
 
-        return "adminuserspage";
+        return "adminuserspage";*/
+        int numberPage;
+
+        try {
+            numberPage = Integer.parseInt(page);
+        } catch (NumberFormatException e) {
+            return Mono.just(utilService.FORBIDDEN_PAGE);
+        }
+
+        return userService.getCountUsers().
+                flatMap(count -> {
+                    PaginationUtil myPage = new PaginationUtil(numberPage, count);
+                    System.out.println(myPage);
+                    if (myPage.getPages() > 0) {
+                        model.addAttribute("pagination", myPage);
+                    }
+
+                    return Mono.just(myPage);
+                }).
+                flatMap(myPage -> {
+                    if (myPage.getPages() > 0) {
+                        model.addAttribute("users", userService.findAll().sort(Comparator.comparingLong(User::getId))
+                                .skip((numberPage - 1) * PaginationUtil.ITEM_ON_PAGE).take(PaginationUtil.ITEM_ON_PAGE));
+                    }
+                    System.out.println(myPage);
+                    return Mono.just("adminuserspage");
+                }).
+                onErrorReturn(utilService.FORBIDDEN_PAGE);
+
     }
 
     @GetMapping("accountpage/{id}")

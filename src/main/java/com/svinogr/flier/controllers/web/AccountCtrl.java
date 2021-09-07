@@ -3,6 +3,7 @@ package com.svinogr.flier.controllers.web;
 import com.svinogr.flier.controllers.web.utils.PaginationUtil;
 import com.svinogr.flier.controllers.web.utils.Util;
 import com.svinogr.flier.model.User;
+import com.svinogr.flier.model.shop.Shop;
 import com.svinogr.flier.services.ShopService;
 import com.svinogr.flier.services.StockService;
 import com.svinogr.flier.services.UserService;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
 
 import java.security.AccessControlException;
+import java.util.Comparator;
 
 @Controller
 @RequestMapping("/account/")
@@ -78,7 +80,7 @@ public class AccountCtrl {
                                         }).
                                         flatMap(myPage -> {
                                             if (myPage.getPages() > 0) {
-                                                model.addAttribute("shops", shopService.getShopsByUserId(principal.getId())
+                                                model.addAttribute("shops", shopService.getShopsByUserId(principal.getId()).sort(Comparator.comparingLong(Shop::getId))
                                                         .skip((numberPage - 1) * PaginationUtil.ITEM_ON_PAGE).take(PaginationUtil.ITEM_ON_PAGE));
                                             }
 
@@ -183,7 +185,7 @@ public class AccountCtrl {
                 flatMap(myPage -> {
                     if (myPage.getPages() > 0) {
 
-                        model.addAttribute("shops", shopService.searchPersonalByValueAndType(type, value)
+                        model.addAttribute("shops", shopService.searchPersonalByValueAndType(type, value).sort(Comparator.comparingLong(Shop::getId))
                                 .skip((numberPage - 1) * PaginationUtil.ITEM_ON_PAGE).take(PaginationUtil.ITEM_ON_PAGE));
                     }
 

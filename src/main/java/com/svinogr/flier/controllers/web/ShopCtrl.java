@@ -20,6 +20,7 @@ import reactor.core.publisher.Mono;
 import java.security.AccessControlException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Comparator;
 
 @Controller
 @RequestMapping("shop")
@@ -102,7 +103,7 @@ public class ShopCtrl {
                                             }).
                                             flatMap(myPage -> {
                                                 if (myPage.getPages() > 0) {
-                                                    model.addAttribute("stocks", stockService.findStocksByShopId(shopId)
+                                                    model.addAttribute("stocks", stockService.findStocksByShopId(shopId).sort(Comparator.comparingLong(Stock::getId))
                                                             .skip((numberPage - 1) * PaginationUtil.ITEM_ON_PAGE).take(PaginationUtil.ITEM_ON_PAGE));
                                                 }
 
@@ -146,7 +147,6 @@ public class ShopCtrl {
                         if (!ok) return Mono.just(utilService.FORBIDDEN_PAGE);
 
                         return shopService.getShopById(shopid).flatMap(s -> {
-                            //   model.addAttribute("admin", userService.isAdmin());
                             model.addAttribute("shop", s);
                             return Mono.just("updateshoppage");
                         });
@@ -548,7 +548,7 @@ public class ShopCtrl {
                                     }).
                                     flatMap(myPage -> {
                                         if (myPage.getPages() > 0) {
-                                            model.addAttribute("stocks", stockService.searchPersonalByValueAndType(type, value, shopId)
+                                            model.addAttribute("stocks", stockService.searchPersonalByValueAndType(type, value, shopId).sort(Comparator.comparingLong(Stock::getId))
                                                     .skip((numberPage - 1) * PaginationUtil.ITEM_ON_PAGE).take(PaginationUtil.ITEM_ON_PAGE));
                                         }
 
