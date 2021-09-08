@@ -1,7 +1,9 @@
 <div xmlns:th="http://www.thymeleaf.org" th:fragment="fragmentadminupdateshop" class="container mt-4">
     <script src="/js/preview.js" type="text/javascript"></script>
-    <script src="/js/map.js" type="text/javascript"></script>
-
+    <script async
+            src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC8DVoSaetE4L5HePXjXzNpJCBRar-sIoA&callback=initMap&libraries=places&v=weekly">
+    </script>
+<!--    <script src="/js/map.js" type="text/javascript"></script>-->
     <form class="" enctype="multipart/form-data" id="update" method="post">
         <div class="row">
             <div class="col-3">
@@ -119,7 +121,7 @@
         <div></div>
     </div>
 
-    <!-- Modal -->
+    <!--&lt;!&ndash; Modal &ndash;&gt;
     <div class="modal fade" id="addressShopModel" tabindex="-1" aria-labelledby="addressShopModelLabel"
          aria-hidden="true">
         <div class="modal-dialog">
@@ -141,10 +143,12 @@
                         <script async
                                 src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC8DVoSaetE4L5HePXjXzNpJCBRar-sIoA&callback=initMap&libraries=places&v=weekly">
                         </script>
-                        <!--        <script>
-                                    google.maps.event.addDomListener(window, 'load', myautocomplete);
-                                </script>-->
+
                     </div>
+                    <script src="/js/map.js" type="text/javascript"></script>
+                 &lt;!&ndash;   <script>
+                        google.maps.event.addDomListener(window, 'load', myautocomplete);
+                    </script>&ndash;&gt;
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
@@ -153,7 +157,7 @@
                 </div>
             </div>
         </div>
-    </div>
+    </div>-->
 </div>
 
 

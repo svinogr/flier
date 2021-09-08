@@ -1,17 +1,6 @@
 <div xmlns:th="http://www.thymeleaf.org" th:fragment="adminfragmentusers" class="container mt-4">
     <div class="row">
-        <script> $(document).ready(function () {
-            $(".clickable-row").click(function () {
-                var id = $(this).prop("id");
-                window.location.href = "/admin/accountpage/" + id;
-            });
-
-            $(".add").click(function () {
-                var id = $(this).prop("id");
-                window.location.href = "/admin/accountpage/" + id;
-            });
-        });
-        </script>
+        <script src="/js/admin/account/clickableRow.js" type="text/javascript"></script>
         <div class="col-9">
             <table class="table table-hover">
                 <thead>
@@ -25,20 +14,17 @@
                 </thead>
                 <tbody>
                 <tr th:each="user : ${users}" >
-                    <th class="clickable-row" th:id="${user.id}" th:text="${user.id}" scope="row">d</th>
-
-                    <td class="clickable-row" th:id="${user.id}" th:text="${user.username}">name</td>
-                    <td class="clickable-row" th:id="${user.id}"  th:text="${user.email}">email</td>
-                    <td class="clickable-row" th:id="${user.id}"  th:text="${user.status}">status</td>
-                    <td class="clickable-row" th:id="${user.id}"  th:text="${user.roles[0].name}">role</td>
-
+                    <th onclick="clickableRow(this.id)" class="clickable-row" th:id="${user.id}" th:text="${user.id}" scope="row">d</th>
+                    <td onclick="clickableRow(this.id)" class="clickable-row" th:id="${user.id}" th:text="${user.username}">name</td>
+                    <td onclick="clickableRow(this.id)" class="clickable-row" th:id="${user.id}"  th:text="${user.email}">email</td>
+                    <td onclick="clickableRow(this.id)" class="clickable-row" th:id="${user.id}"  th:text="${user.status}">status</td>
+                    <td onclick="clickableRow(this.id)" class="clickable-row" th:id="${user.id}"  th:text="${user.roles[0].name}">role</td>
                 </tr>
                 </tbody>
             </table>
-
         </div>
         <div class="col-3 mt-4">
-            <a class="btn btn-outline-success form-control add" id="0"  role="button">Добавить
+            <a class="btn btn-outline-success form-control" href="/admin/accountpage/0" id="0"  role="button">Добавить
                 пользователя</a>
         </div>
     </div>
