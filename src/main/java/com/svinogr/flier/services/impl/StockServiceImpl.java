@@ -1,5 +1,6 @@
 package com.svinogr.flier.services.impl;
 
+import com.svinogr.flier.controllers.web.utils.SearchType;
 import com.svinogr.flier.model.Status;
 import com.svinogr.flier.model.shop.Stock;
 import com.svinogr.flier.repo.StockRepo;
@@ -7,12 +8,9 @@ import com.svinogr.flier.services.StockService;
 import com.svinogr.flier.services.UserService;
 import org.apache.logging.log4j.util.Strings;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.r2dbc.repository.Modifying;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-
-import java.security.AccessControlException;
 
 @Service
 public class StockServiceImpl implements StockService {
@@ -65,13 +63,11 @@ public class StockServiceImpl implements StockService {
     }
 
     @Override
-    public Mono<Long> getCountSearchPersonalByValue(String type, String value, long shopId) {
-        System.out.println(type + "--" + value);
-
+    public Mono<Long> getCountSearchPersonalByValue(SearchType type, String value, long shopId) {
         if (value.equals(Strings.EMPTY)) return Mono.empty();
 
         switch (type) {
-            case "searchId":
+            case BY_ID:
                 long id;
 
                 try {
@@ -79,12 +75,11 @@ public class StockServiceImpl implements StockService {
                 } catch (NumberFormatException e) {
                     return Mono.just(0L);
                 }
-                System.out.println("type " + type + "*" + "value " + id);
-                return getCountPersonalStockById(id, shopId);
 
-            case "searchTitle":
+                return getCountPersonalStockById(id, shopId);
+            case BY_TITLE:
                 return getCountPersonalStockByTitle(value, shopId);
-            case "searchAddress":
+            case BY_ADDRESS:
                 return getCountPersonalStockByDescription(value, shopId);
             default:
                 return Mono.empty();
@@ -119,29 +114,22 @@ public class StockServiceImpl implements StockService {
     }
 
     @Override
-    public Flux<Stock> searchPersonalByValueAndType(String type, String value, long shopId) {
-        System.out.println(type + "--" + value);
-
+    public Flux<Stock> searchPersonalByValueAndType(SearchType type, String value, long shopId) {
          switch (type) {
-            case "searchId":
+             case BY_ID:
                 long id;
-                System.out.println(1);
+
                 try {
                     id = Long.parseLong(value);
                 } catch (NumberFormatException e) {
                     return Flux.empty();
                 }
-                System.out.println("type " + type + "*" + "value " + id);
+
                 return getPersonalStockById(id, shopId).flux();
-
-            case "searchTitle":
-
-                System.out.println(2);
+             case BY_TITLE:
 
                 return getPersonalStockByTitle(value, shopId);
-            case "searchAddress":
-
-                System.out.println(3);
+             case BY_ADDRESS:
 
                 return getPersonalStockByDescription(value, shopId);
             default:

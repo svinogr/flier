@@ -19,16 +19,16 @@ public class Util {
 
     public final String FORBIDDEN_PAGE = "forbiddenpage";
     public final String SEARCH_VALUE = "searchValue";
-    public final String SEARCH_BY_ID = "searchById";
+/*    public final String SEARCH_BY_ID = "searchById";
     public final String SEARCH_BY_TITLE = "searchByTitle";
-    public final String SEARCH_BY_ADDRESS = "searchByAddress";
+    public final String SEARCH_BY_ADDRESS = "searchByAddress";*/
     public final String SEARCH_ACTIVE_CHECKBOX = "on";
     public  final long LIMIT_ENTITY_REQUEST = 10;
 
     /*
     return List. 0 el = typeSearch, 1 el = value
      */
-    public List<String> getSearchValues(MultiValueMap<String, String> map) {
+/*    public List<String> getSearchValues(MultiValueMap<String, String> map) {
         List<String> arr = new ArrayList<>();
 
         for (Map.Entry<String, List<String>> entry : map.entrySet()) {
@@ -58,5 +58,5 @@ public class Util {
         }
 
         return arr;
-    }
+    }*/
 }

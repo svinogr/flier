@@ -1,6 +1,7 @@
 package com.svinogr.flier.controllers.web;
 
 import com.svinogr.flier.controllers.web.utils.PaginationUtil;
+import com.svinogr.flier.controllers.web.utils.SearchType;
 import com.svinogr.flier.controllers.web.utils.Util;
 import com.svinogr.flier.model.User;
 import com.svinogr.flier.model.shop.Shop;
@@ -16,6 +17,10 @@ import reactor.core.publisher.Mono;
 import java.security.AccessControlException;
 import java.util.Comparator;
 
+/**
+ * @author SVINOGR
+ * version 0.0.1
+ */
 @Controller
 @RequestMapping("/account/")
 public class AccountCtrl {
@@ -41,7 +46,14 @@ public class AccountCtrl {
         return userService.getPrincipal();
     }
 
-    //ver 2
+    /**
+     * Get
+     *
+     * @param id    id account from db
+     * @param page  number page received from request
+     * @param model {@link Model model
+     * @return name of web page of account
+     */
     @GetMapping("accountpage/{id}")
     public Mono<String> accountPage(@PathVariable String id,
                                     @RequestParam(value = "page", defaultValue = "1") String page,
@@ -90,6 +102,13 @@ public class AccountCtrl {
                 });
     }
 
+    /**
+     * Get
+     *
+     * @param id    id account from db
+     * @param model {@link Model model
+     * @return name of web page for update account
+     */
     @GetMapping("accountpage/{id}/update")
     public Mono<String> updateAccountPage(@PathVariable String id, Model model) {
         Long userId;
@@ -113,7 +132,13 @@ public class AccountCtrl {
                 });
     }
 
-    //ver 2
+    /**
+     * Post
+     *
+     * @param id   id account from db
+     * @param user {@link User user
+     * @return name of web page with result of update account
+     */
     @PostMapping("accountpage/{id}/update")
     public Mono<String> saveOrUpdateAccount(@PathVariable String id, User user) {
         Long userId;
@@ -137,7 +162,12 @@ public class AccountCtrl {
                 });
     }
 
-    // ver2
+    /**
+     * Get
+     *
+     * @param id id account from db
+     * @return name of page with result of delete account
+     */
     @GetMapping("accountpage/{id}/delete")
     public Mono<String> deleteUserById(@PathVariable String id) {
         long userId;
@@ -157,21 +187,28 @@ public class AccountCtrl {
         });
     }
 
+    /**
+     * @param type  type of searching. {@link com.svinogr.flier.controllers.web.utils.SearchType
+     * @param value value of searching
+     * @param page  number page of result searching
+     * @param model {@link Model
+     * @param id    id account from db
+     * @return name of page with result of searching with params
+     */
     @GetMapping("accountpage/{id}/searchshops")
     public Mono<String> searchShops(@RequestParam("type") String type,
                                     @RequestParam(value = "value", defaultValue = "") String value,
                                     @RequestParam(value = "page", defaultValue = "1") String page, Model model, @PathVariable String id) {
-        long userId;
         int numberPage;
-
+        SearchType searchType;
         try {
-            userId = Long.parseLong(id);
             numberPage = Integer.parseInt(page);
-        } catch (NumberFormatException e) {
+            searchType = SearchType.valueOf(type);
+        } catch (IllegalArgumentException e) {
             return Mono.just(utilService.FORBIDDEN_PAGE);
         }
 
-        return shopService.getCountSearchPersonalByValue(type, value).
+        return shopService.getCountSearchPersonalByValue(searchType, value).
                 flatMap(count -> {
                     System.out.println(count);
                     PaginationUtil myPage = new PaginationUtil(numberPage, count);
@@ -185,7 +222,7 @@ public class AccountCtrl {
                 flatMap(myPage -> {
                     if (myPage.getPages() > 0) {
 
-                        model.addAttribute("shops", shopService.searchPersonalByValueAndType(type, value).sort(Comparator.comparingLong(Shop::getId))
+                        model.addAttribute("shops", shopService.searchPersonalByValueAndType(searchType, value).sort(Comparator.comparingLong(Shop::getId))
                                 .skip((numberPage - 1) * PaginationUtil.ITEM_ON_PAGE).take(PaginationUtil.ITEM_ON_PAGE));
                     }
 

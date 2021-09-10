@@ -1,6 +1,7 @@
 package com.svinogr.flier.controllers.web;
 
 import com.svinogr.flier.controllers.web.utils.PaginationUtil;
+import com.svinogr.flier.controllers.web.utils.SearchType;
 import com.svinogr.flier.controllers.web.utils.Util;
 import com.svinogr.flier.model.Status;
 import com.svinogr.flier.model.User;
@@ -517,11 +518,12 @@ public class ShopCtrl {
         System.out.println(type + " " + value);
         long shopId;
         int numberPage;
-
+        SearchType searchType;
         try {
             shopId = Long.parseLong(id);
             numberPage = Integer.parseInt(page);
-        } catch (NumberFormatException e) {
+            searchType = SearchType.valueOf(type);
+        } catch (IllegalArgumentException e) {
             return Mono.just(utilService.FORBIDDEN_PAGE);
         }
 
@@ -536,7 +538,7 @@ public class ShopCtrl {
                                     model.addAttribute("shop", shop);
                                     return Mono.just(shop);
                                 }).flatMap(shop -> {
-                            return stockService.getCountSearchPersonalByValue(type, value, shop.getId()).
+                            return stockService.getCountSearchPersonalByValue(searchType, value, shop.getId()).
                                     flatMap(count -> {
                                         PaginationUtil myPage = new PaginationUtil(numberPage, count);
                                         System.out.println(myPage);
@@ -548,7 +550,7 @@ public class ShopCtrl {
                                     }).
                                     flatMap(myPage -> {
                                         if (myPage.getPages() > 0) {
-                                            model.addAttribute("stocks", stockService.searchPersonalByValueAndType(type, value, shopId).sort(Comparator.comparingLong(Stock::getId))
+                                            model.addAttribute("stocks", stockService.searchPersonalByValueAndType(searchType, value, shopId).sort(Comparator.comparingLong(Stock::getId))
                                                     .skip((numberPage - 1) * PaginationUtil.ITEM_ON_PAGE).take(PaginationUtil.ITEM_ON_PAGE));
                                         }
 

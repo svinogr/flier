@@ -1,5 +1,6 @@
 package com.svinogr.flier.services.impl;
 
+import com.svinogr.flier.controllers.web.utils.SearchType;
 import com.svinogr.flier.model.Status;
 import com.svinogr.flier.model.shop.Shop;
 import com.svinogr.flier.repo.ShopRepo;
@@ -121,33 +122,28 @@ public class ShopServiceImpl implements ShopService {
     }
 
     @Override
-    public Mono<Long> getCountSearchPersonalByValue(String type, String value) {
+    public Mono<Long> getCountSearchPersonalByValue(SearchType type, String value) {
         if (value.equals(Strings.EMPTY)) return Mono.empty();
 
         switch (type) {
-            case "searchId":
+            case BY_ID:
                 long id;
-                System.out.println(1);
+
                 try {
                     id = Long.parseLong(value);
                 } catch (NumberFormatException e) {
                     return Mono.just(0L);
                 }
-                System.out.println("type " + type + "*" + "value " + id);
+
                 return getCountPersonalShopById(id);
-
-            case "searchTitle":
-
+            case BY_TITLE:
                 System.out.println(2);
 
                 return getCountPersonalShopByTitle(value);
-            case "searchAddress":
-
-                System.out.println(3);
+            case BY_ADDRESS:
 
                 return getCountPersonalShopByAddress(value);
             default:
-                System.out.println(4);
                 return Mono.empty();
         }
     }
@@ -158,19 +154,19 @@ public class ShopServiceImpl implements ShopService {
     }
 
     @Override
-    public Mono<Long> getCountSearchByValue(String type, String value) {
+    public Mono<Long> getCountSearchByValue(SearchType type, String value) {
         if (value.equals(Strings.EMPTY)) return Mono.empty();
 
         switch (type) {
-            case "searchId":
+            case BY_ID:
                 long id;
-                System.out.println(1);
+
                 try {
                     id = Long.parseLong(value);
                 } catch (NumberFormatException e) {
                     return Mono.just(0L);
                 }
-                System.out.println("type " + type + "*" + "value " + id);
+
                 return getCountShopById(id);
             default:
                 return Mono.empty();
@@ -182,18 +178,17 @@ public class ShopServiceImpl implements ShopService {
     }
 
     @Override
-    public Flux<Shop> searchByValueAndType(String type, String value) {
+    public Flux<Shop> searchByValueAndType(SearchType type, String value) {
         switch (type) {
-            case "searchId":
+            case BY_ID:
                 long id;
-                System.out.println(1);
+
                 try {
                     id = Long.parseLong(value);
                 } catch (NumberFormatException e) {
 
                     return Flux.empty();
                 }
-                System.out.println("type " + type + "*" + "value " + id);
                 return getShopById(id).flux();
             default:
                 System.out.println(4);
@@ -204,7 +199,7 @@ public class ShopServiceImpl implements ShopService {
     private Mono<Long> getCountPersonalShopByAddress(String address) {
         return userService.getPrincipal().
                 flatMap(principal -> {
-                    return shopRepo. countByUserIdAndAddressContainsIgnoreCase(principal.getId(), address);
+                    return shopRepo.countByUserIdAndAddressContainsIgnoreCase(principal.getId(), address);
                 });
     }
 
@@ -216,16 +211,16 @@ public class ShopServiceImpl implements ShopService {
     }
 
     private Mono<Long> getCountPersonalShopById(long id) {
-   return userService.getPrincipal().
+        return userService.getPrincipal().
                 flatMap(principal -> {
                     return shopRepo.countByUserIdAndId(principal.getId(), id);
                 });
     }
 
     @Override
-    public Flux<Shop> searchPersonalByValueAndType(String type, String value) {
+    public Flux<Shop> searchPersonalByValueAndType(SearchType type, String value) {
         switch (type) {
-            case "searchId":
+            case BY_ID:
                 long id;
                 System.out.println(1);
                 try {
@@ -234,21 +229,17 @@ public class ShopServiceImpl implements ShopService {
 
                     return Flux.empty();
                 }
-                System.out.println("type " + type + "*" + "value " + id);
+
                 return getPersonalShopById(id).flux();
 
-            case "searchTitle":
-
-                System.out.println(2);
+            case BY_TITLE:
 
                 return getPersonalShopByTitle(value);
-            case "searchAddress":
-
-                System.out.println(3);
+            case BY_ADDRESS:
 
                 return getPersonalShopByAddress(value);
             default:
-                System.out.println(4);
+
                 return userService.getPrincipal().
                         flatMapMany(principal -> getShopsByUserId(principal.getId()));
         }

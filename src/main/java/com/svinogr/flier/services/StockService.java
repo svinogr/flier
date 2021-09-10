@@ -1,10 +1,9 @@
 package com.svinogr.flier.services;
 
+import com.svinogr.flier.controllers.web.utils.SearchType;
 import com.svinogr.flier.model.shop.Stock;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-
-import java.io.InputStream;
 
 public interface StockService {
     Flux<Stock> findStocksByShopId(Long id);
@@ -21,9 +20,9 @@ public interface StockService {
 
     Mono<Boolean> isOwnerOfStock(long shopId, long stockId);
 
-    Mono<Long> getCountSearchPersonalByValue(String type, String value, long shopId);
+    Mono<Long> getCountSearchPersonalByValue(SearchType type, String value, long shopId);
 
-    Flux<Stock> searchPersonalByValueAndType(String type, String value, long shopId);
+    Flux<Stock> searchPersonalByValueAndType(SearchType type, String value, long shopId);
 
     Mono<Long> getCountStocksByShopId(Long id);
 

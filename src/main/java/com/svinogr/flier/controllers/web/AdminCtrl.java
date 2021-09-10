@@ -1,6 +1,7 @@
 package com.svinogr.flier.controllers.web;
 
 import com.svinogr.flier.controllers.web.utils.PaginationUtil;
+import com.svinogr.flier.controllers.web.utils.SearchType;
 import com.svinogr.flier.controllers.web.utils.Util;
 import com.svinogr.flier.model.Role;
 import com.svinogr.flier.model.Status;
@@ -18,9 +19,6 @@ import org.springframework.http.codec.multipart.FilePart;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import org.thymeleaf.spring5.context.webflux.IReactiveDataDriverContextVariable;
-import org.thymeleaf.spring5.context.webflux.ReactiveDataDriverContextVariable;
-import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.time.LocalDateTime;
@@ -262,14 +260,15 @@ public class AdminCtrl {
                                     @RequestParam(value = "value", defaultValue = "") String value,
                                     @RequestParam(value = "page", defaultValue = "1") String page, Model model) {
         int numberPage;
+        SearchType searchType;
 
         try {
             numberPage = Integer.parseInt(page);
-        } catch (NumberFormatException e) {
+            searchType = SearchType.valueOf(type);
+        } catch (IllegalArgumentException e) {
             return Mono.just(utilService.FORBIDDEN_PAGE);
         }
-
-        return shopService.getCountSearchByValue(type, value).
+        return shopService.getCountSearchByValue(searchType, value).
                 flatMap(count -> {
                     System.out.println(count);
                     PaginationUtil myPage = new PaginationUtil(numberPage, count);
@@ -283,7 +282,7 @@ public class AdminCtrl {
                 flatMap(myPage -> {
                     if (myPage.getPages() > 0) {
 
-                        model.addAttribute("shops", shopService.searchByValueAndType(type, value)
+                        model.addAttribute("shops", shopService.searchByValueAndType(searchType, value)
                                 .skip((numberPage - 1) * PaginationUtil.ITEM_ON_PAGE).take(PaginationUtil.ITEM_ON_PAGE));
                     }
 

@@ -1,13 +1,9 @@
 package com.svinogr.flier.services;
 
+import com.svinogr.flier.controllers.web.utils.SearchType;
 import com.svinogr.flier.model.shop.Shop;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.util.MultiValueMap;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-
-import java.io.InputStream;
 
 public interface ShopService {
     Mono<Shop> createShop(Shop shop);
@@ -32,18 +28,18 @@ public interface ShopService {
 
     Flux<Shop> getPersonalShopByAddress(String address);
 
-    Flux<Shop> searchPersonalByValueAndType(String type, String value);
+    Flux<Shop> searchPersonalByValueAndType(SearchType type, String value);
 
     Mono<Shop> getPersonalShopById(Long shopId);
 
     Mono<Long> getCountShopsByUserId(Long userId);
 
-    Mono<Long>  getCountSearchPersonalByValue(String type, String value);
+    Mono<Long>  getCountSearchPersonalByValue(SearchType type, String value);
 
     Mono<Long> getCountShops();
 
-    Mono<Long> getCountSearchByValue(String type, String value);
+    Mono<Long> getCountSearchByValue(SearchType type, String value);
 
-    Flux<Shop> searchByValueAndType(String type, String value);
+    Flux<Shop> searchByValueAndType(SearchType type, String value);
 
 }

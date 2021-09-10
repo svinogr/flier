@@ -5,16 +5,17 @@ function search() {
     var url = document.URL;
 
     if ($('#searchId').is(':checked')) {
-        type = "searchId";
+        type = "BY_ID";
         go = true;
     }
+
     if ($('#searchTitle').is(':checked')) {
-        type = "searchTitle";
+        type = "BY_TITLE";
         go = true;
     }
 
     if ($('#searchAddress').is(':checked')) {
-        type = "searchAddress";
+        type = "BY_ADDRESS";
         go = true;
     }
 
