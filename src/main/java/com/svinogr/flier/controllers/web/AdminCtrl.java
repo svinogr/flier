@@ -1,6 +1,7 @@
 
 package com.svinogr.flier.controllers.web;
 
+import com.svinogr.flier.controllers.web.utils.ImageTypeAction;
 import com.svinogr.flier.controllers.web.utils.PaginationUtil;
 import com.svinogr.flier.controllers.web.utils.SearchType;
 import com.svinogr.flier.controllers.web.utils.Util;
@@ -53,7 +54,7 @@ public class AdminCtrl {
     private String upload;
 
     /**
-     * Method for getting signed user
+     * GET method for getting signed user
      *
      * @return signed user
      */
@@ -63,7 +64,7 @@ public class AdminCtrl {
     }
 
     /**
-     * Method for validation check
+     * GET method for validation check
      *
      * @return true if signed user is admin
      */
@@ -195,29 +196,30 @@ public class AdminCtrl {
      * POST method for saving updating or creating shop
      *
      * @param id id shop from db
-     * @param imgTypeAction for action with img: 0 - nothing to do, -1 set default, 1 set new from file
+     * @param imgTypeAction {@link com.svinogr.flier.controllers.web.utils.ImageTypeAction}
      * @param file file with img
      * @param shop for update
-     * @return name of web page after update or create shop
+     * @return name of web page after updating or creating shop
      */
     @PostMapping("shop/shoppage/{id}/update")
     public Mono<String> updateShop(@PathVariable String id, @RequestPart("imgTypeAction") String imgTypeAction,
                                    @RequestPart("file") Mono<FilePart> file, Shop shop) {
         long shopId;
+        ImageTypeAction imageTypeAction;
         try {
             shopId = Long.parseLong(id);
-
-        } catch (NumberFormatException e) {
+            imageTypeAction = ImageTypeAction.valueOf(imgTypeAction);
+        } catch (IllegalArgumentException e) {
             return Mono.just(utilService.FORBIDDEN_PAGE);
         }
 
         if (shopId == 0) { // создание нового
             shop.setId(null);
             return shopService.createShop(shop).flatMap(s -> {
-                switch (imgTypeAction) {
-                    case "0":
+                switch (imageTypeAction) {
+                    case NOTHING:
                         return Mono.just("redirect:/admin/shops");
-                    case "1":
+                    case IMG:
                         return file.flatMap(f -> {
                             if (f.filename().equals("")) {
                                 s.setImg(utilService.defaultShopImg);
@@ -232,7 +234,7 @@ public class AdminCtrl {
                             );
                         }).flatMap(sh -> shopService.updateShop(sh).flatMap(sf -> Mono.just("redirect:/admin/shops")));
 
-                    case "-1":
+                    case DEFAULT:
                         // сброс на дефолтную картинку и удаление старой из базы
                         return Mono.just("redirect:/admin/shops");
                     default:
@@ -241,10 +243,10 @@ public class AdminCtrl {
             });
         } else { // обновление уже созданого
             return shopService.createShop(shop).flatMap(s -> {
-                switch (imgTypeAction) {
-                    case "0":
+                switch (imageTypeAction) {
+                    case NOTHING:
                         return Mono.just("redirect:/admin/shop/shoppage/" + shop.getId());
-                    case "1":
+                    case IMG:
                         return file.flatMap(f -> {
                             if (f.filename().equals("")) {
                                 shop.setImg(utilService.defaultShopImg);
@@ -260,7 +262,7 @@ public class AdminCtrl {
                             shopService.updateShop(sh).subscribe();
                             return Mono.just("redirect:/admin/shop/shoppage/" + shop.getId());
                         });
-                    case "-1":
+                    case DEFAULT:
                         // сброс на дефолтную картинку и удаление старой из базы
                         return fileService.deleteImageForShop(shop.getImg()).flatMap(
                                 n -> {
@@ -425,7 +427,7 @@ public class AdminCtrl {
      *
      * @param idSh id of shop in bd
      * @param idSt id of stock in bd
-     * @param imgTypeAction for action with img: 0 - nothing to do, -1 set default, 1 set new from file
+     * @param imgTypeAction {@link com.svinogr.flier.controllers.web.utils.ImageTypeAction}
      * @param file file with img
      * @param stock for update or create
      * @return name of web page after create or update
@@ -433,10 +435,10 @@ public class AdminCtrl {
     @PostMapping("shop/shoppage/{idSh}/stockpage/{idSt}")
     public Mono<String> updateStock(@PathVariable String idSh, @PathVariable String idSt, @RequestPart("imgTypeAction") String imgTypeAction, @RequestPart("file") Mono<FilePart> file, Stock stock) {
         long shopId, stockId;
+        ImageTypeAction imageTypeAction;
         try {
             shopId = Long.parseLong(idSh);
-            stockId = Long.parseLong(idSt);
-
+            imageTypeAction = ImageTypeAction.valueOf(imgTypeAction);
         } catch (NumberFormatException e) {
             return Mono.just(utilService.FORBIDDEN_PAGE);
         }
@@ -445,12 +447,12 @@ public class AdminCtrl {
             stock.setId(null);
             stock.setShopId(shopId);
             return stockService.createStock(stock).flatMap(s -> {
-                switch (imgTypeAction) {
-                    case "0":
+                switch (imageTypeAction) {
+                    case NOTHING:
                         if (shopId == 0) return  Mono.just("redirect:/admin/stocks/");
 
                         return Mono.just("redirect:/admin/shop/shoppage/" + shopId);
-                    case "1":
+                    case IMG:
                         return file.flatMap(f -> {
                             if (f.filename().equals("")) {
                                 s.setImg(utilService.defaultStockImg);
@@ -471,7 +473,7 @@ public class AdminCtrl {
                                             return Mono.just("redirect:/admin/shop/shoppage/" + shopId);
                                         }));
 
-                    case "-1":
+                    case DEFAULT:
                         // сброс на дефолтную картинку и удаление старой из базы
                         // странное место тоже
                         return Mono.just("redirect:/admin/shop/shoppage/" + shopId);
@@ -481,10 +483,10 @@ public class AdminCtrl {
             });
         } else { // обновление уже созданого
             return stockService.updateStock(stock).flatMap(s -> {
-                switch (imgTypeAction) {
-                    case "0":
+                switch (imageTypeAction) {
+                    case NOTHING:
                         return Mono.just("redirect:/admin/shop/shoppage/" + shopId);
-                    case "1":
+                    case IMG:
                         System.out.println(1);
                         return file.flatMap(f -> {
                             if (f.filename().equals("")) {
@@ -503,7 +505,7 @@ public class AdminCtrl {
                             stockService.updateStock(sh).subscribe();
                             return Mono.just("redirect:/admin/shop/shoppage/" + shopId);
                         });
-                    case "-1":
+                    case DEFAULT:
                         System.out.println(2);
                         // сброс на дефолтную картинку и удаление старой из базы
                         return fileService.deleteImageForStock(stock.getImg()).flatMap(

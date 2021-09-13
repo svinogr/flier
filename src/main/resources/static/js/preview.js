@@ -8,7 +8,7 @@ function preview() {
             $('#img').attr('src', e.target.result);
         }
         var typeImg = $("#imgTypeAction");
-        typeImg.attr('value', 1);
+        typeImg.attr('value', "IMG");
         reader.readAsDataURL(input.files[0]);
 
         $("#deleteImg").removeAttr('hidden')
@@ -18,6 +18,6 @@ function preview() {
 function deleteImgPreview(srcImage) {
     $("#img").attr('src', src = srcImage);
     var typeImg = $("#imgTypeAction");
-    typeImg.attr('value', -1);
+    typeImg.attr('value', "DEFAULT");
     $("#deleteImg").attr('hidden', 'hidden')
 }

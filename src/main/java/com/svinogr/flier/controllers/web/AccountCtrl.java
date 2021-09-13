@@ -193,7 +193,7 @@ public class AccountCtrl {
     /**
      * GET method for getting page result of searching shops of signed user
      *
-     * @param type  type of searching. {@link com.svinogr.flier.controllers.web.utils.SearchType
+     * @param type  {@link com.svinogr.flier.controllers.web.utils.SearchType}
      * @param value value of searching
      * @param page  number page of result searching
      * @param model {@link Model}

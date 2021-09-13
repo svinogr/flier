@@ -15,7 +15,11 @@ import reactor.core.publisher.Mono;
 
 import java.io.File;
 import java.io.IOException;
-
+/**@author SVINOGR
+ * @version 0.0.1
+ *
+ * Class for managing files of media data
+ */
 @Controller
 @RequestMapping("/img")
 public class FileCtrl {
@@ -28,6 +32,11 @@ public class FileCtrl {
     @Value("${upload.stock.imgPath}")
     private String stockImgPath;
 
+    /**
+     * @param id shop id
+     * @param response {@link ServerHttpResponse}
+     * @return data of pic for shop
+     */
     @GetMapping("shop/{id}")
     public Mono<Void> imgShopRout(@PathVariable String id, ServerHttpResponse response)  {
        return fileService.getImgByNameAndPath(id, shopImgPath)
@@ -39,6 +48,11 @@ public class FileCtrl {
         });
     }
 
+    /**
+     * @param id stock id
+     * @param response {@link ServerHttpResponse}
+     * @return data of pic for stock
+     */
     @GetMapping("stock/{id}")
     public Mono<Void> imgStockRout(@PathVariable String id, ServerHttpResponse response)  {
         return fileService.getImgByNameAndPath(id, stockImgPath)

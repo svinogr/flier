@@ -21,6 +21,11 @@ import reactor.core.publisher.Mono;
 import javax.validation.Valid;
 import java.util.Map;
 
+/**@author SVINOGR
+ * @version 0.0.1
+ *
+ * Class for managing page of login and register user
+ */
 @Controller
 @RequestMapping
 public class RegistrationCtrl {
@@ -37,6 +42,12 @@ public class RegistrationCtrl {
     private Util util;
 
 
+    /**
+     * GET method for getting page for register new user or update
+     *
+     * @param model {@link Model}
+     * @return  name page for registering user
+     */
     @GetMapping("/register")
     public Mono<String> register(Model model) {
         User user = new User();
@@ -48,6 +59,14 @@ public class RegistrationCtrl {
     }
 
 
+    /**
+     * POST method for saving user account
+     *
+     * @param user {@link User}
+     * @param bindingResult {@link BindingResult}
+     * @param model {@link Model}
+     * @return name of page after updating or creating
+     */
     @PostMapping("/register")
     public Mono<String> saveOrUpdateUser(@Valid User user, BindingResult bindingResult, Model model) {
         if (bindingResult.hasErrors()) {
@@ -70,6 +89,13 @@ public class RegistrationCtrl {
     }
 
 
+    /**
+     * POST method for login user
+     *
+     * @param user {@link User}
+     * @param swe {@link ServerWebExchange}
+     * @return name of page with result login
+     */
     @PostMapping("/login")
     public Mono<String> login(User user, ServerWebExchange swe) {
         return userService.findUserByEmail(user.getEmail())

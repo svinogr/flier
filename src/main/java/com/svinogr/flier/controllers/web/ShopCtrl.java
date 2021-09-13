@@ -1,5 +1,6 @@
 package com.svinogr.flier.controllers.web;
 
+import com.svinogr.flier.controllers.web.utils.ImageTypeAction;
 import com.svinogr.flier.controllers.web.utils.PaginationUtil;
 import com.svinogr.flier.controllers.web.utils.SearchType;
 import com.svinogr.flier.controllers.web.utils.Util;
@@ -23,21 +24,15 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
 
+/**
+ * @author SVINOGR
+ * version 0.0.1
+ *
+ * Class for managing web pages of shops
+ */
 @Controller
 @RequestMapping("shop")
 public class ShopCtrl {
-    /*    @Autowired
-        ShopService shopService;
-        @GetMapping("shops")
-        public String getAllShop(Model model) {
-            Flux<User> all = userService.findAll().sort(Comparator.comparingLong(User::getId));
-
-            IReactiveDataDriverContextVariable reactiveDataDrivenMode =
-                    new ReactiveDataDriverContextVariable(all, 1,1);
-            model.addAttribute("users", reactiveDataDrivenMode);
-
-            return "accountmainpage";
-    }*/
     @Autowired
     private Util utilService;
 
@@ -64,9 +59,11 @@ public class ShopCtrl {
     }
 
     /**
-     * @param id    id shop
-     * @param model
-     * @return shop page for shop with id
+     * GET method for getting page of shop by id
+     *
+     * @param id shop id from db
+     * @param model {@link Model}
+     * @return name of  page for shop by id
      */
     @GetMapping("shoppage/{id}")
     public Mono<String> getShopPage(@PathVariable String id, @RequestParam(value = "page", defaultValue = "1") String page, Model model) {
@@ -117,6 +114,13 @@ public class ShopCtrl {
 
     }
 
+    /**
+     * GET method for getting page for update or create shop
+     *
+     * @param id shop id from db. 0 for new shop
+     * @param model {@link Model}
+     * @return name of page of shop by id
+     */
     @GetMapping("shoppage/{id}/update")
     public Mono<String> getUpdateShopPage(@PathVariable String id, Model model) {
         Long shopid;
@@ -126,7 +130,6 @@ public class ShopCtrl {
         } catch (NumberFormatException e) {
             return Mono.just(utilService.FORBIDDEN_PAGE);
         }
-
 
         if (shopid == 0) {
             Shop shop = new Shop();
@@ -155,21 +158,26 @@ public class ShopCtrl {
         }
     }
 
+
     /**
-     * value imgTypeAction.
-     * 0 - nothing to do
-     * -1 set default
-     * 1 set new from file
+     *POST method for creating or updating shop
+     *
+     * @param id shop id from db
+     * @param imgTypeAction {@link ImageTypeAction}
+     * @param file file with img
+     * @param shop for update
+     * @return name of web page after saving or creating shop
      */
     @PostMapping("shoppage/{id}/update")
     public Mono<String> updateShop(@PathVariable String id, @RequestPart("imgTypeAction") String imgTypeAction,
                                    @RequestPart("file") Mono<FilePart> file, Shop shop) {
         long parseShopId;
+        ImageTypeAction imageTypeAction;
 
         try {
             parseShopId = Long.parseLong(id);
-
-        } catch (NumberFormatException e) {
+            imageTypeAction = ImageTypeAction.valueOf(imgTypeAction);
+        } catch (IllegalArgumentException e) {
             return Mono.just(utilService.FORBIDDEN_PAGE);
         }
 
@@ -179,10 +187,10 @@ public class ShopCtrl {
                         shop.setId(null);
                         shop.setUserId(userPrincipal.getId());
                         return shopService.createShop(shop).flatMap(s -> {
-                            switch (imgTypeAction) {
-                                case "0":
+                            switch (imageTypeAction) {
+                                case NOTHING:
                                     return Mono.just("redirect:/account/accountpage/" + userPrincipal.getId());
-                                case "1":
+                                case IMG:
                                     return file.flatMap(f -> {
                                         if (f.filename().equals("")) {
                                             s.setImg(utilService.defaultShopImg);
@@ -197,7 +205,7 @@ public class ShopCtrl {
                                         );
                                     }).flatMap(sh -> shopService.updateShop(sh).flatMap(sf -> Mono.just("redirect:/account/accountpage/" + userPrincipal.getId())));
 
-                                case "-1":
+                                case DEFAULT:
                                     // сброс на дефолтную картинку и удаление старой из базы
                                     return Mono.just("redirect:/account/accountpage");
                                 default:
@@ -210,10 +218,10 @@ public class ShopCtrl {
                                 return Mono.just(utilService.FORBIDDEN_PAGE);
                             } else {
                                 return shopService.updateShop(shop).flatMap(s -> {
-                                    switch (imgTypeAction) {
-                                        case "0":
+                                    switch (imageTypeAction) {
+                                        case NOTHING:
                                             return Mono.just("redirect:/account/accountpage/" + userPrincipal.getId());
-                                        case "1":
+                                        case IMG:
                                             return file.flatMap(f -> {
                                                 if (f.filename().equals("")) {
                                                     shop.setImg(utilService.defaultShopImg);
@@ -229,7 +237,7 @@ public class ShopCtrl {
                                                 shopService.updateShop(sh).subscribe();
                                                 return Mono.just("redirect:/account/accountpage/" + userPrincipal.getId());
                                             });
-                                        case "-1":
+                                        case DEFAULT:
                                             // сброс на дефолтную картинку и удаление старой из базы
                                             return fileService.deleteImageForShop(shop.getImg()).flatMap(
                                                     n -> {
