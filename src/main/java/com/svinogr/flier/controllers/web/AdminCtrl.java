@@ -1,3 +1,4 @@
+
 package com.svinogr.flier.controllers.web;
 
 import com.svinogr.flier.controllers.web.utils.PaginationUtil;
@@ -24,7 +25,12 @@ import reactor.core.publisher.Mono;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
-
+/**
+ * @author SVINOGR
+ * version 0.0.1
+ *
+ * Class for admin's managing web pages
+ */
 @Controller
 @RequestMapping("/admin")
 public class AdminCtrl {
@@ -46,16 +52,31 @@ public class AdminCtrl {
     @Value("${upload.shop.imgPath}")
     private String upload;
 
+    /**
+     * Method for getting signed user
+     *
+     * @return signed user
+     */
     @ModelAttribute("principal")
     public Mono<User> principal() {
         return userService.getPrincipal();
     }
 
+    /**
+     * Method for validation check
+     *
+     * @return true if signed user is admin
+     */
     @ModelAttribute("admin")
     public Mono<Boolean> isAdmin() {
         return userService.isAdmin();
     }
 
+    /**
+     * @param page number page received from request
+     * @param model {@link Model model
+     * @return name of web page with shops of signed user
+     */
     @GetMapping("shops")
     public Mono<String> getAllShop(@RequestParam(value = "page", defaultValue = "1") String page, Model model) {
         int numberPage;
@@ -87,6 +108,14 @@ public class AdminCtrl {
                 onErrorReturn(utilService.FORBIDDEN_PAGE);
     }
 
+    /**
+     * GET method for getting page of shop by id
+     *
+     * @param id  id shop from db
+     * @param page number page received from request
+     * @param model {@link Model model
+     * @return name of web page shop by id
+     */
     @GetMapping("shop/shoppage/{id}")
     public Mono<String> getShopPage(@PathVariable String id, @RequestParam(value = "page", defaultValue = "1") String page, Model model) {
         Long shopId;
@@ -126,7 +155,13 @@ public class AdminCtrl {
                 });
     }
 
-
+    /**
+     * GET method for getting page of updating or creating shop
+     *
+     * @param id id shop from db
+     * @param model {@link Model model}
+     * @return name of web page for update shop by id. if id == 0 - web page to create new shop
+     */
     @GetMapping("shop/shoppage/{id}/update")
     public Mono<String> getUpdateShopPage(@PathVariable String id, Model model) {
         Long parseId;
@@ -156,12 +191,14 @@ public class AdminCtrl {
         }).switchIfEmpty(Mono.just("redirect:/admin/shops"));
     }
 
-
     /**
-     * value imgTypeAction.
-     * 0 - nothing to do
-     * -1 set default
-     * 1 set new from file
+     * POST method for saving updating or creating shop
+     *
+     * @param id id shop from db
+     * @param imgTypeAction for action with img: 0 - nothing to do, -1 set default, 1 set new from file
+     * @param file file with img
+     * @param shop for update
+     * @return name of web page after update or create shop
      */
     @PostMapping("shop/shoppage/{id}/update")
     public Mono<String> updateShop(@PathVariable String id, @RequestPart("imgTypeAction") String imgTypeAction,
@@ -239,6 +276,12 @@ public class AdminCtrl {
 
     }
 
+    /**
+     * GET method for deleting shop by id
+     *
+     * @param id id shop from db to delete
+     * @return name of web page after deleting
+     */
     @GetMapping("shop/shoppage/{id}/delete")
     public Mono<String> delShopById(@PathVariable String id) {
         Long shopId;
@@ -255,6 +298,15 @@ public class AdminCtrl {
                 });
     }
 
+    /**
+     * GET method for getting page with result of searching shops by type and value
+     *
+     * @param type type of searching @{link {@link SearchType}
+     * @param value value for searching
+     * @param page number page received from request of searchin results
+     * @param model {@link Model model}
+     * @return name of web page with searching results by page
+     */
     @GetMapping("shop/searchshops")
     public Mono<String> searchShops(@RequestParam("type") String type,
                                     @RequestParam(value = "value", defaultValue = "") String value,
@@ -292,7 +344,14 @@ public class AdminCtrl {
                          Mono.just("redirect:/admin/shops"));
     }
 
-
+    /**
+     * GET method for getting page of stock by id shop and is stock
+     *
+     * @param idSh id of shop in bd
+     * @param idSt id of stock in bd
+     * @param model {@link Model model}
+     * @return name of web page stock with id
+     */
     @GetMapping("shop/shoppage/{idSh}/stockpage/{idSt}")
     public Mono<String> getStockPage(@PathVariable String idSh, @PathVariable String idSt, Model model) {
         long shopId, stockId;
@@ -342,6 +401,10 @@ public class AdminCtrl {
                 .switchIfEmpty(Mono.just("redirect:/admin/shop/shoppage/" + shopId));
     }
 
+    /**
+     * @param id  id of shop in bd
+     * @return name of web page after restoring shop
+     */
     @GetMapping("shop/shoppage/{id}/restore")
     public Mono<String> restoreShop(@PathVariable String id) {
         Long shopId;
@@ -358,10 +421,14 @@ public class AdminCtrl {
     }
 
     /**
-     * value imgTypeAction.
-     * 0 - nothing to do
-     * -1 set default
-     * 1 set new from file
+     *POST method for saving updating or creating stock
+     *
+     * @param idSh id of shop in bd
+     * @param idSt id of stock in bd
+     * @param imgTypeAction for action with img: 0 - nothing to do, -1 set default, 1 set new from file
+     * @param file file with img
+     * @param stock for update or create
+     * @return name of web page after create or update
      */
     @PostMapping("shop/shoppage/{idSh}/stockpage/{idSt}")
     public Mono<String> updateStock(@PathVariable String idSh, @PathVariable String idSt, @RequestPart("imgTypeAction") String imgTypeAction, @RequestPart("file") Mono<FilePart> file, Stock stock) {
@@ -453,6 +520,12 @@ public class AdminCtrl {
 
     }
 
+    /**
+     * GET method for deleting stock by id
+     *
+     * @param id id of stock in bd
+     * @return name of web page after deleting
+     */
     @PostMapping("stock/stockpage/{id}/delete")
     public Mono<String> delStockById(@PathVariable String id) {
         Long stockId;
@@ -469,6 +542,13 @@ public class AdminCtrl {
 
     }
 
+    /**
+     * GET method for restoring stock by id shop and id stock
+     *
+     * @param idSh id of shop in bd
+     * @param idSt id of stock in bd
+     * @return name of web page after restoring stock
+     */
     @PostMapping("shop/shoppage/{idSh}/stockpage/{idSt}/restore")
     public Mono<String> restoreStockById(@PathVariable String idSh, @PathVariable String idSt) {
         long stockId;
@@ -486,6 +566,13 @@ public class AdminCtrl {
                 switchIfEmpty(Mono.just("redirect:/admin/shop/shoppage/" + shopId));
     }
 
+    /**
+     * GET method for getting page with all users by page
+     *
+     * @param page number page received from request
+     * @param model  {@link Model model}
+     * @return name of web page with all user by number page
+     */
     @GetMapping("users")
     public Mono<String> getAllUser(@RequestParam(value = "page", defaultValue = "1") String page,  Model model) {
         int numberPage;
@@ -518,6 +605,13 @@ public class AdminCtrl {
 
     }
 
+    /**
+     * GET method for getting page of user account by id
+     *
+     * @param id number id of account in bd
+     * @param model  {@link Model model}
+     * @return name of web page with account
+     */
     @GetMapping("accountpage/{id}")
     public Mono<String> getUserById(@PathVariable String id, Model model) {
         Mono<User> userById;
@@ -546,6 +640,13 @@ public class AdminCtrl {
         }).switchIfEmpty(Mono.just("redirect:/admin/users"));
     }
 
+    /**
+     * GET method for restoring stock
+     *
+     * @param user {@link User} for update or create
+     * @param model {@link Model model}
+     * @return name of web after update or create
+     */
     @PostMapping("accountpage/{id}")
     public Mono<String> saveOrUpdateUser(User user, Model model) {
         Mono<User> userDb;
@@ -559,6 +660,12 @@ public class AdminCtrl {
         return userDb.flatMap(u -> Mono.just("redirect:/admin/users")).switchIfEmpty(Mono.just("redirect:/admin/users"));
     }
 
+    /**
+     * GET method for deleting user account by id
+     *
+     * @param id number id of account in bd
+     * @return name of web page after deleting
+     */
     @GetMapping("accountpage/{id}/delete")
     public Mono<String> deleteUserById(@PathVariable String id) {
         long userId;
@@ -575,6 +682,13 @@ public class AdminCtrl {
                 });
     }
 
+    /**
+     * GET method for getting page with all stocks
+     *
+     * @param page number page received from request
+     * @param model {@link Model model}
+     * @return name of web page wit all stocks
+     */
     @GetMapping("stocks")
     public Mono<String> getAllStocks(@RequestParam(value = "page", defaultValue = "1") String page,  Model model) {
         int numberPage;

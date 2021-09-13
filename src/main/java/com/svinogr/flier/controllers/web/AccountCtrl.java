@@ -20,6 +20,8 @@ import java.util.Comparator;
 /**
  * @author SVINOGR
  * version 0.0.1
+ *
+ * Class for managing web pages of account
  */
 @Controller
 @RequestMapping("/account/")
@@ -47,7 +49,7 @@ public class AccountCtrl {
     }
 
     /**
-     * Get
+     * GET method for getting page of account
      *
      * @param id    id account from db
      * @param page  number page received from request
@@ -103,7 +105,7 @@ public class AccountCtrl {
     }
 
     /**
-     * Get
+     * GET method for getting page of updating signed user's account
      *
      * @param id    id account from db
      * @param model {@link Model model
@@ -133,7 +135,7 @@ public class AccountCtrl {
     }
 
     /**
-     * Post
+     * POST method for saving changes of user's account
      *
      * @param id   id account from db
      * @param user {@link User user
@@ -163,11 +165,12 @@ public class AccountCtrl {
     }
 
     /**
-     * Get
+     * GET method for deleting page of user's account
      *
      * @param id id account from db
      * @return name of page with result of delete account
      */
+    //TODO возможно стоит изменить на POST
     @GetMapping("accountpage/{id}/delete")
     public Mono<String> deleteUserById(@PathVariable String id) {
         long userId;
@@ -188,10 +191,12 @@ public class AccountCtrl {
     }
 
     /**
+     * GET method for getting page result of searching shops of signed user
+     *
      * @param type  type of searching. {@link com.svinogr.flier.controllers.web.utils.SearchType
      * @param value value of searching
      * @param page  number page of result searching
-     * @param model {@link Model
+     * @param model {@link Model}
      * @param id    id account from db
      * @return name of page with result of searching with params
      */
