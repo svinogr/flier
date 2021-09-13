@@ -5,7 +5,4 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
 @RequestMapping("stock")
-public class StockCtrl {
-
-
-}
+public class StockCtrl {}

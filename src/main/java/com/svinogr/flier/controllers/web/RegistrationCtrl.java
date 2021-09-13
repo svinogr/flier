@@ -58,7 +58,6 @@ public class RegistrationCtrl {
         });
     }
 
-
     /**
      * POST method for saving user account
      *
@@ -87,7 +86,6 @@ public class RegistrationCtrl {
                 .flatMap(u -> Mono.just("redirect:/admin/users"))
                 .switchIfEmpty(Mono.just("redirect:/admin/users"));
     }
-
 
     /**
      * POST method for login user

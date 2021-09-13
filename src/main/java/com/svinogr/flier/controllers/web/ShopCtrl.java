@@ -27,7 +27,7 @@ import java.util.Comparator;
 /**
  * @author SVINOGR
  * version 0.0.1
- *
+ * <p>
  * Class for managing web pages of shops
  */
 @Controller
@@ -61,7 +61,7 @@ public class ShopCtrl {
     /**
      * GET method for getting page of shop by id
      *
-     * @param id shop id from db
+     * @param id    shop id from db
      * @param model {@link Model}
      * @return name of  page for shop by id
      */
@@ -117,7 +117,7 @@ public class ShopCtrl {
     /**
      * GET method for getting page for update or create shop
      *
-     * @param id shop id from db. 0 for new shop
+     * @param id    shop id from db. 0 for new shop
      * @param model {@link Model}
      * @return name of page of shop by id
      */
@@ -160,12 +160,12 @@ public class ShopCtrl {
 
 
     /**
-     *POST method for creating or updating shop
+     * POST method for creating or updating shop
      *
-     * @param id shop id from db
+     * @param id            shop id from db
      * @param imgTypeAction {@link ImageTypeAction}
-     * @param file file with img
-     * @param shop for update
+     * @param file          file with img
+     * @param shop          for update
      * @return name of web page after saving or creating shop
      */
     @PostMapping("shoppage/{id}/update")
@@ -258,6 +258,13 @@ public class ShopCtrl {
                 });
     }
 
+    /**
+     * GET method for deleting shop by id
+     *
+     * @param id shop id from db
+     * @return name of web page after deleting shop
+     */
+    //TODO возможно стоит изменить на Post
     @GetMapping("shoppage/{id}/delete")
     public Mono<String> deleteShop(@PathVariable String id) {
         Long shopId;
@@ -282,6 +289,12 @@ public class ShopCtrl {
                 });
     }
 
+    /**
+     * GET method for restoring shop by id
+     *
+     * @param id shop id from db
+     * @return name of web page after restoring shop
+     */
     @GetMapping("shoppage/{id}/restore")
     public Mono<String> restoreShop(@PathVariable String id) {
         Long shopId;
@@ -307,6 +320,14 @@ public class ShopCtrl {
                 .switchIfEmpty(Mono.just(utilService.FORBIDDEN_PAGE));
     }
 
+    /**
+     * GET method for getting web page of stock by id shop and stock id
+     *
+     * @param idSh  shop id from db
+     * @param idSt  stock id from db
+     * @param model {@link Model}
+     * @return name of web page stock by id
+     */
     @GetMapping("shoppage/{idSh}/stockpage/{idSt}")
     public Mono<String> getStockPage(@PathVariable String idSh, @PathVariable String idSt, Model model) {
         Long shopId, stockId;
@@ -357,21 +378,28 @@ public class ShopCtrl {
                 .switchIfEmpty(Mono.just(utilService.FORBIDDEN_PAGE));
     }
 
+
     /**
-     * value imgTypeAction.
-     * 0 - nothing to do
-     * -1 set default
-     * 1 set new from file
+     * POST method for creating or updating stock by shop id and shop id
+     *
+     * @param idSh          shop id from db
+     * @param idSt          stock id from db
+     * @param imgTypeAction {@link ImageTypeAction}
+     * @param file          file file with img
+     * @param stock         {@link Stock}
+     * @return name of web page after creating or updating stock
      */
     @PostMapping("shoppage/{idSh}/stockpage/{idSt}")
     public Mono<String> updateStock(@PathVariable String idSh, @PathVariable String
             idSt, @RequestPart("imgTypeAction") String imgTypeAction, @RequestPart("file") Mono<FilePart> file, Stock
                                             stock) {
         long shopId, stockId;
+        ImageTypeAction imageTypeAction;
 
         try {
             shopId = Long.parseLong(idSh);
             stockId = Long.parseLong(idSt);
+            imageTypeAction = ImageTypeAction.valueOf(imgTypeAction);
         } catch (NumberFormatException e) {
             return Mono.just(utilService.FORBIDDEN_PAGE);
         }
@@ -385,10 +413,10 @@ public class ShopCtrl {
                         stock.setShopId(shopId);
 
                         return stockService.createStock(stock).flatMap(s -> {
-                            switch (imgTypeAction) {
-                                case "0":
+                            switch (imageTypeAction) {
+                                case NOTHING:
                                     return Mono.just("redirect:/shop/shoppage/" + shopId);// подозрительное место почему строка а не обьект
-                                case "1":
+                                case IMG:
                                     return file.flatMap(f -> {
                                         if (f.filename().equals("")) {
                                             s.setImg(utilService.defaultStockImg);
@@ -405,7 +433,7 @@ public class ShopCtrl {
                                             .flatMap(sh -> stockService.updateStock(sh)
                                                     .flatMap(sf -> Mono.just("redirect:/shop/shoppage/" + shopId)));
 
-                                case "-1":
+                                case DEFAULT:
                                     // сброс на дефолтную картинку и удаление старой из базы
                                     // странное место тоже
                                     return Mono.just("redirect:/shop/shoppage/" + shopId);
@@ -420,12 +448,10 @@ public class ShopCtrl {
 
                                     return stockService.updateStock(stock).flatMap(s -> {
                                         System.out.println(stock);
-                                        switch (imgTypeAction) {
-                                            case "0":
-                                                System.out.println(0);
+                                        switch (imageTypeAction) {
+                                            case NOTHING:
                                                 return Mono.just("redirect:/shop/shoppage/" + shopId);
-                                            case "1":
-                                                System.out.println(1);
+                                            case IMG:
                                                 return file.flatMap(f -> {
                                                     if (f.filename().equals("")) {
                                                         stock.setImg(utilService.defaultStockImg);
@@ -440,13 +466,12 @@ public class ShopCtrl {
                                                                                 return Mono.just(s);
                                                                             }));
                                                 }).flatMap(sh -> {
-                                                    //   stockService.updateStock(sh).subscribe();
                                                     return stockService.updateStock(sh).flatMap(stock1 -> {
                                                         return Mono.just("redirect:/shop/shoppage/" + shopId);
                                                     });
 
                                                 });
-                                            case "-1":
+                                            case DEFAULT:
                                                 System.out.println(2);
                                                 // сброс на дефолтную картинку и удаление старой из базы
                                                 return fileService.deleteImageForStock(stock.getImg()).flatMap(
@@ -465,6 +490,13 @@ public class ShopCtrl {
                 });
     }
 
+    /**
+     * POST method for deleting stock by shop id and stock id
+     *
+     * @param idSh stock id from db
+     * @param idSt shop id from db
+     * @return name of web page after deleteing stock
+     */
     @PostMapping("shoppage/{idSh}/stockpage/{idSt}/delete")
     public Mono<String> delStockById(@PathVariable String idSh, @PathVariable String idSt) {
         long stockId;
@@ -492,14 +524,21 @@ public class ShopCtrl {
                 });
     }
 
+    /**
+     * POST method for restoring stock by shop id and stock id
+     *
+     * @param idSh shop id from db
+     * @param idSt stock id from db
+     * @return name of web page after restoring stock
+     */
     @PostMapping("shoppage/{idSh}/stockpage/{idSt}/restore")
     public Mono<String> restoreStockById(@PathVariable String idSh, @PathVariable String idSt) {
         long stockId;
         long shopId;
+
         try {
             stockId = Long.parseLong(idSt);
             shopId = Long.parseLong(idSh);
-
         } catch (NumberFormatException e) {
             return Mono.just(utilService.FORBIDDEN_PAGE);
         }
@@ -519,14 +558,24 @@ public class ShopCtrl {
                 });
     }
 
+    /**
+     * GET method for searching stock's shop by page
+     *
+     * @param type {@link SearchType}
+     * @param value searching value
+     * @param page number of page
+     * @param model {@link Model}
+     * @param id shop id from db
+     * @return name of web page with result of searching
+     */
     @GetMapping("shoppage/{id}/searchstocks")
     public Mono<String> searchShops(@RequestParam("type") String type,
                                     @RequestParam(value = "value", defaultValue = "") String value,
                                     @RequestParam(value = "page", defaultValue = "1") String page, Model model, @PathVariable String id) {
-        System.out.println(type + " " + value);
         long shopId;
         int numberPage;
         SearchType searchType;
+
         try {
             shopId = Long.parseLong(id);
             numberPage = Integer.parseInt(page);

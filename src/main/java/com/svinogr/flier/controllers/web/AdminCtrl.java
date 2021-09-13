@@ -404,6 +404,8 @@ public class AdminCtrl {
     }
 
     /**
+     * GET method for restoring shop
+     *
      * @param id  id of shop in bd
      * @return name of web page after restoring shop
      */
