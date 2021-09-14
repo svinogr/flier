@@ -96,16 +96,16 @@ public class ShopServiceImpl implements ShopService {
                 });
     }
 
-    @Override
-    public Flux<Shop> getPersonalShopByTitle(String title) {
+
+    private Flux<Shop> getPersonalShopByTitle(String title) {
         return userService.getPrincipal().
                 flatMapMany(principal -> {
                     return shopRepo.findByTitleContainsIgnoreCaseAndUserId(title, principal.getId());
                 });
     }
 
-    @Override
-    public Flux<Shop> getPersonalShopByAddress(String address) {
+
+    private Flux<Shop> getPersonalShopByAddress(String address) {
         System.out.println(address);
         return userService.getPrincipal().
                 flatMapMany(principal -> {
@@ -113,8 +113,7 @@ public class ShopServiceImpl implements ShopService {
                 });
     }
 
-    @Override
-    public Mono<Shop> getPersonalShopById(Long id) {
+    private Mono<Shop> getPersonalShopById(Long id) {
         return userService.getPrincipal().
                 flatMap(principal -> {
                     return shopRepo.findByIdAndUserId(id, principal.getId());

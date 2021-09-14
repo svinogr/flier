@@ -3,7 +3,12 @@ package com.svinogr.flier.services;
 import com.svinogr.flier.model.User;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-
+/**
+ * @author SVINOGR
+ * version 0.0.1
+ * <p>
+ *Interface for user services
+ */
 public interface UserService {
     Flux<User> findAll();
     Mono<User> findUserById(Long id);

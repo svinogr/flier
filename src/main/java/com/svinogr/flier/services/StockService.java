@@ -4,7 +4,12 @@ import com.svinogr.flier.controllers.web.utils.SearchType;
 import com.svinogr.flier.model.shop.Stock;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-
+/**
+ * @author SVINOGR
+ * version 0.0.1
+ * <p>
+ *Interface for stock services
+ */
 public interface StockService {
     Flux<Stock> findStocksByShopId(Long id);
 
