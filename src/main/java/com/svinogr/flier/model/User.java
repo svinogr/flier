@@ -16,7 +16,12 @@ import java.util.List;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
-
+/**
+ * @author SVINOGR
+ * version 0.0.1
+ * <p>
+ * Class User entity. Table named "usr". Implements {@link UserDetails}
+ */
 @Data
 @Table("usr")
 public class User extends BaseEntity implements UserDetails {

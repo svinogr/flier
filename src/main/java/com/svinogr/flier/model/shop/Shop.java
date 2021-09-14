@@ -8,7 +8,12 @@ import org.springframework.data.relational.core.mapping.Table;
 
 import javax.validation.constraints.NotBlank;
 import java.util.List;
-
+/**
+ * @author SVINOGR
+ * version 0.0.1
+ * <p>
+ * Class Shop entity. Table named "shops"
+ */
 @Table("shops")
 @Data
 public class Shop extends BaseEntity {

@@ -9,6 +9,12 @@ import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Mono;
 
+/**
+ * @author SVINOGR
+ * version 0.0.1
+ * <p>
+ * Reactive repository for {@link Role}
+ */
 @Repository
 public interface RoleRepo extends ReactiveCrudRepository<Role, Long> {
      Mono<Role> findByName(String name);

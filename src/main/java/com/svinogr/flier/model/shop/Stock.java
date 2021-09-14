@@ -8,7 +8,12 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-
+/**
+ * @author SVINOGR
+ * version 0.0.1
+ * <p>
+ * Class Stock entity. Table named "stocks"
+ */
 @Table("stocks")
 @Data
 public class Stock extends BaseEntity {

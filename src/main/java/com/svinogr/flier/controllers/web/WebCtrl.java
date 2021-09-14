@@ -1,33 +1,40 @@
 package com.svinogr.flier.controllers.web;
 
-import com.svinogr.flier.services.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.server.ServerWebExchange;
-
+/**
+ * @author SVINOGR
+ * version 0.0.1
+ * <p>
+ * Class for managing login
+ */
 @Controller
 @RequestMapping("/")
 public class WebCtrl {
-    @Autowired
-    private UserService userService;
 
+    /**
+     * GET method for mainpage
+     *
+     * @param model {@link Model}
+     * @return name of web main page
+     */
     @GetMapping()
     public String mainPage(Model model) {
-
         return "adminmainpage";
     }
 
-
+    /**
+     * GET method for loginpage
+     *
+     * @param swe
+     * @return name of web page for login
+     */
     @GetMapping("/loginpage")
     public String loginPage(ServerWebExchange swe) {
-   //     swe.getRequest().getCookies().clear();
-      //  System.out.println(swe.getResponse().getCookies().getFirst("jwt").);
         return "loginpage";
     }
-
-
 }
 

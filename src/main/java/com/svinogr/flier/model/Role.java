@@ -9,7 +9,12 @@ import org.springframework.data.relational.core.mapping.Table;
 import java.time.LocalDate;
 import java.util.Date;
 
-
+/**
+ * @author SVINOGR
+ * version 0.0.1
+ * <p>
+ * Class Role entity. Table named "role". Use {@link UserRole} for value name
+ */
 @Data
 @Table
 @NoArgsConstructor
