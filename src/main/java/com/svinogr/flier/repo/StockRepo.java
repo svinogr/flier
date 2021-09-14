@@ -1,6 +1,5 @@
 package com.svinogr.flier.repo;
 
-import com.svinogr.flier.model.shop.Shop;
 import com.svinogr.flier.model.shop.Stock;
 import org.springframework.data.r2dbc.repository.Modifying;
 import org.springframework.data.r2dbc.repository.Query;
@@ -12,7 +11,7 @@ import reactor.core.publisher.Mono;
  * @author SVINOGR
  * version 0.0.1
  * <p>
- *Class  Reactive repository for {@link Stock} implements {@link ReactiveCrudRepository}
+ *Class Reactive repository for {@link Stock} implements {@link ReactiveCrudRepository}
  */
 @Repository
 public interface StockRepo extends ReactiveCrudRepository<Stock, Long> {
@@ -25,7 +24,8 @@ public interface StockRepo extends ReactiveCrudRepository<Stock, Long> {
     Flux<Stock> findAllByShopId(Long shopId);
 
     /**
-     * Custom query for update entity {@link Stock}
+     * Custom query for update entity {@link Stock}.
+     * Sets column updated by default.
      *
      * @param stock  {@link Stock}
      * @return  boolean status of operation. Mono<Boolean>
