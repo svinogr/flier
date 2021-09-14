@@ -11,7 +11,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-
+/**
+ * @author SVINOGR
+ * version 0.0.1
+ * <p>
+ *Class service implementation {@link StockService}
+ */
 @Service
 public class StockServiceImpl implements StockService {
     @Autowired
@@ -37,7 +42,6 @@ public class StockServiceImpl implements StockService {
 
     @Override
     public Mono<Stock> updateStock(Stock stock) {
-        // return Mono.just(new Stock());
         return stockRepo.updateStock(stock)
                 .flatMap(ok -> {
                     if (ok) return findStockById(stock.getId());
@@ -51,6 +55,7 @@ public class StockServiceImpl implements StockService {
         return stockRepo.findById(stockId)
                 .flatMap(stock -> {
                     stock.setStatus(Status.NON_ACTIVE.name());
+
                     return Mono.just(stock);
                 })
                 .flatMap(stock -> updateStock(stock));
@@ -97,16 +102,11 @@ public class StockServiceImpl implements StockService {
         return stockRepo.findByTitleContainingIgnoreCaseAndShopId(title, shopId).filterWhen(stock -> {
           return isOwnerOfStock(shopId, stock.getId());
           }).count();
-
-
-
-
     }
 
     private Mono<Long> getCountPersonalStockById(long id, long shopId) {
        return isOwnerOfStock(shopId, id).
                flatMap(owner ->{
-                  // if (!owner) return  Mono.error(new AccessControlException("access denied"));
                    if (!owner) return  Mono.just(0L);
 
                    return stockRepo.countByShopIdAndId(shopId, id);
@@ -127,10 +127,8 @@ public class StockServiceImpl implements StockService {
 
                 return getPersonalStockById(id, shopId).flux();
              case BY_TITLE:
-
                 return getPersonalStockByTitle(value, shopId);
              case BY_ADDRESS:
-
                 return getPersonalStockByDescription(value, shopId);
             default:
                 return Flux.empty();
@@ -150,7 +148,6 @@ public class StockServiceImpl implements StockService {
     private Mono<Stock> getPersonalStockById(long id, long shopId) {
         return isOwnerOfStock(shopId, id).
                 flatMap(owner ->{
-                    // if (!owner) return  Mono.error(new AccessControlException("access denied"));
                     if (!owner) return  Mono.empty();
 
                     return stockRepo.findByShopIdAndId(shopId, id);
@@ -177,6 +174,7 @@ public class StockServiceImpl implements StockService {
         return stockRepo.findById(stockId)
                 .flatMap(stock -> {
                     stock.setStatus(Status.ACTIVE.name());
+
                     return Mono.just(stock);
                 })
                 .flatMap(stock -> updateStock(stock));

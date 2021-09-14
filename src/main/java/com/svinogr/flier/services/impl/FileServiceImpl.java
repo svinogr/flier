@@ -1,13 +1,19 @@
 package com.svinogr.flier.services.impl;
 
 import com.svinogr.flier.services.FileService;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.codec.multipart.FilePart;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
 import java.io.File;
-
+/**
+ * @author SVINOGR
+ * version 0.0.1
+ * <p>
+ *Class service implementation {@link FileService}
+ */
 @Service
 public class FileServiceImpl implements FileService {
     @Value("${upload.shop.imgPath}")
@@ -36,7 +42,13 @@ public class FileServiceImpl implements FileService {
 
     @Override
     public Mono<String> saveImgByIdForShop(FilePart file, Long id) {
+        return getNameImg(file, id, uploadshopImg);
+    }
+
+    @NotNull
+    private Mono<String> getNameImg(FilePart file, Long id, String forWhoEntity) {
         File uploadDir = new File(uploadshopImg);
+
         if (!uploadDir.exists()) {
             uploadDir.mkdir();
         }
@@ -53,23 +65,10 @@ public class FileServiceImpl implements FileService {
         });
     }
 
+
     @Override
     public Mono<String> saveImgByIdForStock(FilePart file, Long id) {
-        File uploadDir = new File(uploadStockImg);
-        if (!uploadDir.exists()) {
-            uploadDir.mkdir();
-        }
-        String[] split = file.filename().split("\\.");
-        String extension = split[split.length -1]; // получаем расширение
-        String name = String.format("%d.%s", id, extension);
-        String fullPath = String.format("%s%s", uploadStockImg, name);
-
-        file.transferTo(new File(fullPath));
-
-        return Mono.just(fullPath).flatMap(fp -> {
-            file.transferTo(new File(fp)).subscribe();
-            return Mono.just(name);
-        });
+        return getNameImg(file, id, uploadStockImg);
     }
 
     @Override

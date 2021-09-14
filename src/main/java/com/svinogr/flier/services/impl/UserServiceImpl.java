@@ -7,16 +7,19 @@ import com.svinogr.flier.repo.UserRolesRepo;
 import com.svinogr.flier.services.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.context.ReactiveSecurityContextHolder;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import reactor.core.Disposable;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.util.ArrayList;
 import java.util.List;
-
+/**
+ * @author SVINOGR
+ * version 0.0.1
+ * <p>
+ *Class service implementation {@link UserService}
+ */
 @Service
 @Slf4j
 public class UserServiceImpl implements UserService {
@@ -46,12 +49,10 @@ public class UserServiceImpl implements UserService {
                                 flatMap(r -> {
                                     Role role = new Role();
                                     role.setName(UserRole.valueOf(r.getName()).name());
-                                    System.out.println(role.getName());
                                     user.getRoles().add(role);
+
                                     return Mono.just(user);
-
                                 });
-
                     });
         });
     }
@@ -109,8 +110,7 @@ public class UserServiceImpl implements UserService {
                             });
                 })
                 .flatMap(r -> {
-                    return //userRepo.save(user);
-                            userRepo.update(user)
+                    return userRepo.update(user)
                                     .flatMap(ok -> {
                                         if (ok) {
                                             return findUserByIdSafety(user.getId());
@@ -127,6 +127,7 @@ public class UserServiceImpl implements UserService {
                 .flatMap(role -> {
                     List<Role> roles = new ArrayList();
                     roles.add(role);
+
                     user.setRoles(roles);
                     user.setPassword(passwordEncoder.encode(user.getPassword()));
 
@@ -173,7 +174,7 @@ public class UserServiceImpl implements UserService {
     public Mono<User> findUserByIdSafety(long id) {
         return userRepo.findById(id).
                 flatMap(user -> {
-                    user.setPassword("secret");
+                    user.setPassword("secret"); // чтобы не отдать настоящий пароль
                     return Mono.just(user);
                 });
     }
@@ -208,5 +209,4 @@ public class UserServiceImpl implements UserService {
     public Mono<Long> getCountUsers() {
         return userRepo.count();
     }
-
 }

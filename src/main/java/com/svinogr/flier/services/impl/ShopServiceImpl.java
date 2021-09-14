@@ -11,7 +11,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-
+/**
+ * @author SVINOGR
+ * version 0.0.1
+ * <p>
+ *Class service implementation {@link ShopService}
+ */
 @Service
 public class ShopServiceImpl implements ShopService {
     @Autowired
@@ -137,11 +142,8 @@ public class ShopServiceImpl implements ShopService {
 
                 return getCountPersonalShopById(id);
             case BY_TITLE:
-                System.out.println(2);
-
                 return getCountPersonalShopByTitle(value);
             case BY_ADDRESS:
-
                 return getCountPersonalShopByAddress(value);
             default:
                 return Mono.empty();
@@ -186,12 +188,11 @@ public class ShopServiceImpl implements ShopService {
                 try {
                     id = Long.parseLong(value);
                 } catch (NumberFormatException e) {
-
                     return Flux.empty();
                 }
+
                 return getShopById(id).flux();
             default:
-                System.out.println(4);
                 return Flux.empty();
         }
     }
@@ -222,24 +223,21 @@ public class ShopServiceImpl implements ShopService {
         switch (type) {
             case BY_ID:
                 long id;
-                System.out.println(1);
+
                 try {
                     id = Long.parseLong(value);
                 } catch (NumberFormatException e) {
-
                     return Flux.empty();
                 }
 
                 return getPersonalShopById(id).flux();
 
             case BY_TITLE:
-
                 return getPersonalShopByTitle(value);
             case BY_ADDRESS:
 
                 return getPersonalShopByAddress(value);
             default:
-
                 return userService.getPrincipal().
                         flatMapMany(principal -> getShopsByUserId(principal.getId()));
         }
