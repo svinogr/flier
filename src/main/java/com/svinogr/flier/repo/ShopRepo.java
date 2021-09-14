@@ -26,7 +26,7 @@ public interface ShopRepo extends ReactiveCrudRepository<Shop, Long> {
     /**
      * Custom query for update entity {@link Shop}
      *
-     * @param shop shop
+     * @param shop {@link Shop}
      * @return  boolean status of operation
      */
     @Modifying()
