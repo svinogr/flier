@@ -8,7 +8,7 @@ import reactor.core.publisher.Mono;
  * @author SVINOGR
  * version 0.0.1
  * <p>
- *Interface for file shop services
+ *Interface for shop services
  */
 public interface ShopService {
     /**
@@ -38,7 +38,7 @@ public interface ShopService {
     /**
      * Get shop {@link Shop} by id
      *
-     * @param shopId id in db {@link Shop}
+     * @param shopId id from db {@link Shop}
      * @return found shop {@link Shop}
      */
     Mono<Shop> getShopById(Long shopId);
@@ -80,7 +80,6 @@ public interface ShopService {
      * @return restoring shop {@link Shop}
      */
     Mono<Shop> restoreShop(Long shopId);
-
 
 /*  @Deprecated
     Flux<Shop> getPersonalShopByTitle(String title);*/
