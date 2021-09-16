@@ -1,5 +1,6 @@
 package com.svinogr.flier.config;
 
+import com.svinogr.flier.config.jwt.JwtUtil;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.multipart.commons.CommonsMultipartResolver;
@@ -8,6 +9,13 @@ import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.templateresolver.ClassLoaderTemplateResolver;
 import org.thymeleaf.templateresolver.ITemplateResolver;
 
+/**
+ * @author SVINOGR
+ * version 0.0.1
+ * <p>
+ *Class Resolver for static resourse.
+ *
+ */
 @Configuration
 public class TemplateResolver {
 

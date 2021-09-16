@@ -14,7 +14,13 @@ import reactor.core.publisher.Mono;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
-
+/**
+ * @author SVINOGR
+ * version 0.0.1
+ * <p>
+ *Class AuthenticationManager for auth with JWT token. Implements ReactiveAuthenticationManager.
+ * {@link JwtUtil}
+ */
 @Component
 @Data
 public class AuthenticationManager implements ReactiveAuthenticationManager {
@@ -24,7 +30,6 @@ public class AuthenticationManager implements ReactiveAuthenticationManager {
     @Override
     public Mono<Authentication> authenticate(Authentication authentication) {
         String authToken = authentication.getCredentials().toString();
-        System.out.println("authenticate");
         String username;
         try {
             username = jwtUtil.extractUserName(authToken);
@@ -40,7 +45,6 @@ public class AuthenticationManager implements ReactiveAuthenticationManager {
                   auth.add(simpleGrantedAuthority);
                   return Mono.just(new UsernamePasswordAuthenticationToken(user, null, auth));
               });
-
         } else {
             return Mono.empty();
         }
