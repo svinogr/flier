@@ -69,7 +69,8 @@ public class WebSecurityConfig {
         DelegatingServerLogoutHandler logoutHandler = new DelegatingServerLogoutHandler(securityContext, clearSiteData);
 
         return serverHttpSecurity.
-                csrf().tokenFromMultipartDataEnabled(true).and().
+              //  csrf().tokenFromMultipartDataEnabled(true).and(). //включить на боевой
+                      csrf().disable(). // на время теста http json
                 logout(logout -> {
                     logout.logoutHandler(logoutHandler).
                             logoutUrl("/logout")
@@ -119,7 +120,7 @@ public class WebSecurityConfig {
                         authenticationManager(authentificationManager).
                         securityContextRepository(securityContextRepository).
                         authorizeExchange().
-                        pathMatchers("/webjars/**", "/loginpage", "/login", "/logout", "/favicon.ico", "/register").permitAll().
+                        pathMatchers("/webjars/**", "/loginpage", "/login", "/logout", "/favicon.ico", "/register", "/api/**").permitAll().
                 // pathMatchers("/d").hasAnyRole("ACCOUNT", "ADMIN").
                         pathMatchers("/admin/**").hasRole("ADMIN").
                         pathMatchers("/account/**").hasAnyRole("ACCOUNT", "ADMIN").

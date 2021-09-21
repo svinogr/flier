@@ -1,5 +1,6 @@
 package com.svinogr.flier.repo;
 
+import com.svinogr.flier.model.CoordHelper;
 import com.svinogr.flier.model.shop.Shop;
 import org.springframework.data.r2dbc.repository.Modifying;
 import org.springframework.data.r2dbc.repository.Query;
@@ -7,11 +8,12 @@ import org.springframework.data.repository.reactive.ReactiveCrudRepository;
 import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+
 /**
  * @author SVINOGR
  * version 0.0.1
  * <p>
- *Class  Reactive repository for {@link Shop} implements {@link ReactiveCrudRepository}
+ * Class  Reactive repository for {@link Shop} implements {@link ReactiveCrudRepository}
  */
 @Repository
 public interface ShopRepo extends ReactiveCrudRepository<Shop, Long> {
@@ -19,7 +21,7 @@ public interface ShopRepo extends ReactiveCrudRepository<Shop, Long> {
      * Find all shops by user id
      *
      * @param id value for search shop id
-     * @return  found all shops by id Flux<Shop>
+     * @return found all shops by id Flux<Shop>
      */
     Flux<Shop> findAllByUserId(Long id);
 
@@ -28,7 +30,7 @@ public interface ShopRepo extends ReactiveCrudRepository<Shop, Long> {
      * Sets column updated by default.
      *
      * @param shop {@link Shop}
-     * @return  boolean status of operation
+     * @return boolean status of operation
      */
     @Modifying()
     @Query("update shops set" +
@@ -48,7 +50,7 @@ public interface ShopRepo extends ReactiveCrudRepository<Shop, Long> {
     /**
      * Method searching by title and id
      *
-     * @param title value for search in column "title"
+     * @param title  value for search in column "title"
      * @param userId value for search in column "user_id"
      * @return found shops Flex<Shop>
      */
@@ -58,7 +60,7 @@ public interface ShopRepo extends ReactiveCrudRepository<Shop, Long> {
      * Method searching by address and id
      *
      * @param address value for search in column "address"
-     * @param userId value for search in column "user_id"
+     * @param userId  value for search in column "user_id"
      * @return found shops Flex<Shop>
      */
     Flux<Shop> findByAddressContainingIgnoreCaseAndUserId(String address, Long userId);
@@ -66,7 +68,7 @@ public interface ShopRepo extends ReactiveCrudRepository<Shop, Long> {
     /**
      * Method searching by address and id
      *
-     * @param id value for search in column "id"
+     * @param id     value for search in column "id"
      * @param userId value for search in column "user_id"
      * @return found shop. Mono<Shop>
      */
@@ -84,7 +86,7 @@ public interface ShopRepo extends ReactiveCrudRepository<Shop, Long> {
      * Method searching count by user id and id
      *
      * @param userId value for search in column "user_id"
-     * @param id value for search in column "id"
+     * @param id     value for search in column "id"
      * @return count of found shops. Mono<Long>
      */
     Mono<Long> countByUserIdAndId(long userId, Long id);
@@ -93,7 +95,7 @@ public interface ShopRepo extends ReactiveCrudRepository<Shop, Long> {
      * Method searching count by user id and title with ignore case
      *
      * @param userId value for search in column "user_id"
-     * @param title value for search in column "title"
+     * @param title  value for search in column "title"
      * @return count of found shops. Mono<Long>
      */
     Mono<Long> countByUserIdAndTitleContainsIgnoreCase(Long userId, String title);
@@ -110,8 +112,22 @@ public interface ShopRepo extends ReactiveCrudRepository<Shop, Long> {
     /**
      * Method searching count by id
      *
-     * @param id  value for search in column "id"
+     * @param id value for search in column "id"
      * @return count of found shops. Mono<Long>
      */
     Mono<Long> countById(long id);
+
+    /**
+     * Custom query for select entity {@link Shop}
+     *
+     * @param helper {@link CoordHelper}
+     * @return found shops
+     */
+    @Query("select * from shops" +
+            " where (lat < :#{#helper.getNordUpPoint} and" +
+            " lat > :#{#helper.getSouthDownPoint}) and " +
+            "(lng < :#{#helper.getEastRightPoint} and " +
+            " lng > :#{#helper.getWestLeftPoint})")
+    Flux<Shop> getShopsAroundCoord(CoordHelper helper);
+
 }

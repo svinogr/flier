@@ -1,6 +1,8 @@
 package com.svinogr.flier.services.impl;
 
 import com.svinogr.flier.controllers.web.utils.SearchType;
+import com.svinogr.flier.model.Coord;
+import com.svinogr.flier.model.CoordHelper;
 import com.svinogr.flier.model.Status;
 import com.svinogr.flier.model.shop.Shop;
 import com.svinogr.flier.repo.ShopRepo;
@@ -194,6 +196,13 @@ public class ShopServiceImpl implements ShopService {
             default:
                 return Flux.empty();
         }
+    }
+
+    @Override
+    public Flux<Shop> getAllShopsAroundCoord(Coord coord) {
+        CoordHelper coordHelper = new CoordHelper(coord);
+
+        return shopRepo.getShopsAroundCoord(coordHelper);
     }
 
     private Mono<Long> getCountPersonalShopByAddress(String address) {

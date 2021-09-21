@@ -1,6 +1,7 @@
 package com.svinogr.flier.services;
 
 import com.svinogr.flier.controllers.web.utils.SearchType;
+import com.svinogr.flier.model.Coord;
 import com.svinogr.flier.model.shop.Shop;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -140,4 +141,12 @@ public interface ShopService {
      * @return found shops. Flux<Shop>
      */
     Flux<Shop> searchByValueAndType(SearchType type, String value);
+
+    /**
+     * Get all around point shops by coord
+     *
+     * @param coord {@link Coord}
+     * @return found shops. Flux<Shop>
+     */
+    Flux<Shop> getAllShopsAroundCoord(Coord coord);
 }

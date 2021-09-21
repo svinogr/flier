@@ -19,9 +19,9 @@ import java.util.List;
 public class Shop extends BaseEntity {
     private Long userId;
     @Column("lat")
-    private Float coordLat;
+    private double coordLat;
     @Column("lng")
-    private Float coordLng;
+    private double coordLng;
     @NotBlank(message = "поле не должно быть пустым")
     private String title;
     @NotBlank(message = "поле не должно быть пустым")
