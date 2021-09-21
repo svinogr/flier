@@ -6,3 +6,11 @@ Content-Type: application/json
   "lng": "-57.5",
   "lat": "-25.3"
 }
+
+###
+
+GET http://localhost:8081/api/shop/1
+Cache-Control: no-cache
+
+###
+
