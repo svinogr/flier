@@ -5,6 +5,7 @@ import com.svinogr.flier.model.Coord;
 import com.svinogr.flier.model.CoordHelper;
 import com.svinogr.flier.model.Status;
 import com.svinogr.flier.model.shop.Shop;
+import com.svinogr.flier.model.shop.Stock;
 import com.svinogr.flier.repo.ShopRepo;
 import com.svinogr.flier.services.ShopService;
 import com.svinogr.flier.services.UserService;
@@ -97,7 +98,6 @@ public class ShopServiceImpl implements ShopService {
                             });
                 });
     }
-
 
     private Flux<Shop> getPersonalShopByTitle(String title) {
         return userService.getPrincipal().
@@ -203,6 +203,11 @@ public class ShopServiceImpl implements ShopService {
         CoordHelper coordHelper = new CoordHelper(coord);
 
         return shopRepo.getShopsAroundCoord(coordHelper);
+    }
+
+    @Override
+    public Flux<Stock> searchByValueTags(String value) {
+        return null;
     }
 
     private Mono<Long> getCountPersonalShopByAddress(String address) {

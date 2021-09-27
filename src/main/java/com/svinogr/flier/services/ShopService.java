@@ -3,6 +3,7 @@ package com.svinogr.flier.services;
 import com.svinogr.flier.controllers.web.utils.SearchType;
 import com.svinogr.flier.model.Coord;
 import com.svinogr.flier.model.shop.Shop;
+import com.svinogr.flier.model.shop.Stock;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 /**
@@ -125,7 +126,7 @@ public interface ShopService {
     Mono<Long> getCountShops();
 
     /**
-     * Get count of shops {@link com.svinogr.flier.model.User} by searching value and type searching from db
+     * Get count of shops {@link Shop} by searching value and type searching from db
      *
      * @param type  @{@link SearchType}
      * @param value string searching value
@@ -149,4 +150,12 @@ public interface ShopService {
      * @return found shops. Flux<Shop>
      */
     Flux<Shop> getAllShopsAroundCoord(Coord coord);
+
+    /**
+     * Get stock by searching value from db by all searching fields "TAGS" (title, description)
+     * In first use for API mobile
+     * @param value string value
+     * @return found stocks
+     */
+    Flux<Stock> searchByValueTags(String value);
 }

@@ -1,12 +1,15 @@
 package com.svinogr.flier.repo;
 
+import com.svinogr.flier.model.shop.Shop;
 import com.svinogr.flier.model.shop.Stock;
 import org.springframework.data.r2dbc.repository.Modifying;
 import org.springframework.data.r2dbc.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.data.repository.reactive.ReactiveCrudRepository;
 import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+
 /**
  * @author SVINOGR
  * version 0.0.1
@@ -97,4 +100,26 @@ public interface StockRepo extends ReactiveCrudRepository<Stock, Long> {
      * @return found stocks. Flux<Stock>
      */
     Flux<Stock> findByTitleContainingIgnoreCaseAndShopId(String title, long shopId);
+
+ //   @Query("select * from stocks where title like any (array['%1%','%2%'])")
+    //  @Query("select * from stocks where title like any (array[:arr[0]])")
+      @Query("select * from stocks where title like any (:arr)")
+    Flux<Stock> searchByArrayValueIgnoreCase(@Param("arr") Integer[] arr);
+
+    /**
+     *
+     * Method searching stock title with ignore case
+     *
+     * @param title value for search in column "title"
+     * @return found stocks. Flux<Stock>
+     */
+    Flux<Stock> findByTitleContainingIgnoreCase(String title);
+
+    /**
+     * Method searching stock title with ignore case
+     *
+     * @param title value for search in column "title"
+     * @return found stocks. Flux<Stock>
+     */
+    Flux<Stock> findByDescriptionContainingIgnoreCase(String title);
 }

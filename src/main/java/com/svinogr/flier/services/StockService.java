@@ -1,6 +1,7 @@
 package com.svinogr.flier.services;
 
 import com.svinogr.flier.controllers.web.utils.SearchType;
+import com.svinogr.flier.model.shop.Shop;
 import com.svinogr.flier.model.shop.Stock;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -12,10 +13,10 @@ import reactor.core.publisher.Mono;
  */
 public interface StockService {
     /**
-     * Get stock {@link Stock} by shop id from db
+     * Get stocks {@link Stock} by shop id from db
      *
      * @param id shop id  from db
-     * @return found stock. Flux<Stock>
+     * @return found stocks. Flux<Stock>
      */
     Flux<Stock> findStocksByShopId(Long id);
 
@@ -109,4 +110,30 @@ public interface StockService {
      * @return found all stocks
      */
     Flux<Stock> findAll();
+
+    /**
+     * Get count of stock {@link Stock} by searching value and type searching from db
+     *
+     * @param type  @{@link SearchType}
+     * @param value string searching value
+     * @return count found shops. Mono<Long>
+     */
+    Mono<Long> getCountSearchByValue(SearchType type, String value);
+
+    /**
+     * Get stocks {@link Stock} by searching value and type searching from db
+     *
+     * @param type @{@link SearchType}
+     * @param value string searching value
+     * @return found stocks. Flux<Stock>
+     */
+    Flux<Stock> searchByValueAndType(SearchType type, String value);
+
+    /**
+     * Get stock by searching value from db by all searching fields (title, description)
+     * In first use for API mobile
+     * @param value string value
+     * @return found stocks
+     */
+    Flux<Stock> searchByValueTags(String value);
 }

@@ -11,6 +11,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
+
 /**
  * @author SVINOGR
  * version 0.0.1
@@ -167,6 +172,29 @@ public class StockServiceImpl implements StockService {
     @Override
     public Flux<Stock> findAll() {
         return stockRepo.findAll();
+    }
+
+    @Override
+    public Mono<Long> getCountSearchByValue(SearchType type, String value) {
+        return null;
+    }
+
+    @Override
+    public Flux<Stock> searchByValueAndType(SearchType type, String value) {
+        return null;
+    }
+
+    @Override
+    public Flux<Stock> searchByValueTags(String value) {
+        String[] arr = value.split(" ");
+
+        Flux<Stock> result = Flux.empty();
+
+        for (String s : arr) {
+           result = Flux.concat(result, Flux.concat(stockRepo.findByTitleContainingIgnoreCase(s), stockRepo.findByDescriptionContainingIgnoreCase(s)));
+        }
+
+        return result.distinct();
     }
 
     @Override

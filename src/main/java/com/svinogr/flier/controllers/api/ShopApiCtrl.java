@@ -7,7 +7,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-
+/**
+ * @author SVINOGR
+ * version 0.0.1
+ * <p>
+ * Class Restcontroller for {@link Shop}
+ */
 @RestController
 @RequestMapping("api")
 public class ShopApiCtrl {

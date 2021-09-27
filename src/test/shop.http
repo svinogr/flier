@@ -13,4 +13,15 @@ GET http://localhost:8081/api/shop/1
 Cache-Control: no-cache
 
 ###
+GET http://localhost:8081/api/shop/1/stock
+Cache-Control: no-cache
 
+###
+
+GET http://localhost:8081/api/stock/1
+Cache-Control: no-cache
+
+###
+GET http://localhost:8081/api/stock/search?searchValue=2t3 &from=0&quantity=10
+Cache-Control: no-cache
+Content-Type: application/json
