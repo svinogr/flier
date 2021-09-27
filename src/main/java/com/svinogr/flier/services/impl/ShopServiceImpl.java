@@ -8,22 +8,30 @@ import com.svinogr.flier.model.shop.Shop;
 import com.svinogr.flier.model.shop.Stock;
 import com.svinogr.flier.repo.ShopRepo;
 import com.svinogr.flier.services.ShopService;
+import com.svinogr.flier.services.StockService;
 import com.svinogr.flier.services.UserService;
 import org.apache.logging.log4j.util.Strings;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * @author SVINOGR
  * version 0.0.1
  * <p>
- *Class service implementation {@link ShopService}
+ * Class service implementation {@link ShopService}
  */
 @Service
 public class ShopServiceImpl implements ShopService {
     @Autowired
     private ShopRepo shopRepo;
+
+    @Autowired
+    private StockService stockService;
 
     @Autowired
     private UserService userService;
@@ -59,7 +67,17 @@ public class ShopServiceImpl implements ShopService {
 
     @Override
     public Mono<Shop> getShopById(Long id) {
-        return shopRepo.findById(id);
+        return shopRepo.findById(id).flatMap(shop -> {
+            List<Stock> list = new ArrayList<>();
+            shop.setStocks(list);
+
+            return stockService.findStocksByShopId(shop.getId()).
+                    flatMap(stock -> {
+                        list.add(stock);
+                        return Mono.just(stock);
+                    }).
+                    then(Mono.just(shop));
+        });
     }
 
     @Override
@@ -202,7 +220,17 @@ public class ShopServiceImpl implements ShopService {
     public Flux<Shop> getAllShopsAroundCoord(Coord coord) {
         CoordHelper coordHelper = new CoordHelper(coord);
 
-        return shopRepo.getShopsAroundCoord(coordHelper);
+        return shopRepo.getShopsAroundCoord(coordHelper).
+                flatMap(shop -> {
+                    List<Stock> list = new ArrayList<>();
+                    shop.setStocks(list);
+                    return stockService.findStocksByShopId(shop.getId()).
+                            flatMap(stock -> {
+                                list.add(stock);
+                                System.out.println(list);
+                                return Mono.just(shop);
+                            });
+                });
     }
 
     @Override

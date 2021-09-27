@@ -1,19 +1,18 @@
-POST http://localhost:8081/api/shop
+GET http://localhost:8081/api/shop?lng=-57.5&lat=-25.3&from=0&quantity=10
 Cache-Control: no-cache
 Content-Type: application/json
 
-{
-  "lng": "-57.5",
-  "lat": "-25.3"
-}
-
+###
+GET http://localhost:8081/api/shop/all?from=0&quantity=10
+Cache-Control: no-cache
+Content-Type: application/json
 ###
 
 GET http://localhost:8081/api/shop/1
 Cache-Control: no-cache
 
 ###
-GET http://localhost:8081/api/shop/1/stock
+GET http://localhost:8081/api/shop/1/stock?from=0&quantity=10
 Cache-Control: no-cache
 
 ###
@@ -22,6 +21,6 @@ GET http://localhost:8081/api/stock/1
 Cache-Control: no-cache
 
 ###
-GET http://localhost:8081/api/stock/search?searchValue=2t3 &from=0&quantity=10
+GET http://localhost:8081/api/stock/search?searchValue=2 3 &from=0&quantity=10
 Cache-Control: no-cache
 Content-Type: application/json

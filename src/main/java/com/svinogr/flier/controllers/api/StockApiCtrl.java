@@ -23,14 +23,29 @@ public class StockApiCtrl {
     StockService stockService;
 
     /**
-     * Returns json stocks by shop id
+     * Returns json stocks by shop id and parameters of getting
      *
+     * @param f number of start getting
+     * @param q quantity of getting
      * @param idSh shop id from db
      * @return found stocks
      */
     @GetMapping("shop/{idSh}/stock")
-    public Flux<Stock> getAllStocksByShopId(@PathVariable long idSh) {
-        return stockService.findStocksByShopId(idSh);
+    public Flux<Stock> getAllStocksByShopId(@PathVariable long idSh,
+                                            @RequestParam("from") String f,
+                                            @RequestParam("quantity") String q) {
+        long from, quantity;
+
+        try {
+            from = Long.parseLong(f);
+            quantity = Long.parseLong(q);
+        } catch (NumberFormatException e) {
+            return Flux.empty();
+        }
+
+        return stockService.findStocksByShopId(idSh).
+                sort(Comparator.comparingLong(Stock::getId)).
+                skip(from).take(quantity);
     }
 
     /**
@@ -44,6 +59,14 @@ public class StockApiCtrl {
         return stockService.findStockById(id);
     }
 
+    /**
+     * Returns json stocks by searching value and parameters of getting
+     *
+     * @param searchValue value for searching
+     * @param f number of start getting
+     * @param q quantity of getting
+     * @return found stocks
+     */
     @GetMapping("stock/search")
     public Flux<Stock> search(@RequestParam("searchValue") String searchValue,
                               @RequestParam("from") String f,
