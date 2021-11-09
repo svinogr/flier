@@ -69,8 +69,8 @@ public class WebSecurityConfig {
         DelegatingServerLogoutHandler logoutHandler = new DelegatingServerLogoutHandler(securityContext, clearSiteData);
 
         return serverHttpSecurity.
-              //  csrf().tokenFromMultipartDataEnabled(true).and(). //включить на боевой
-                      csrf().disable(). // на время теста http json
+                csrf().tokenFromMultipartDataEnabled(true).and(). //включить на боевой
+              //        csrf().disable(). // на время теста http json
                 logout(logout -> {
                     logout.logoutHandler(logoutHandler).
                             logoutUrl("/logout")
