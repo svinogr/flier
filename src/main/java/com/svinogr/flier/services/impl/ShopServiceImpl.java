@@ -216,6 +216,7 @@ public class ShopServiceImpl implements ShopService {
         }
     }
 
+/*
     @Override
     public Flux<Shop> getAllShopsAroundCoord(Coord coord) {
         CoordHelper coordHelper = new CoordHelper(coord);
@@ -230,6 +231,25 @@ public class ShopServiceImpl implements ShopService {
                                 System.out.println(list);
                                 return Mono.just(shop);
                             });
+                });
+    }
+*/
+
+    @Override
+    public Flux<Shop> getAllShopsAroundCoord(Coord coord) {
+        CoordHelper coordHelper = new CoordHelper(coord);
+
+        return shopRepo.getShopsAroundCoord(coordHelper).
+                flatMap(shop -> {
+                    List<Stock> list = new ArrayList<>();
+                    shop.setStocks(list);
+                     stockService.findStocksByShopId(shop.getId()).
+                            flatMap(stock -> {
+                                list.add(stock);
+                                System.out.println(list);
+                              return Mono.empty();
+                            });
+                return Mono.just(shop);
                 });
     }
 

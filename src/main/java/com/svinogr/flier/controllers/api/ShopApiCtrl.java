@@ -2,7 +2,6 @@ package com.svinogr.flier.controllers.api;
 
 import com.svinogr.flier.model.Coord;
 import com.svinogr.flier.model.shop.Shop;
-import com.svinogr.flier.model.shop.Stock;
 import com.svinogr.flier.services.ShopService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -72,7 +71,6 @@ public class ShopApiCtrl {
     public Flux<Shop> getAllShops(@RequestParam("from") String f,
                                      @RequestParam("quantity") String q) {
         long from, quantity;
-        double latitude, langitude;
 
         try {
             from = Long.parseLong(f);
