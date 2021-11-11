@@ -1,6 +1,6 @@
 create table shops
 (
-    id          SERIAL PRIMARY KEY,
+    id          SERIAL PRIMARY KEY ,
     user_id     INTEGER,
     title       CHARACTER VARYING(200),
     description CHARACTER VARYING(300),
