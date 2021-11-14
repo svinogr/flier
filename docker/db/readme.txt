@@ -1,0 +1,8 @@
+для работы через докер нужно
+1) в проперти aplication изменить postgresql://localhost:54323/flier на postgresql://db/flier  где db название контейнера для базы описано в докер композ
+2) создать jar -> maven deploy
+3) скопировать создаый jar в папку с docker-compose и проверить чтобы его имя было как в Dokerfile
+4) создаем образ докер для приложения docker build -t app .
+5) запускаеим docker-compose up
+
+думаем как прионектится в базу из вне
