@@ -1,6 +1,7 @@
 package com.svinogr.flier.model.shop;
 
 import com.svinogr.flier.model.BaseEntity;
+import com.svinogr.flier.model.TabsOfShopProperty;
 import lombok.Data;
 import org.springframework.data.annotation.Transient;
 import org.springframework.data.relational.core.mapping.Column;
@@ -28,6 +29,7 @@ public class Shop extends BaseEntity {
     private String address;
     @NotBlank(message = "поле не должно быть пустым")
     private String description;
+    private TabsOfShopProperty property;
 
     private String url;
     private String img;

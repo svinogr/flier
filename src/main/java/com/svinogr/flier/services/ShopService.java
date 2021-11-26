@@ -6,11 +6,12 @@ import com.svinogr.flier.model.shop.Shop;
 import com.svinogr.flier.model.shop.Stock;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+
 /**
  * @author SVINOGR
  * version 0.0.1
  * <p>
- *Interface for shop services
+ * Interface for shop services
  */
 public interface ShopService {
     /**
@@ -89,12 +90,13 @@ public interface ShopService {
    /* @Deprecated
     Flux<Shop> getPersonalShopByAddress(String address);
 */
+
     /**
      * Get shops {@link Shop} only for signed user by searching value and type searching from db
      *
-     * @param type @{@link SearchType}
+     * @param type  @{@link SearchType}
      * @param value string searching value
-     * @return  found shops {@link Shop}. Flux<Shop>
+     * @return found shops {@link Shop}. Flux<Shop>
      */
     Flux<Shop> searchPersonalByValueAndType(SearchType type, String value);
 
@@ -112,11 +114,11 @@ public interface ShopService {
     /**
      * Get count of shops {@link com.svinogr.flier.model.User} has searching user id only for signed user
      *
-     * @param type @{@link SearchType}
+     * @param type  @{@link SearchType}
      * @param value string searching value
      * @return count found shops. Mono<Long>
      */
-    Mono<Long>  getCountSearchPersonalByValue(SearchType type, String value);
+    Mono<Long> getCountSearchPersonalByValue(SearchType type, String value);
 
     /**
      * Get count all shops from db
@@ -137,7 +139,7 @@ public interface ShopService {
     /**
      * Get shops {@link Shop} by searching value and type searching from db
      *
-     * @param type @{@link SearchType}
+     * @param type  @{@link SearchType}
      * @param value string searching value
      * @return found shops. Flux<Shop>
      */
@@ -154,8 +156,15 @@ public interface ShopService {
     /**
      * Get stock by searching value from db by all searching fields "TAGS" (title, description)
      * In first use for API mobile
+     *
      * @param value string value
      * @return found stocks
      */
     Flux<Stock> searchByValueTags(String value);
+
+    //TODO desxription
+    Flux<Shop> getSearchAllShopsAroundCoord(Coord coord, String searchText);
+
+    //TODO
+    Flux<Shop> searchShopsBySearchingTextInShopsAndStocks(String searchText);
 }

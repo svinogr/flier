@@ -243,19 +243,98 @@ public class ShopServiceImpl implements ShopService {
                 flatMap(shop -> {
                     List<Stock> list = new ArrayList<>();
                     shop.setStocks(list);
-                     stockService.findStocksByShopId(shop.getId()).
+                    stockService.findStocksByShopId(shop.getId()).
                             flatMap(stock -> {
                                 list.add(stock);
                                 System.out.println(list);
-                              return Mono.empty();
+                                return Mono.empty();
                             });
-                return Mono.just(shop);
+                    return Mono.just(shop);
                 });
     }
 
     @Override
     public Flux<Stock> searchByValueTags(String value) {
         return null;
+    }
+
+    @Override
+    public Flux<Shop> getSearchAllShopsAroundCoord(Coord coord, String searchText) {
+        CoordHelper coordHelper = new CoordHelper(coord);
+        return shopRepo.getShopsAroundCoord(coordHelper).
+                flatMap(shop -> {
+                    Flux<List<Stock>> listFlux = stockService.
+                            findStocksByShopId(shop.getId()).
+                            //проверяем если акции содержащие в название или в описании искомый текст
+                                    filter(stock -> {
+                                if (stock.getDescription().contains(searchText) || stock.getTitle().contains(searchText)) {
+                                    System.out.println(true);
+                                    return true;
+                                } else {
+                                    System.out.println(false);
+                                    return false;
+                                }
+                                //собираем в лист и прикрепляем к магазину
+                            }).collectList().flatMapMany(Flux::just);
+                    shop.setStocks((List) listFlux);
+
+                    return Mono.just(shop);
+
+
+                }).
+                flatMap(shop -> {
+                    //проверяем сожержить ли название магазина или описание искомы текст или акции
+                    if (shop.getStocks().size() > 0) return Mono.just(shop);
+
+                    if (shop.getTitle().contains(searchText) || shop.getDescription().contains(searchText))
+                        return Mono.just(shop);
+
+                    return Mono.empty();
+                });
+    }
+
+    @Override
+    public Flux<Shop> searchShopsBySearchingTextInShopsAndStocks(String searchText) {
+        return shopRepo.findAll().
+                flatMap(shop -> {
+                    System.out.println(shop);
+                    if (shop.getTitle().contains(searchText) || shop.getDescription().contains(searchText)) {
+                        System.out.println(true);
+                        List<Stock> stocks = new ArrayList<>();
+                        stocks.add(new Stock());
+                        shop.setStocks(stocks);
+                        return Mono.just(shop);
+                    } else {
+                        System.out.println(false);
+                        shop.setStocks(new ArrayList<>());
+
+                        return stockService.
+                                findStocksByShopId(shop.getId()).
+                                filter(stock -> stock.getDescription().contains(searchText) || stock.getTitle().contains(searchText)).
+                                // subscribe(shop.getStocks()::add);
+                                        flatMap(s -> {
+                                    shop.getStocks().add(s);
+                                    return Mono.just(shop);
+
+                                });
+
+
+
+
+/*
+                     //   shop.setStocks(stocks);
+                  //      System.out.println(stocks.size());
+                    //    System.out.println(shop.getId());
+                        System.out.println(shop.getStocks().size() + "yuiy");
+                        if (shop.getStocks().size() == 0) return Mono.empty();
+
+                        System.out.println("end");
+                        return Mono.just(shop);*/
+
+                    }
+                }).filter(shop -> {
+            return shop.getStocks().size() > 0;
+        });
     }
 
     private Mono<Long> getCountPersonalShopByAddress(String address) {
