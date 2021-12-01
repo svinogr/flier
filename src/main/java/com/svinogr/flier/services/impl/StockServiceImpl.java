@@ -12,10 +12,6 @@ import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
-
 /**
  * @author SVINOGR
  * version 0.0.1
@@ -25,10 +21,10 @@ import java.util.Set;
 @Service
 public class StockServiceImpl implements StockService {
     @Autowired
-    StockRepo stockRepo;
+    private StockRepo stockRepo;
 
     @Autowired
-    UserService userService;
+    private UserService userService;
 
     @Override
     public Flux<Stock> findStocksByShopId(Long id) {

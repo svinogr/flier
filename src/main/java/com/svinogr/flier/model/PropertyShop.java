@@ -21,6 +21,8 @@ public class PropertyShop {
     @Id
     private Long id;
 
+    private Long shopId;
+
     private LocalDate created;
 
     private LocalDate updated;
@@ -34,7 +36,6 @@ public class PropertyShop {
         this.id = id;
         this.name = name;
         this.property = TabsOfShopProperty.valueOf(name);
-
     }
 
 }

@@ -162,9 +162,21 @@ public interface ShopService {
      */
     Flux<Stock> searchByValueTags(String value);
 
-    //TODO desxription
+    /**
+     * Get shops by searching value from db by all searching fields  (title, description) and all shops around coord
+     * In first use for API mobile
+     *
+     * @param searchText string value
+     * @param coord {@link Coord}
+     * @return found stocks
+     */
     Flux<Shop> getSearchAllShopsAroundCoord(Coord coord, String searchText);
 
-    //TODO
+    /**
+     * Get shops by searching value from db by all searching fields  (title, description)
+     *
+     * @param searchText string value
+     * @return found stocks
+     */
     Flux<Shop> searchShopsBySearchingTextInShopsAndStocks(String searchText);
 }

@@ -1,6 +1,7 @@
 package com.svinogr.flier.controllers.api;
 
 import com.svinogr.flier.model.Coord;
+import com.svinogr.flier.model.PropertyShop;
 import com.svinogr.flier.model.TabsOfShopProperty;
 import com.svinogr.flier.model.shop.Shop;
 import com.svinogr.flier.services.ShopService;
@@ -118,20 +119,15 @@ public class ShopApiCtrl {
         long from, quantity;
         double latitude, langitude;
         TabsOfShopProperty tab;
-        if (!tabString.isBlank()) {
-            tab = TabsOfShopProperty.valueOf(tabString);
-        } else {
-            tab = TabsOfShopProperty.FOOD;
-        }
-        searchText.trim();
 
         try {
             from = Long.parseLong(f);
             quantity = Long.parseLong(q);
+            tab = TabsOfShopProperty.valueOf(tabString);
             langitude = Double.parseDouble(lng);
             latitude = Double.parseDouble(lat);
-
-        } catch (NumberFormatException e) {
+            searchText.trim();
+        } catch (IllegalArgumentException e) {
             return Flux.empty();
         }
 
@@ -141,8 +137,8 @@ public class ShopApiCtrl {
 
         return shopService.getSearchAllShopsAroundCoord(coord, searchText).
                 sort(Comparator.comparingLong(Shop::getId)).
-                filter(s -> s.getProperty() == tab).
-                skip(from).take(quantity);
+                 filter(s-> checkTab(s, tab)).
+                        skip(from).take(quantity);
     }
 
     /**
@@ -161,28 +157,30 @@ public class ShopApiCtrl {
                                            @RequestParam("quantity") String q) {
 
         long from, quantity;
-        double latitude, langitude;
         TabsOfShopProperty tab;
-        if (!tabString.isBlank()) {
-            tab = TabsOfShopProperty.valueOf(tabString);
-        } else {
-            tab = TabsOfShopProperty.FOOD;
-        }
-        searchText.trim();
 
         try {
             from = Long.parseLong(f);
             quantity = Long.parseLong(q);
-
-        } catch (NumberFormatException e) {
+            tab = TabsOfShopProperty.valueOf(tabString);
+            searchText.trim();
+        } catch (IllegalArgumentException e) {
             return Flux.empty();
         }
 
         return shopService.searchShopsBySearchingTextInShopsAndStocks(searchText).
                 sort(Comparator.comparingLong(Shop::getId)).
-                //filter(s -> s.getProperty() == tab).
+                filter(s ->  checkTab(s, tab)
+                ).
                 skip(from).take(quantity);
     }
 
-
+    private boolean checkTab(Shop shop, TabsOfShopProperty tab) {
+        boolean ok = false;
+        for (PropertyShop propertyShop : shop.getListOfProperty()) {
+            ok = propertyShop.getProperty() == tab;
+            if (ok) break;
+        }
+        return ok;
+    }
 }

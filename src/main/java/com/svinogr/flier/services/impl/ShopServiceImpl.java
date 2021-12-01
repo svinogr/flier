@@ -9,6 +9,7 @@ import com.svinogr.flier.model.shop.Stock;
 import com.svinogr.flier.repo.ShopRepo;
 import com.svinogr.flier.services.ShopService;
 import com.svinogr.flier.services.StockService;
+import com.svinogr.flier.services.TabsService;
 import com.svinogr.flier.services.UserService;
 import org.apache.logging.log4j.util.Strings;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,6 +36,9 @@ public class ShopServiceImpl implements ShopService {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private TabsService tabsService;
 
     @Override
     public Mono<Shop> createShop(Shop shop) {
@@ -261,7 +265,30 @@ public class ShopServiceImpl implements ShopService {
     @Override
     public Flux<Shop> getSearchAllShopsAroundCoord(Coord coord, String searchText) {
         CoordHelper coordHelper = new CoordHelper(coord);
+
         return shopRepo.getShopsAroundCoord(coordHelper).
+                filterWhen(shop -> {
+                    if (shop.getTitle().toLowerCase().contains(searchText.toLowerCase()) || shop.getDescription().toLowerCase().contains(searchText.toLowerCase())) {
+                        return Mono.just(true);
+                    } else {
+                        return stockService.
+                                findStocksByShopId(shop.getId()).flatMap(stock -> {
+                            if (stock.getDescription().toLowerCase().contains(searchText.toLowerCase()) || stock.getTitle().toLowerCase().contains(searchText.toLowerCase())) {
+                                return Mono.just(true);
+                            }
+
+                            return Mono.just(false);
+                        });
+                    }
+                }).flatMap(shop -> {
+            //  return shop.setListOfProperty(
+            return tabsService.getAllTabsByShopId(shop.getId()).collectList().flatMapMany(list -> {
+                shop.setListOfProperty(list);
+                return Mono.just(shop);
+            });
+        });
+
+   /*     return shopRepo.getShopsAroundCoord(coordHelper).
                 flatMap(shop -> {
                     Flux<List<Stock>> listFlux = stockService.
                             findStocksByShopId(shop.getId()).
@@ -290,50 +317,31 @@ public class ShopServiceImpl implements ShopService {
                         return Mono.just(shop);
 
                     return Mono.empty();
-                });
+                });*/
     }
 
     @Override
     public Flux<Shop> searchShopsBySearchingTextInShopsAndStocks(String searchText) {
         return shopRepo.findAll().
-                flatMap(shop -> {
-                    System.out.println(shop);
-                    if (shop.getTitle().contains(searchText) || shop.getDescription().contains(searchText)) {
-                        System.out.println(true);
-                        List<Stock> stocks = new ArrayList<>();
-                        stocks.add(new Stock());
-                        shop.setStocks(stocks);
-                        return Mono.just(shop);
+                filterWhen(shop -> {
+                    if (shop.getTitle().toLowerCase().contains(searchText.toLowerCase()) || shop.getDescription().toLowerCase().contains(searchText.toLowerCase())) {
+                        return Mono.just(true);
                     } else {
-                        System.out.println(false);
-                        shop.setStocks(new ArrayList<>());
-
                         return stockService.
-                                findStocksByShopId(shop.getId()).
-                                filter(stock -> stock.getDescription().contains(searchText) || stock.getTitle().contains(searchText)).
-                                // subscribe(shop.getStocks()::add);
-                                        flatMap(s -> {
-                                    shop.getStocks().add(s);
-                                    return Mono.just(shop);
+                                findStocksByShopId(shop.getId()).flatMap(stock -> {
+                            if (stock.getDescription().toLowerCase().contains(searchText.toLowerCase()) || stock.getTitle().toLowerCase().contains(searchText.toLowerCase())) {
+                                return Mono.just(true);
+                            }
 
-                                });
-
-
-
-
-/*
-                     //   shop.setStocks(stocks);
-                  //      System.out.println(stocks.size());
-                    //    System.out.println(shop.getId());
-                        System.out.println(shop.getStocks().size() + "yuiy");
-                        if (shop.getStocks().size() == 0) return Mono.empty();
-
-                        System.out.println("end");
-                        return Mono.just(shop);*/
-
+                            return Mono.just(false);
+                        });
                     }
-                }).filter(shop -> {
-            return shop.getStocks().size() > 0;
+                }).flatMap(shop -> {
+            //  return shop.setListOfProperty(
+            return tabsService.getAllTabsByShopId(shop.getId()).collectList().flatMapMany(list -> {
+                shop.setListOfProperty(list);
+                return Mono.just(shop);
+            });
         });
     }
 
