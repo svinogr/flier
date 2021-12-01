@@ -1,7 +1,7 @@
 package com.svinogr.flier.model;
 
 public enum TabsOfShopProperty {
-    FOOD("ПРОДУКТЫ"), CLOTHES("ОДЕЖДА"), BUILDING("СТРОИТЕЛЬНЫЙ");
+    ALL("DEAFAULT"), FOOD("ПРОДУКТЫ"), CLOTHES("ОДЕЖДА"), BUILDING("СТРОИТЕЛЬНЫЙ");
 
     String title;
 

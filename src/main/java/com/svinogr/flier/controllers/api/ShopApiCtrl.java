@@ -108,7 +108,7 @@ public class ShopApiCtrl {
      * @param q          quantity of getting
      * @return found shops
      */
-    @GetMapping("shop/nearest/search/")
+    @GetMapping("shop/nearest/search")
     public Flux<Shop> getAllSearchingNearestShop(@RequestParam("lng") String lng,
                                                  @RequestParam("lat") String lat,
                                                  @RequestParam("tab") String tabString,
@@ -117,28 +117,28 @@ public class ShopApiCtrl {
                                                  @RequestParam("quantity") String q) {
 
         long from, quantity;
-        double latitude, langitude;
+        double latitude, longitude;
         TabsOfShopProperty tab;
 
         try {
             from = Long.parseLong(f);
             quantity = Long.parseLong(q);
             tab = TabsOfShopProperty.valueOf(tabString);
-            langitude = Double.parseDouble(lng);
+            longitude = Double.parseDouble(lng);
             latitude = Double.parseDouble(lat);
             searchText.trim();
         } catch (IllegalArgumentException e) {
             return Flux.empty();
         }
 
-        Coord coord = new Coord(langitude, latitude);
+        Coord coord = new Coord(longitude, latitude);
         System.out.println(coord);
-
 
         return shopService.getSearchAllShopsAroundCoord(coord, searchText).
                 sort(Comparator.comparingLong(Shop::getId)).
-                 filter(s-> checkTab(s, tab)).
-                        skip(from).take(quantity);
+                filter(s -> checkTab(s, tab)).
+                skip(from).
+                take(quantity);
     }
 
     /**
@@ -170,17 +170,22 @@ public class ShopApiCtrl {
 
         return shopService.searchShopsBySearchingTextInShopsAndStocks(searchText).
                 sort(Comparator.comparingLong(Shop::getId)).
-                filter(s ->  checkTab(s, tab)
+                filter(s -> checkTab(s, tab)
                 ).
-                skip(from).take(quantity);
+                skip(from).
+                take(quantity);
     }
 
     private boolean checkTab(Shop shop, TabsOfShopProperty tab) {
+        if (tab == TabsOfShopProperty.ALL) return true;
+
         boolean ok = false;
+
         for (PropertyShop propertyShop : shop.getListOfProperty()) {
             ok = propertyShop.getProperty() == tab;
             if (ok) break;
         }
+
         return ok;
     }
 }

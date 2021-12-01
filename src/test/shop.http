@@ -21,12 +21,15 @@ Content-Type: application/json
 GET http://localhost:8081/api/shop/1/stock?from=0&quantity=10
 Cache-Control: no-cache
 ###
+##
+GET http://localhost:8081/api/shop/nearest/search?lng=21.0&lat=31.0&tab=CLOTHES&searchText=MAGAS&from=0&quantity=10
+Cache-Control: no-cache#
 ###
-GET http://localhost:8081/api/shop/search?lng=5.0&lat=5.0&tab=CLOTHES&searchText=MAGAS&from=0&quantity=10
+GET http://localhost:8081/api/shop/nearest/search?lng=29.0&lat=19.0&tab=ALL&searchText=MAGAS&from=0&quantity=10
 Cache-Control: no-cache
 
 ###
-GET http://localhost:8081/api/shop/search?tab=FOOD&searchText=MAGAS&from=0&quantity=10
+GET http://localhost:8081/api/shop/search?tab=ALL&searchText=MAGAS&from=0&quantity=10
 Cache-Control: no-cache
 ###
 

@@ -281,7 +281,6 @@ public class ShopServiceImpl implements ShopService {
                         });
                     }
                 }).flatMap(shop -> {
-            //  return shop.setListOfProperty(
             return tabsService.getAllTabsByShopId(shop.getId()).collectList().flatMapMany(list -> {
                 shop.setListOfProperty(list);
                 return Mono.just(shop);
@@ -337,7 +336,6 @@ public class ShopServiceImpl implements ShopService {
                         });
                     }
                 }).flatMap(shop -> {
-            //  return shop.setListOfProperty(
             return tabsService.getAllTabsByShopId(shop.getId()).collectList().flatMapMany(list -> {
                 shop.setListOfProperty(list);
                 return Mono.just(shop);

@@ -124,7 +124,8 @@ public interface ShopRepo extends ReactiveCrudRepository<Shop, Long> {
      * @return found shops
      */
     @Query("select * from shops" +
-            " where (lat < :#{#helper.getNordUpPoint} and" +
+            " where " +
+            "(lat < :#{#helper.getNordUpPoint} and" +
             " lat > :#{#helper.getSouthDownPoint}) and " +
             "(lng < :#{#helper.getEastRightPoint} and " +
             " lng > :#{#helper.getWestLeftPoint})")
