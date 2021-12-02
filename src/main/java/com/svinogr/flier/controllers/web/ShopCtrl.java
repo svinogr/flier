@@ -8,10 +8,7 @@ import com.svinogr.flier.model.Status;
 import com.svinogr.flier.model.User;
 import com.svinogr.flier.model.shop.Shop;
 import com.svinogr.flier.model.shop.Stock;
-import com.svinogr.flier.services.FileService;
-import com.svinogr.flier.services.ShopService;
-import com.svinogr.flier.services.StockService;
-import com.svinogr.flier.services.UserService;
+import com.svinogr.flier.services.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.codec.multipart.FilePart;
 import org.springframework.stereotype.Controller;
@@ -35,6 +32,9 @@ import java.util.Comparator;
 public class ShopCtrl {
     @Autowired
     private Util utilService;
+
+    @Autowired
+    private PropertyShopService propertyShopService;
 
     @Autowired
     private ShopService shopService;
@@ -140,6 +140,60 @@ public class ShopCtrl {
 
             return userService.getPrincipal().
                     flatMap(user -> {
+                        return propertyShopService.getAllTabs().collectList().
+                                flatMap(list -> {
+                                    shop.setUserId(user.getId());
+                                    shop.setListOfProperty(list);
+                                    model.addAttribute("shop", shop);
+                                    return Mono.just("updateshoppage");
+                                    //      shop.setUserId(user.getId());
+                                    //    shop.setListOfProperty(list);
+                                    //  model.addAttribute("shop", shop);
+                                    //String u = "d";
+                                    //  return Mono.just("updateshoppage");
+
+                                });
+                    });
+        } else {
+
+            return userService.getPrincipal().flatMap(user -> shopService.isOwnerOfShop(shopid).
+                    flatMap(ok -> {
+                        if (!ok) return Mono.just(utilService.FORBIDDEN_PAGE);
+
+                        return shopService.getShopById(shopid).flatMap(s -> {
+                            model.addAttribute("shop", s);
+                            return Mono.just("updateshoppage");
+                        });
+                    }));
+        }
+    }
+
+    /*  *//**
+     * GET method for getting page for update or create shop
+     *
+     * @param id    shop id from db. 0 for new shop
+     * @param model {@link Model}
+     * @return name of page of shop by id
+     *//*
+    @GetMapping("shoppage/{id}/update")
+    public Mono<String> getUpdateShopPage(@PathVariable String id, Model model) {
+        Long shopid;
+        try {
+            shopid = Long.parseLong(id);
+
+        } catch (NumberFormatException e) {
+            return Mono.just(utilService.FORBIDDEN_PAGE);
+        }
+
+        if (shopid == 0) {
+            Shop shop = new Shop();
+            shop.setId(shopid);
+            shop.setImg(utilService.defaultShopImg);
+            shop.setStocks(new ArrayList());
+            shop.setStatus(Status.ACTIVE.name());
+
+            return userService.getPrincipal().
+                    flatMap(user -> {
                         shop.setUserId(user.getId());
                         model.addAttribute("shop", shop);
                         return Mono.just("updateshoppage");
@@ -157,7 +211,7 @@ public class ShopCtrl {
                     }));
         }
     }
-
+*/
 
     /**
      * POST method for creating or updating shop
@@ -173,7 +227,7 @@ public class ShopCtrl {
                                    @RequestPart("file") Mono<FilePart> file, Shop shop) {
         long parseShopId;
         ImageTypeAction imageTypeAction;
-
+        System.out.println(shop.getListOfProperty());
         try {
             parseShopId = Long.parseLong(id);
             imageTypeAction = ImageTypeAction.valueOf(imgTypeAction);
@@ -561,11 +615,11 @@ public class ShopCtrl {
     /**
      * GET method for searching stock's shop by page
      *
-     * @param type {@link SearchType}
+     * @param type  {@link SearchType}
      * @param value searching value
-     * @param page number of page
+     * @param page  number of page
      * @param model {@link Model}
-     * @param id shop id from db
+     * @param id    shop id from db
      * @return name of web page with result of searching
      */
     @GetMapping("shoppage/{id}/searchstocks")

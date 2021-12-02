@@ -7,9 +7,9 @@ import com.svinogr.flier.model.Status;
 import com.svinogr.flier.model.shop.Shop;
 import com.svinogr.flier.model.shop.Stock;
 import com.svinogr.flier.repo.ShopRepo;
+import com.svinogr.flier.services.PropertyShopService;
 import com.svinogr.flier.services.ShopService;
 import com.svinogr.flier.services.StockService;
-import com.svinogr.flier.services.TabsService;
 import com.svinogr.flier.services.UserService;
 import org.apache.logging.log4j.util.Strings;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,7 +38,7 @@ public class ShopServiceImpl implements ShopService {
     private UserService userService;
 
     @Autowired
-    private TabsService tabsService;
+    private PropertyShopService propertyShopService;
 
     @Override
     public Mono<Shop> createShop(Shop shop) {
@@ -60,6 +60,7 @@ public class ShopServiceImpl implements ShopService {
         //TODO сделать удаление акции при удалении магазина
         return shopRepo.findById(id).flatMap(shop -> {
             shop.setStatus(Status.NON_ACTIVE.name());
+
             return shopRepo.updateShop(shop).
                     flatMap(ok -> {
                         if (ok) return getShopById(shop.getId());
@@ -280,12 +281,11 @@ public class ShopServiceImpl implements ShopService {
                             return Mono.just(false);
                         });
                     }
-                }).flatMap(shop -> {
-            return tabsService.getAllTabsByShopId(shop.getId()).collectList().flatMapMany(list -> {
-                shop.setListOfProperty(list);
-                return Mono.just(shop);
-            });
-        });
+                }).flatMap(shop -> propertyShopService.getAllTabsByShopId(shop.getId()).collectList().flatMapMany(
+                        list -> {
+                            shop.setListOfProperty(list);
+                            return Mono.just(shop);
+                        }));
 
    /*     return shopRepo.getShopsAroundCoord(coordHelper).
                 flatMap(shop -> {
@@ -336,7 +336,7 @@ public class ShopServiceImpl implements ShopService {
                         });
                     }
                 }).flatMap(shop -> {
-            return tabsService.getAllTabsByShopId(shop.getId()).collectList().flatMapMany(list -> {
+            return propertyShopService.getAllTabsByShopId(shop.getId()).collectList().flatMapMany(list -> {
                 shop.setListOfProperty(list);
                 return Mono.just(shop);
             });

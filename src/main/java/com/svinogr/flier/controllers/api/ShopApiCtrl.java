@@ -2,7 +2,6 @@ package com.svinogr.flier.controllers.api;
 
 import com.svinogr.flier.model.Coord;
 import com.svinogr.flier.model.PropertyShop;
-import com.svinogr.flier.model.TabsOfShopProperty;
 import com.svinogr.flier.model.shop.Shop;
 import com.svinogr.flier.services.ShopService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,8 +21,7 @@ import java.util.Comparator;
 @RequestMapping("api")
 public class ShopApiCtrl {
     @Autowired
-    ShopService shopService;
-
+    private ShopService shopService;
 
     /**
      * Returns json found shops by around coord and parameters of getting
@@ -118,12 +116,14 @@ public class ShopApiCtrl {
 
         long from, quantity;
         double latitude, longitude;
-        TabsOfShopProperty tab;
+        PropertyShop tab;
 
         try {
             from = Long.parseLong(f);
             quantity = Long.parseLong(q);
-            tab = TabsOfShopProperty.valueOf(tabString);
+         //   tab = new PropertyShop(tabString);
+            tab = new PropertyShop();
+            tab.setName(tabString);
             longitude = Double.parseDouble(lng);
             latitude = Double.parseDouble(lat);
             searchText.trim();
@@ -157,12 +157,14 @@ public class ShopApiCtrl {
                                            @RequestParam("quantity") String q) {
 
         long from, quantity;
-        TabsOfShopProperty tab;
+        PropertyShop tab;
 
         try {
             from = Long.parseLong(f);
             quantity = Long.parseLong(q);
-            tab = TabsOfShopProperty.valueOf(tabString);
+            //tab = new PropertyShop(tabString);
+            tab = new PropertyShop();
+            tab.setName(tabString);
             searchText.trim();
         } catch (IllegalArgumentException e) {
             return Flux.empty();
@@ -176,13 +178,11 @@ public class ShopApiCtrl {
                 take(quantity);
     }
 
-    private boolean checkTab(Shop shop, TabsOfShopProperty tab) {
-        if (tab == TabsOfShopProperty.ALL) return true;
-
+    private boolean checkTab(Shop shop, PropertyShop tab) {
         boolean ok = false;
 
         for (PropertyShop propertyShop : shop.getListOfProperty()) {
-            ok = propertyShop.getProperty() == tab;
+            ok = propertyShop.getName().equals(tab.getName());
             if (ok) break;
         }
 

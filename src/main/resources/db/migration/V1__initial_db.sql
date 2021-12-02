@@ -10,7 +10,7 @@ create table usr
     status    CHARACTER VARYING(100)   DEFAULT 'ACTIVE',
     created   TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     updated   TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-    UNIQUE (id)
+    UNIQUE (id, email)
 );
 create table role
 (
@@ -25,5 +25,6 @@ create table user_roles
 (
     id      SERIAL PRIMARY key,
     user_id INTEGER,
-    role_id INTEGER
+    role_id INTEGER,
+     UNIQUE (id)
 );

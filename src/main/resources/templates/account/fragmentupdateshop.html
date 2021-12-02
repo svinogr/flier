@@ -86,86 +86,21 @@
                            id="url" name="url">
                     <label for="url">Сайт</label>
                 </div>
-                <div  class="form-floating" >
-                        <ul name="property" id="property" class="form-control mt-3">
-                            <li class="" style="display: inline-block; padding-left: 5pt; padding-top: 5pt;" th:each="type : ${T(com.svinogr.flier.model.TabsOfShopProperty).values()}">
-                                <input type="checkbox" th:value="${type} " />
 
-                                <label  th:text="${type}"></label>
-                            </li>
-                        </ul>
-                    <label for="property">Направление</label>
+                <div class="form-floating">
+                    <ul name="property2" id="property2" class="form-control mt-3">
+                        <li class="" style="display: inline-block; padding-left: 5pt; padding-top: 5pt;"
+                            th:each="property, el : ${shop.listOfProperty}">
+                            <input type="checkbox" th:id="${el.count}" th:value="*{property.id}" th:field="*{shop.listOfProperty}" />
+
+                       <!--     <label  th:text="${property}">Heating</label>-->
+                            <label th:for="${#ids.seq('')}"
+                                   th:text="${property.name}">Heating</label>
+                        </li>
+                    </ul>
+                    <label for="property2">Направление</label>
 
                 </div>
-
-              <!--  <div class="row">
-                    <div class="col form-floating">
-                        <select class="form-control selectpicker mt-3" th:field="*{shop.listOfProperty[0].name}"
-                                id="property">
-                            <option value="">Nothing selected</option>
-                            <option th:each="property : ${T(com.svinogr.flier.model.TabsOfShopProperty).values()}"
-                                    th:value="${property}"
-                                    th:text="${property}">property
-                            </option>
-                        </select>
-                        <label for="property">Направление</label>
-                    </div>
-                    <div class="col form-floating">
-                        <select class="form-control selectpicker mt-3" th:field="*{shop.listOfProperty[0].name}"
-                                id="property">
-                            <option value="">Nothing selected</option>
-                            <option th:each="property : ${T(com.svinogr.flier.model.TabsOfShopProperty).values()}"
-                                    th:value="${property}"
-                                    th:text="${property}">property
-                            </option>
-                        </select>
-                        <label for="property">Направление</label>
-                    </div>
-                    <div class="col form-floating">
-                        <select class="form-control selectpicker mt-3" th:field="*{shop.listOfProperty[0].name}"
-                                id="property">
-                            <option value="">Nothing selected</option>
-                            <option th:each="property : ${T(com.svinogr.flier.model.TabsOfShopProperty).values()}"
-                                    th:value="${property}"
-                                    th:text="${property}">property
-                            </option>
-                        </select>
-                        <label for="property">Направление</label>
-                    </div>
-                    <div class="col form-floating">
-                        <select class="form-control selectpicker mt-3" th:field="*{shop.listOfProperty[0].name}"
-                                id="property">
-                            <option value="">Nothing selected</option>
-                            <option th:each="property : ${T(com.svinogr.flier.model.TabsOfShopProperty).values()}"
-                                    th:value="${property}"
-                                    th:text="${property}">property
-                            </option>
-                        </select>
-                        <label for="property">Направление</label>
-                    </div>
-                    <div class="col form-floating">
-                        <select class="form-control selectpicker mt-3" th:field="*{shop.listOfProperty[0].name}"
-                                id="property">
-                            <option value="">Nothing selected</option>
-                            <option th:each="property : ${T(com.svinogr.flier.model.TabsOfShopProperty).values()}"
-                                    th:value="${property}"
-                                    th:text="${property}">property
-                            </option>
-                        </select>
-                        <label for="property">Направление</label>
-                    </div>
-                    <div class="col form-floating">
-                        <select class="form-control selectpicker mt-3" th:field="*{shop.listOfProperty[0].name}"
-                                id="property">
-                            <option value="">Nothing selected</option>
-                            <option th:each="property : ${T(com.svinogr.flier.model.TabsOfShopProperty).values()}"
-                                    th:value="${property}"
-                                    th:text="${property}">property
-                            </option>
-                        </select>
-                        <label for="property">Направление</label>
-                    </div>
-                </div>-->
                 <div>
                     <input class="btn btn-outline-primary form-control mt-4" type="submit" value="Сохранить">
                     <input hidden="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
