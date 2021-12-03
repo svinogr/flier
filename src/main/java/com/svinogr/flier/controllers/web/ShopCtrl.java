@@ -146,8 +146,8 @@ public class ShopCtrl {
                         return propertyShopService.getAllTabs().collectList().
                                 flatMap(list -> {
                                     shop.setUserId(user.getId());
-                                    shop.setListOfProperty(list);
                                     model.addAttribute("shop", shop);
+                                    model.addAttribute("tabs", list);
                                     return Mono.just("updateshoppage");
                                 });
                     });
@@ -158,8 +158,13 @@ public class ShopCtrl {
                         if (!ok) return Mono.just(utilService.FORBIDDEN_PAGE);
 
                         return shopService.getShopById(shopid).flatMap(s -> {
-                            model.addAttribute("shop", s);
-                            return Mono.just("updateshoppage");
+                            return propertyShopService.getAllTabs().collectList().
+                                    flatMap(list -> {
+                                        model.addAttribute("shop", s);
+                                        model.addAttribute("tabs", list);
+
+                                        return Mono.just("updateshoppage");
+                                    });
                         });
                     }));
         }
@@ -253,6 +258,7 @@ public class ShopCtrl {
                                                 return fileService.saveImgByIdForShop(f, s.getId()).flatMap(
                                                         n -> {
                                                             s.setImg(n);
+
                                                             return Mono.just(s);
                                                         }
                                                 );

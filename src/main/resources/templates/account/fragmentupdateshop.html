@@ -90,17 +90,17 @@
                 <div class="form-floating">
                     <ul name="property2" id="property2" class="form-control mt-3">
                         <li class="" style="display: inline-block; padding-left: 5pt; padding-top: 5pt;"
-                            th:each="property, el : ${shop.listOfProperty}">
-                            <input type="checkbox" th:id="${el.count}" th:value="*{property.id}" th:field="*{shop.listOfProperty}" />
-
-                       <!--     <label  th:text="${property}">Heating</label>-->
-                            <label th:for="${#ids.seq('')}"
+                            th:each="property, el : ${tabs}">
+                           <!-- th:checked="${not #lists.contains(tabs, property)}"-->
+                            <input type="checkbox" checked=""  th:id="${el.count}" th:value="*{property.id}" th:field="*{shop.listOfProperty}" />
+                            <label  th:for="${#ids.seq('')}"
                                    th:text="${property.name}">Heating</label>
                         </li>
                     </ul>
                     <label for="property2">Направление</label>
 
                 </div>
+                <input type="checkbox" checked/>
                 <div>
                     <input class="btn btn-outline-primary form-control mt-4" type="submit" value="Сохранить">
                     <input hidden="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">

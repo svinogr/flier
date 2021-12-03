@@ -51,12 +51,6 @@ public class ShopServiceImpl implements ShopService {
 
             return propertiesShopsService.saveAll(propShopslist).collectList().flatMap(l -> Mono.just(shop));
         });
-
-    /*    return propertiesShopsService.saveAll(propShopslist).
-                collectList().
-                flatMap(list -> {
-                    return shopRepo.save(shop);
-                });*/
     }
 
     @Override
@@ -90,12 +84,23 @@ public class ShopServiceImpl implements ShopService {
             List<Stock> list = new ArrayList<>();
             shop.setStocks(list);
 
-            return stockService.findStocksByShopId(shop.getId()).
-                    flatMap(stock -> {
-                        list.add(stock);
-                        return Mono.just(stock);
-                    }).
-                    then(Mono.just(shop));
+            return propertiesShopsService.getByShopId(id).collectList().flatMap(
+                    pS -> {
+                        return propertyShopService.getByIdsPropertiesShops(pS).
+                                collectList().
+                                flatMap(lP -> {
+                                    shop.setListOfProperty(lP);
+                                    return Mono.just(shop);
+                                }).flatMap(s -> {
+                            return stockService.findStocksByShopId(s.getId()).
+                                    flatMap(stock -> {
+                                        list.add(stock);
+
+                                        return Mono.just(stock);
+                                    }).
+                                    then(Mono.just(s));
+                        });
+                    });
         });
     }
 
@@ -142,7 +147,6 @@ public class ShopServiceImpl implements ShopService {
                     return shopRepo.findByTitleContainsIgnoreCaseAndUserId(title, principal.getId());
                 });
     }
-
 
     private Flux<Shop> getPersonalShopByAddress(String address) {
         System.out.println(address);
