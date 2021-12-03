@@ -16,7 +16,7 @@ create table properties_shops
     created     TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     updated     TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     status      CHARACTER VARYING(100)   DEFAULT 'ACTIVE',
-    UNIQUE (id)
+    UNIQUE (id, shop_id, property_id)
 );
 
 insert into property_shop (name)

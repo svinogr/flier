@@ -34,6 +34,9 @@ public class ShopCtrl {
     private Util utilService;
 
     @Autowired
+    private PropertiesShopsService propertiesShopsService;
+
+    @Autowired
     private PropertyShopService propertyShopService;
 
     @Autowired
@@ -146,12 +149,6 @@ public class ShopCtrl {
                                     shop.setListOfProperty(list);
                                     model.addAttribute("shop", shop);
                                     return Mono.just("updateshoppage");
-                                    //      shop.setUserId(user.getId());
-                                    //    shop.setListOfProperty(list);
-                                    //  model.addAttribute("shop", shop);
-                                    //String u = "d";
-                                    //  return Mono.just("updateshoppage");
-
                                 });
                     });
         } else {
@@ -240,27 +237,34 @@ public class ShopCtrl {
                     if (parseShopId == 0) { // создание нового
                         shop.setId(null);
                         shop.setUserId(userPrincipal.getId());
+
                         return shopService.createShop(shop).flatMap(s -> {
                             switch (imageTypeAction) {
                                 case NOTHING:
                                     return Mono.just("redirect:/account/accountpage/" + userPrincipal.getId());
                                 case IMG:
-                                    return file.flatMap(f -> {
-                                        if (f.filename().equals("")) {
-                                            s.setImg(utilService.defaultShopImg);
-                                            return Mono.just(s);// поменять на стринг
-                                        }
-
-                                        return fileService.saveImgByIdForShop(f, s.getId()).flatMap(
-                                                n -> {
-                                                    s.setImg(n);
-                                                    return Mono.just(s);
+                                    return file.
+                                            flatMap(f -> {
+                                                if (f.filename().equals("")) {
+                                                    s.setImg(utilService.defaultShopImg);
+                                                    return Mono.just(s);// поменять на стринг
                                                 }
-                                        );
-                                    }).flatMap(sh -> shopService.updateShop(sh).flatMap(sf -> Mono.just("redirect:/account/accountpage/" + userPrincipal.getId())));
 
+                                                return fileService.saveImgByIdForShop(f, s.getId()).flatMap(
+                                                        n -> {
+                                                            s.setImg(n);
+                                                            return Mono.just(s);
+                                                        }
+                                                );
+                                            }).
+                                            flatMap(sh -> {
+                                                return shopService.updateShop(sh).
+                                                        flatMap(sf ->
+                                                                Mono.just("redirect:/account/accountpage/" + userPrincipal.getId())
+                                                        );
+                                            });
                                 case DEFAULT:
-                                    // сброс на дефолтную картинку и удаление старой из базы
+                                    //TODO сброс на дефолтную картинку и удаление старой из базы
                                     return Mono.just("redirect:/account/accountpage");
                                 default:
                                     return Mono.just(utilService.FORBIDDEN_PAGE);

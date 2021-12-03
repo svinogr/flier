@@ -1,6 +1,7 @@
 package com.svinogr.flier.model.shop;
 
 import com.svinogr.flier.model.PropertyShop;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.stereotype.Component;
 /**
@@ -12,7 +13,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class PropertyConverter implements Converter<String, PropertyShop> {
     @Override
-    public PropertyShop convert(String id) {
+    public PropertyShop convert(@NotNull String id) {
         long idBD = Long.parseLong(id);
 
         PropertyShop propertyShop = new PropertyShop();

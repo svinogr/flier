@@ -1,7 +1,10 @@
 package com.svinogr.flier.services;
 
+import com.svinogr.flier.model.PropertiesShops;
 import com.svinogr.flier.model.PropertyShop;
 import reactor.core.publisher.Flux;
+
+import java.util.List;
 
 /**
  * @author SVINOGR
@@ -17,10 +20,5 @@ public interface PropertyShopService {
      */
     Flux<PropertyShop> getAllTabs();
 
-    /**
-     * Get all tabs of shop by id
-     *
-     * @return found {@link PropertyShop}
-     */
-    Flux<PropertyShop> getAllTabsByShopId(Long shopId);
+    Flux<PropertyShop> getByIdsPropertiesShops(List<PropertiesShops> list);
 }

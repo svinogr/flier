@@ -1,11 +1,15 @@
 package com.svinogr.flier.services.impl;
 
+import com.svinogr.flier.model.PropertiesShops;
 import com.svinogr.flier.model.PropertyShop;
 import com.svinogr.flier.repo.TabsRepo;
 import com.svinogr.flier.services.PropertyShopService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 public class PropertyShopServiceImpl implements PropertyShopService {
@@ -18,7 +22,14 @@ public class PropertyShopServiceImpl implements PropertyShopService {
     }
 
     @Override
-    public Flux<PropertyShop> getAllTabsByShopId(Long shopId) {
-        return tabsRepo.findByShopId(shopId);
+    public Flux<PropertyShop> getByIdsPropertiesShops(List<PropertiesShops> list) {
+        List<Long> listIds = new ArrayList<>();
+        for (PropertiesShops p: list) {
+            listIds.add(p.getPropertyId());
+        }
+
+        return tabsRepo.findAllById(listIds);
     }
+
+
 }

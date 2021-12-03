@@ -12,4 +12,12 @@ public class PropertiesShops extends BaseEntity {
 
     @Column("property_id")
     private Long propertyId;
+
+    public PropertiesShops(Long shopId, Long propertyId) {
+        this.shopId = shopId;
+        this.propertyId = propertyId;
+    }
+
+    public PropertiesShops() {
+    }
 }

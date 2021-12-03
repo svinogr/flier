@@ -12,8 +12,5 @@ import org.springframework.data.relational.core.mapping.Table;
 @Data
 @Table(value = "property_shop")
 public class PropertyShop extends BaseEntity {
-
-    private Long shopId;
-
     private String name;
 }
