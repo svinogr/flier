@@ -40,7 +40,6 @@ public class ShopServiceImpl implements ShopService {
 
     @Override
     public Mono<Shop> createShop(Shop shop) {
-
         return shopRepo.save(shop).flatMap(s -> {
             // из проперти магаза получаем проперти для таблицы проп-шоп
             List<PropertiesShops> propShopslist = new ArrayList<>();

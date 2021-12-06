@@ -86,21 +86,42 @@
                            id="url" name="url">
                     <label for="url">Сайт</label>
                 </div>
-
-                <div class="form-floating">
-                    <ul name="property2" id="property2" class="form-control mt-3">
+                <!-- th:checked="${not #lists.contains(tabs, property)}"   th:attrappend="checked=${1 == 1} ? 'checked'"-->
+             <!--   <div class="form-floating">
+                    <ul name="property" id="property" class="form-control mt-3">
                         <li class="" style="display: inline-block; padding-left: 5pt; padding-top: 5pt;"
                             th:each="property, el : ${tabs}">
-                           <!-- th:checked="${not #lists.contains(tabs, property)}"-->
-                            <input type="checkbox" checked=""  th:id="${el.count}" th:value="*{property.id}" th:field="*{shop.listOfProperty}" />
-                            <label  th:for="${#ids.seq('')}"
+
+                            <input type="checkbox"  th:id="${el.count}"   th:value="*{property.id}" th:field="*{shop.listOfProperty}" />
+                            <label
                                    th:text="${property.name}">Heating</label>
                         </li>
                     </ul>
-                    <label for="property2">Направление</label>
+                    <label for="property">Направление</label>
+
+                </div>-->
+                <div>
+                    <ul name="property" id="property" class="form-control mt-3">
+                        <li class="" style="display: inline-block; padding-left: 5pt; padding-top: 5pt;">
+                            <input type="checkbox"  th:id="${shop.listOfProperty[0].id}" th:attrappend="checked=${shop.listOfProperty[0].check} ? 'checked'" th:value="${shop.listOfProperty[0].id}"  />
+                            <label
+                                    th:text="${shop.listOfProperty.name}">Heating</label>
+                        </li>
+
+                        <li class="" style="display: inline-block; padding-left: 5pt; padding-top: 5pt;">
+                            <input type="checkbox"  th:id="${tabs[0].id}"   th:value="${tabs[1].id}" th:field="*{shop.listOfProperty}" />
+                            <label
+                                    th:text="${tabs[1].name}">Heating</label>
+                        </li>
+                        <li class="" style="display: inline-block; padding-left: 5pt; padding-top: 5pt;">
+                            <input type="checkbox"  th:id="${tabs[2].id}"   th:value="${tabs[2].id}" th:field="*{shop.listOfProperty}" />
+                            <label
+                                    th:text="${tabs[2].name}">Heating</label>
+                        </li>
+                    </ul>
 
                 </div>
-                <input type="checkbox" checked/>
+
                 <div>
                     <input class="btn btn-outline-primary form-control mt-4" type="submit" value="Сохранить">
                     <input hidden="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">

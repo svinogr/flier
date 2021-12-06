@@ -1,7 +1,10 @@
 package com.svinogr.flier.model;
 
 import lombok.Data;
+import org.springframework.data.annotation.Transient;
 import org.springframework.data.relational.core.mapping.Table;
+
+
 
 /**
  * @author SVINOGR
@@ -13,4 +16,7 @@ import org.springframework.data.relational.core.mapping.Table;
 @Table(value = "property_shop")
 public class PropertyShop extends BaseEntity {
     private String name;
+    @Transient
+    private boolean
+            check;
 }
