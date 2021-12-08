@@ -13,4 +13,6 @@ public interface PropertiesShopsService {
     Mono<PropertiesShops> save(PropertiesShops propertiesShops);
 
     Flux<PropertiesShops> saveAll(List<PropertiesShops> propertiesShopsList);
+
+    Flux<PropertiesShops> updateAll(List<PropertiesShops> propShopslist);
 }

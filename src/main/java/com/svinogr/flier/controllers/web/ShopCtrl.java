@@ -148,6 +148,7 @@ public class ShopCtrl {
                                     shop.setUserId(user.getId());
                                     model.addAttribute("shop", shop);
                                     model.addAttribute("tabs", list);
+
                                     return Mono.just("updateshoppage");
                                 });
                     });
@@ -298,14 +299,17 @@ public class ShopCtrl {
                                                                     return Mono.just(s);
                                                                 }));
                                             }).flatMap(sh -> {
-                                                shopService.updateShop(sh).subscribe();
-                                                return Mono.just("redirect:/account/accountpage/" + userPrincipal.getId());
+                                              return   shopService.updateShop(sh).flatMap(shop1 -> {
+                                                    return Mono.just("redirect:/account/accountpage/" + userPrincipal.getId());
+                                                });
+
                                             });
                                         case DEFAULT:
                                             // сброс на дефолтную картинку и удаление старой из базы
                                             return fileService.deleteImageForShop(shop.getImg()).flatMap(
                                                     n -> {
                                                         shop.setImg(n);
+
                                                         return Mono.just(shop);
                                                     }
                                             ).flatMap(sh1 -> shopService.updateShop(shop).flatMap(sh -> Mono.just("redirect:/account/accountpage/" + userPrincipal.getId())));

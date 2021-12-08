@@ -86,20 +86,22 @@
                            id="url" name="url">
                     <label for="url">Сайт</label>
                 </div>
+            <!--    [[${shop.listOfProperty}]]
+                [[${tabs}]]-->
                 <!-- th:checked="${not #lists.contains(tabs, property)}"   th:attrappend="checked=${1 == 1} ? 'checked'"-->
-             <!--   <div class="form-floating">
+                <div class="form-floating" th:object="${shop}">
                     <ul name="property" id="property" class="form-control mt-3">
                         <li class="" style="display: inline-block; padding-left: 5pt; padding-top: 5pt;"
                             th:each="property, el : ${tabs}">
 
-                            <input type="checkbox"  th:id="${el.count}"   th:value="*{property.id}" th:field="*{shop.listOfProperty}" />
+                            <input type="checkbox"  th:id="${el.count}"   th:value="${property.id}" th:field="*{listOfProperty}" />
                             <label
                                    th:text="${property.name}">Heating</label>
                         </li>
                     </ul>
                     <label for="property">Направление</label>
-
-                </div>-->
+                </div>
+                <!--
                 <div>
                     <ul name="property" id="property" class="form-control mt-3">
                         <li class="" style="display: inline-block; padding-left: 5pt; padding-top: 5pt;">
@@ -120,7 +122,7 @@
                         </li>
                     </ul>
 
-                </div>
+                </div>-->
 
                 <div>
                     <input class="btn btn-outline-primary form-control mt-4" type="submit" value="Сохранить">

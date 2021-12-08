@@ -56,8 +56,20 @@ public class ShopServiceImpl implements ShopService {
     public Mono<Shop> updateShop(Shop shop) {
         return shopRepo.updateShop(shop).
                 flatMap(ok -> {
-                    if (ok) return getShopById(shop.getId());
+                    if (ok) {
+                        List<PropertiesShops> propShopslist = new ArrayList<>();
+                        for (PropertyShop p : shop.getListOfProperty()) {
+                            PropertiesShops propertiesShops = new PropertiesShops(shop.getId(), p.getId());
+                            propShopslist.add(propertiesShops);
+                        }
+
+                        return propertiesShopsService.updateAll(propShopslist).collectList().flatMap(l -> getShopById(shop.getId()));
+
+                      //  return getShopById(shop.getId());
+                    }
                     //TODO возвращать пустой хорощо ли это??
+
+
                     return Mono.empty();
                 });
     }
@@ -89,6 +101,7 @@ public class ShopServiceImpl implements ShopService {
                                 collectList().
                                 flatMap(lP -> {
                                     shop.setListOfProperty(lP);
+
                                     return Mono.just(shop);
                                 }).flatMap(s -> {
                             return stockService.findStocksByShopId(s.getId()).

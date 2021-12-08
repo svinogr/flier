@@ -7,6 +7,7 @@ import com.svinogr.flier.services.PropertyShopService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,12 +25,15 @@ public class PropertyShopServiceImpl implements PropertyShopService {
     @Override
     public Flux<PropertyShop> getByIdsPropertiesShops(List<PropertiesShops> list) {
         List<Long> listIds = new ArrayList<>();
-        for (PropertiesShops p: list) {
+        for (PropertiesShops p : list) {
             listIds.add(p.getPropertyId());
         }
 
         return tabsRepo.findAllById(listIds);
     }
 
-
+    @Override
+    public Mono<PropertyShop> getPropertyById(long idBD) {
+        return tabsRepo.findById(idBD);
+    }
 }

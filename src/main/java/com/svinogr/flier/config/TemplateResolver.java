@@ -1,13 +1,9 @@
 package com.svinogr.flier.config;
 
-import com.svinogr.flier.config.jwt.JwtUtil;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.web.multipart.commons.CommonsMultipartResolver;
-import org.thymeleaf.spring5.templateresolver.SpringResourceTemplateResolver;
 import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.templateresolver.ClassLoaderTemplateResolver;
-import org.thymeleaf.templateresolver.ITemplateResolver;
 
 /**
  * @author SVINOGR
@@ -28,6 +24,7 @@ public class TemplateResolver {
         adminTemplateResolver.setCharacterEncoding("UTF-8");
         adminTemplateResolver.setOrder(0);
         adminTemplateResolver.setCheckExistence(true);
+        adminTemplateResolver.setCacheable(false);
 
         return adminTemplateResolver;
     }
@@ -41,6 +38,7 @@ public class TemplateResolver {
         adminTemplateResolver.setCharacterEncoding("UTF-8");
         adminTemplateResolver.setOrder(4);
         adminTemplateResolver.setCheckExistence(true);
+        adminTemplateResolver.setCacheable(false);
 
         return adminTemplateResolver;
     }
@@ -54,6 +52,7 @@ public class TemplateResolver {
         shopTemplateResolver.setCharacterEncoding("UTF-8");
         shopTemplateResolver.setOrder(2);
         shopTemplateResolver.setCheckExistence(true);
+        shopTemplateResolver.setCacheable(false);
 
         return shopTemplateResolver;
     }
