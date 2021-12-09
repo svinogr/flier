@@ -1,8 +1,6 @@
 package com.svinogr.flier.model.shop;
 
 import com.svinogr.flier.model.PropertyShop;
-import com.svinogr.flier.services.PropertyShopService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.stereotype.Component;
 
@@ -18,8 +16,6 @@ import java.util.List;
 //TODO найти решение через динамическое получение данных из таблицы. а так это ебаный костылб!!!!
 @Component
 public class PropertyConverter implements Converter<String, PropertyShop> {
-    @Autowired
-    PropertyShopService propertyShopService;
 
     private final List<PropertyShop> list = Arrays.asList(      new PropertyShop("FOOD", 1L), new PropertyShop(  "CLOTHES", 2L),
             new PropertyShop("BUILDING", 3L) );
@@ -38,4 +34,6 @@ public class PropertyConverter implements Converter<String, PropertyShop> {
 
         return p;
     }
+
+
 }

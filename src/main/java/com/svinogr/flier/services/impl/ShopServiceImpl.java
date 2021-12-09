@@ -63,7 +63,7 @@ public class ShopServiceImpl implements ShopService {
                             propShopslist.add(propertiesShops);
                         }
 
-                        return propertiesShopsService.updateAll(propShopslist).collectList().flatMap(l -> getShopById(shop.getId()));
+                        return propertiesShopsService.updateAll(propShopslist, shop.getId()).collectList().flatMap(l -> getShopById(shop.getId()));
 
                       //  return getShopById(shop.getId());
                     }

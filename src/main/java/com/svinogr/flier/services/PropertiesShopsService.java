@@ -14,5 +14,5 @@ public interface PropertiesShopsService {
 
     Flux<PropertiesShops> saveAll(List<PropertiesShops> propertiesShopsList);
 
-    Flux<PropertiesShops> updateAll(List<PropertiesShops> propShopslist);
+    Flux<PropertiesShops>  updateAll(List<PropertiesShops> propShopslist, Long shopId);
 }
