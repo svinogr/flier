@@ -26,3 +26,18 @@ values ('CLOTHES');
 insert into property_shop (name)
 values ('BUILDING');
 
+insert into properties_shops (shop_id, property_id) values (1,1);
+insert into properties_shops (shop_id, property_id) values (1,2);
+insert into properties_shops (shop_id, property_id) values (2,1);
+insert into properties_shops (shop_id, property_id) values (3,1);
+insert into properties_shops (shop_id, property_id) values (3,3);
+insert into properties_shops (shop_id, property_id) values (4,1);
+insert into properties_shops (shop_id, property_id) values (4,2);
+insert into properties_shops (shop_id, property_id) values (5,1);
+insert into properties_shops (shop_id, property_id) values (5,3);
+insert into properties_shops (shop_id, property_id) values (6,1);
+insert into properties_shops (shop_id, property_id) values (6,2);
+insert into properties_shops (shop_id, property_id) values (6,3);
+insert into properties_shops (shop_id, property_id) values (7,1);
+
+
