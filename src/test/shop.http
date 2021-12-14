@@ -48,3 +48,6 @@ Content-Type: application/json
 GET http://localhost:8081/api/shop/1/stock?from=0&quantity=10
 Cache-Control: no-cache
 Content-Type: application/json
+###
+GET http://localhost:8081/api/img/shop/0.png/
+Cache-Control: no-cache
