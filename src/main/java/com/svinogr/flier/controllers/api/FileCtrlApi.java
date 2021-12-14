@@ -29,7 +29,7 @@ public class FileCtrlApi {
      * @param response {@link ServerHttpResponse}
      * @return data of pic for shop
      */
-    @GetMapping("img/shop/{id}")
+    @GetMapping("img/shop/{imgName}")
     public Mono<Void> imgShopRout(@PathVariable String imgName, ServerHttpResponse response)  {
         return fileService.getImgByNameAndPath(imgName, shopImgPath)
                 .flatMap(file ->
@@ -45,7 +45,7 @@ public class FileCtrlApi {
      * @param response {@link ServerHttpResponse}
      * @return data of pic for stock
      */
-    @GetMapping("stock/{id}")
+    @GetMapping("img/stock/{imgName}")
     public Mono<Void> imgStockRout(@PathVariable String imgName, ServerHttpResponse response)  {
         return fileService.getImgByNameAndPath(imgName, stockImgPath)
                 .flatMap(file ->

@@ -51,3 +51,6 @@ Content-Type: application/json
 ###
 GET http://localhost:8081/api/img/shop/0.png/
 Cache-Control: no-cache
+###
+GET http://localhost:8081/api/img/stock/0.png/
+Cache-Control: no-cache
