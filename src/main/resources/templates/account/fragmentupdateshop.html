@@ -61,10 +61,17 @@
                                name="address" id="address">
                         <label for="address">Адрес</label>
                     </div>
+
                     <input hidden="hidden" class="form-control" id="lat" th:value="${shop.coordLat}" type="text"
                            placeholder="coordLat" name="coordLat">
                     <input hidden="hidden" class="form-control" id="lng" th:value="${shop.coordLng}" type="text"
                            placeholder="coordLng" name="coordLng">
+                </div>
+
+                <div class="form-floating">
+                    <input class="form-control mt-3" th:value="${shop.phone}" type="text" placeholder="url"
+                           id="phone" name="url">
+                    <label for="phone">Сайт</label>
                 </div>
                 <div>
                     <input hidden="hidden" class="form-control mt-3" value="NOTHING" type="text" placeholder="imgAction"

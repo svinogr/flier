@@ -9,7 +9,7 @@ import lombok.Data;
  * Class helper to define coord araund for coord
  *
  *lon -west-lon-east
- * lan noed-lan-south
+ * lan nord-lan-south
  */
 @Data
 public class CoordHelper {
@@ -67,7 +67,7 @@ public class CoordHelper {
 
     public void infoSquare() {
         System.out.println("west" + getWestLeftPoint());
-        System.out.println(" east" + getEastRightPoint());
+        System.out.println("east" + getEastRightPoint());
         System.out.println("sout" + getSouthDownPoint());
         System.out.println("nord" + getNordUpPoint());
     }

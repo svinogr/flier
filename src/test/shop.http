@@ -1,4 +1,4 @@
-GET http://localhost:8081/api/shop?lng=-57.5&lat=-25.3&from=0&quantity=10
+GET http://localhost:8081/api/shop/nearest/search?lng=30&lat=20&tab=&searchText=&from=0&quantity=10
 Cache-Control: no-cache
 Content-Type: application/jso
 //http://192.168.43.214:8081/api/shop?lng=-57.5&lat=25.3&from=0&quantity=10
@@ -30,6 +30,10 @@ Cache-Control: no-cache
 
 ###
 GET http://localhost:8081/api/shop/search?tab=ALL&searchText=MAGAS&from=0&quantity=10
+Cache-Control: no-cache
+###
+
+GET http://localhost:8081/api/shop/search?tab=""&searchText=""&from=0&quantity=10
 Cache-Control: no-cache
 ###
 

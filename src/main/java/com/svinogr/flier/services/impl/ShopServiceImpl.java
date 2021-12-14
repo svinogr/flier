@@ -277,7 +277,7 @@ public class ShopServiceImpl implements ShopService {
     @Override
     public Flux<Shop> getSearchAllShopsAroundCoord(Coord coord, String searchText) {
         CoordHelper coordHelper = new CoordHelper(coord);
-
+        coordHelper.infoSquare(); // delete
         return shopRepo.getShopsAroundCoord(coordHelper).
                 filterWhen(shop -> {
                     if (shop.getTitle().toLowerCase().contains(searchText.toLowerCase()) || shop.getDescription().toLowerCase().contains(searchText.toLowerCase())) {

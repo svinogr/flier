@@ -14,12 +14,16 @@
         <h4> Адрес:
             <small class="text-muted" th:text="${shop.address}"/>
         </h4>
+        <h4> Телефон:
+            <small class="text-muted" th:text="${shop.phone}"/>
+        </h4>
         <h4> Описание:
             <small class="text-muted" th:text="${shop.description}"/>
         </h4>
         <h4> Статус:
             <small class="text-muted" th:text="${shop.status}"/>
         </h4>
+
     </div>
 
     <a th:if="${admin}" href="/admin/shop/shoppage/" th:attrappend="href=${shop.id}+'/update'"

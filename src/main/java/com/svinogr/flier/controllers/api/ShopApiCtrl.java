@@ -162,7 +162,6 @@ public class ShopApiCtrl {
         try {
             from = Long.parseLong(f);
             quantity = Long.parseLong(q);
-            //tab = new PropertyShop(tabString);
             tab = new PropertyShop();
             tab.setName(tabString);
             searchText.trim();
@@ -180,6 +179,7 @@ public class ShopApiCtrl {
 
     private boolean checkTab(Shop shop, PropertyShop tab) {
         boolean ok = false;
+        if (tab.getName().trim().isBlank()) return true;
 
         for (PropertyShop propertyShop : shop.getListOfProperty()) {
             ok = propertyShop.getName().equals(tab.getName());

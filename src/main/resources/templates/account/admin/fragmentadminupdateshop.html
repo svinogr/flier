@@ -63,7 +63,6 @@
                     <input class="form-control mt-3" value="NOTHING" type="text" placeholder="imgAction"
                            name="imgTypeAction" id="imgTypeAction">
                 </div>
-
                 <div class="input-group mt-3">
                     <div class="form-floating">
                         <input class="form-control" th:value="${shop.address}" type="text"
@@ -71,6 +70,7 @@
                                name="address" id="address">
                         <label for="title">Адрес</label>
                     </div>
+
                     <input class="form-control" id="lat" th:value="${shop.coordLat}" type="text"
                            placeholder="coordLat" name="coordLat">
                     <input class="form-control" id="lng" th:value="${shop.coordLng}" type="text"
@@ -82,7 +82,11 @@
                         </button>
                     </div>
                 </div>
-
+                <div class="form-floating">
+                    <input class="form-control mt-3" th:value="${shop.phone}" type="text" placeholder="url"
+                           id="phone" name="phone">
+                    <label for="phone">Телефон</label>
+                </div>
                 <div>
                     <input class="form-control mt-3" th:value="${shop.status}" type="text" placeholder="status"
                            name="status">

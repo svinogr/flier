@@ -31,6 +31,7 @@ public class Shop extends BaseEntity {
     private String description;
     private String url;
     private String img;
+    private String phone;
     @Transient
     private List<PropertyShop> listOfProperty;
     @Transient
@@ -114,5 +115,13 @@ public class Shop extends BaseEntity {
 
     public void setStocks(List stocks) {
         this.stocks = stocks;
+    }
+
+    public String getPhone() {
+        return phone;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
     }
 }
