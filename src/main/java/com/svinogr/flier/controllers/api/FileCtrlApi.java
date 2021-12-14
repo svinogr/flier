@@ -1,6 +1,7 @@
 package com.svinogr.flier.controllers.api;
 
 import com.svinogr.flier.services.FileService;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
@@ -11,6 +12,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import reactor.core.publisher.Mono;
+
+import java.io.File;
 
 @Controller
 @RequestMapping("/api")
@@ -33,11 +36,7 @@ public class FileCtrlApi {
     public Mono<Void> imgShopRout(@PathVariable String imgName, ServerHttpResponse response)  {
         return fileService.getImgByNameAndPath(imgName, shopImgPath)
                 .flatMap(file ->
-                {
-                    ZeroCopyHttpOutputMessage zeroCopyResponse = (ZeroCopyHttpOutputMessage) response;
-                    response.getHeaders().setContentType(MediaType.valueOf("image/" + imgName.split("\\.")[1].toLowerCase()));
-                    return zeroCopyResponse.writeWith(file, 0, file.length());
-                });
+                        getFile(imgName, response, file));
     }
 
     /**
@@ -49,10 +48,13 @@ public class FileCtrlApi {
     public Mono<Void> imgStockRout(@PathVariable String imgName, ServerHttpResponse response)  {
         return fileService.getImgByNameAndPath(imgName, stockImgPath)
                 .flatMap(file ->
-                {
-                    ZeroCopyHttpOutputMessage zeroCopyResponse = (ZeroCopyHttpOutputMessage) response;
-                    response.getHeaders().setContentType(MediaType.valueOf("image/" + imgName.split("\\.")[1].toLowerCase()));
-                    return zeroCopyResponse.writeWith(file, 0, file.length());
-                });
+                        getFile(imgName, response, file));
+    }
+
+    @NotNull
+    private Mono<? extends Void> getFile(@PathVariable String imgName, ServerHttpResponse response, File file) {
+        ZeroCopyHttpOutputMessage zeroCopyResponse = (ZeroCopyHttpOutputMessage) response;
+        response.getHeaders().setContentType(MediaType.valueOf("image/" + imgName.split("\\.")[1].toLowerCase()));
+        return zeroCopyResponse.writeWith(file, 0, file.length());
     }
 }
