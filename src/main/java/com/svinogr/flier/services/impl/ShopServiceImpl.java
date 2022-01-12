@@ -65,7 +65,7 @@ public class ShopServiceImpl implements ShopService {
 
                         return propertiesShopsService.updateAll(propShopslist, shop.getId()).collectList().flatMap(l -> getShopById(shop.getId()));
 
-                      //  return getShopById(shop.getId());
+                        //  return getShopById(shop.getId());
                     }
                     //TODO возвращать пустой хорощо ли это??
 
@@ -286,21 +286,31 @@ public class ShopServiceImpl implements ShopService {
                         return stockService.
                                 findStocksByShopId(shop.getId()).flatMap(stock -> {
                             if (stock.getDescription().toLowerCase().contains(searchText.toLowerCase()) || stock.getTitle().toLowerCase().contains(searchText.toLowerCase())) {
+
                                 return Mono.just(true);
                             }
 
                             return Mono.just(false);
                         });
                     }
-                }).flatMap(shop -> {
-            return propertiesShopsService.getByShopId(shop.getId()).collectList().flatMapMany(list -> {
+                })
+                .flatMap(shop -> {
+                    return stockService.findStocksByShopId(shop.getId()).collectList().flatMapMany(listStocks -> {
+                        shop.setStocks(listStocks);
 
-                return propertyShopService.getByIdsPropertiesShops(list).collectList().flatMap(l -> {
-                    shop.setListOfProperty(l);
-                    return Mono.just(shop);
+                        return Mono.just(shop);
+                    });
+                })
+                .flatMap(shop -> {
+
+                    return propertiesShopsService.getByShopId(shop.getId()).collectList().flatMapMany(list -> {
+
+                        return propertyShopService.getByIdsPropertiesShops(list).collectList().flatMap(l -> {
+                            shop.setListOfProperty(l);
+                            return Mono.just(shop);
+                        });
+                    });
                 });
-            });
-        });
     }
 
     @Override
@@ -320,6 +330,12 @@ public class ShopServiceImpl implements ShopService {
                         });
                     }
                 }).flatMap(shop -> {
+            return stockService.findStocksByShopId(shop.getId()).collectList().flatMapMany(listStocks -> {
+                shop.setStocks(listStocks);
+
+                return Mono.just(shop);
+            });
+        }).flatMap(shop -> {
             return propertiesShopsService.getByShopId(shop.getId()).collectList().flatMapMany(list -> {
 
                 return propertyShopService.getByIdsPropertiesShops(list).collectList().flatMap(l -> {
